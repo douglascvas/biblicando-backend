@@ -1,0 +1,15 @@
+biblicando:
+  '{0.0.1}':
+    database:
+      host: '[[DB_HOST]]'
+      port: '13306'
+      username: '[[DB_USERNAME]]'
+      password: '[[DB_PASSWORD]]'
+      database: 'biblicando'
+    cache:
+      configFile: '[[CACHE_CONFIG_FILE]]'
+    server:
+      port: 3005
+    api:
+      biblesOrg:
+        url: 'https://[[BIBLES_ORG_TOKEN]]:@bibles.org/v2/'

@@ -1,0 +1,53 @@
+{
+  "name": "biblicando",
+  "version": "0.0.1",
+  "description": "Bible study tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/douglascvas/biblicandojs.git"
+  },
+  "keywords": [
+    "bible",
+    "god",
+    "jesus",
+    "saviour"
+  ],
+  "author": "Douglas Carvalho Vasconcelos <douglascvas@gmail.com>",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/douglascvas/biblicandojs/issues"
+  },
+  "dependencies": {
+    "biblicando-api": "git+ssh://git@github.com/douglascvas/biblicando-api.git#v0.0.13",
+    "body-parser": "^1.15.0",
+    "configurator-js": "0.0.5",
+    "express": "4.12.3",
+    "glob": "^7.0.3",
+    "ioredis": "^1.15.1",
+    "jsonschema": "^1.1.0",
+    "jsonutils": "^0.1.0",
+    "log4js": "^0.6.33",
+    "mongodb": "^2.1.7",
+    "mysql": "^2.10.2",
+    "node-glob": "^1.2.0",
+    "nunjucks": "1.3.4",
+    "q": "^1.4.1",
+    "request": "^2.69.0",
+    "request-promise": "^2.0.1",
+    "require-dir": "^0.3.0",
+    "sequelize": "^3.19.3",
+    "systemjs": "^0.19.26"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^2.7.0",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^2.13.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3"
+  }
+}
