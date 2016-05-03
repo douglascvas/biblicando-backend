@@ -1,27 +1,28 @@
-namespace chapter {
+'use strict';
+import {Controller} from "../common/decorators/controller";
+import {Inject} from "../common/decorators/inject";
+import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
+import {Request, Response} from "express-serve-static-core";
 
-  'use strict';
-  import Request = common.Request;
-  import RequestType = common.RequestType;
+@Inject()
+@Controller()
+export class ChapterController {
 
-  export class ChapterController {
-
-    constructor(private router, private chapterService, private restResponseService) {
-    }
-
-    @Request('book/{bookId}/chapters', RequestType.GET)
-    public getChapters(request, response) {
-      const bookId = request.params.bookId;
-      let result = this.chapterService.getChapters(bookId);
-      this.restResponseService.respond(request, response, result);
-    }
-
-    @Request('chapter/{chapterId}', RequestType.GET)
-    public getChapter(request, response) {
-      const chapterId = request.params.chapterId;
-      let result = this.chapterService.getChapter(chapterId);
-      this.restResponseService.respond(request, response, result);
-    }
+  constructor(private chapterService,
+              private restResponseService) {
   }
 
+  @RequestMapping('book/{bookId}/chapters', RequestType.GET)
+  public getChapters(request:Request, response:Response) {
+    const bookId = request.params.bookId;
+    let result = this.chapterService.getChapters(bookId);
+    this.restResponseService.respond(request, response, result);
+  }
+
+  @RequestMapping('chapter/{chapterId}', RequestType.GET)
+  public getChapter(request:Request, response:Response) {
+    const chapterId = request.params.chapterId;
+    let result = this.chapterService.getChapter(chapterId);
+    this.restResponseService.respond(request, response, result);
+  }
 }

@@ -1,15 +1,13 @@
 'use strict';
+import {Permission} from "./permission";
 
-namespace user {
-
-  export interface User {
-    firstName:string;
-    lastName:string;
-    passwordHash:string;
-    passwordAlgorithm:string;
-    passwordSalt:string;
-    email:string;
-    registrationIP:string;
-    permissions:Permission[];
-  }
+export interface User {
+  firstName:string;
+  lastName:string;
+  passwordHash:string;
+  passwordAlgorithm:string;
+  passwordSalt:string;
+  email:string;
+  registrationIP:string;
+  permissions:Permission[];
 }

@@ -1,24 +1,21 @@
 'use strict';
+import {Inject} from "../common/decorators/inject";
+import {Collection} from "../common/enums/collection";
+import {Db} from "mongodb";
+import {User} from "./user";
+import {BaseDao} from "../common/dao/baseDao";
 
-namespace user {
-
-  import BaseDao = common.BaseDao;
-  import Collection = common.Collection;
-  import Inject = common.Inject;
-
-  @Inject
-  export class UserDao extends BaseDao {
-    constructor(private database) {
-      super(database, Collection.USER);
-    }
-
-    public findOneByEmail(email) {
-      var query = {
-        email: email
-      };
-      return this.findOne(query);
-    }
+@Inject()
+export class UserDao extends BaseDao {
+  constructor(private database:Db) {
+    super(database, Collection.USER);
   }
 
+  public findOneByEmail(email:string):Promise<User> {
+    var query = {
+      email: email
+    };
+    return this.findOne(query);
+  }
 }
 

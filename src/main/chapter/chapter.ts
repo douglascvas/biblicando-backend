@@ -1,14 +1,12 @@
 'use strict';
+import {Verse} from "../verse/verse";
+import {Book} from "../book/book";
 
-namespace chapter {
-
-  import Verse = verse.Verse;
-
-  export interface Chapter {
-    _id:string;
-    remoteId:string;
-    remoteSource:string;
-    number:number;
-    verses:Verse[];
-  }
+export interface Chapter {
+  _id:string;
+  remoteId:string;
+  remoteSource:string;
+  number:number;
+  book:Book;
+  verses:Verse[];
 }

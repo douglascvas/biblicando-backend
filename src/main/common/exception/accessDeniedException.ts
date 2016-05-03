@@ -1,10 +1,7 @@
-namespace exception {
+export class AccessDeniedException extends Error {
+  public status = 400;
 
-  export class AccessDeniedException extends Error {
-    public status = 400;
-
-    constructor(message) {
-      super(message);
-    }
+  constructor(message) {
+    super(message);
   }
 }
