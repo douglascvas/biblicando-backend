@@ -1,8 +1,11 @@
-import AccessDeniedException = exception.AccessDeniedException;
+import {Inject} from "../decorators/inject";
+import {ValidationService} from "./validationService";
+import {AccessDeniedException} from "../exception/accessDeniedException";
 
-@Inject
+@Inject()
 export class AuthenticationService {
-  constructor(private config, private validationService:ValidationService) {
+  constructor(private config,
+              private validationService:ValidationService) {
   }
 
   public requiresAuthentication() {

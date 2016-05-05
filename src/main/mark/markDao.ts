@@ -1,18 +1,20 @@
 'use strict';
+import {Inject} from "../common/decorators/inject";
+import {BaseDao} from "../common/dao/baseDao";
+import {Collection} from "../common/enums/collection";
+import {Mark} from "./mark";
+import * as Q from "q";
+import IPromise = Q.IPromise;
 import {ObjectID} from "mongodb";
-import BaseDao = common.BaseDao;
-import Collection = common.Collection;
-import Inject = common.Inject;
-import mongodb = require('mongodb');
-import assert = require('assert');
+import * as assert from "assert";
 
-@Inject
-export class MarkDao extends BaseDao {
+@Inject()
+export class MarkDao extends BaseDao<Mark> {
   constructor(private database) {
     super(database, Collection.MARK);
   }
 
-  public findFromVerses(userId, verseIds) {
+  public findFromVerses(userId:string, verseIds:string[]):IPromise<Mark[]> {
     assert(userId);
     assert(verseIds);
 
@@ -23,13 +25,13 @@ export class MarkDao extends BaseDao {
       "user._id": userId
     };
 
-    return self.find(query);
+    return this.find(query);
   }
 
   /**
    * Exclude all marks whose `insertDate` is not equal `insertDateToIgnore`.
    */
-  public removeFromVerses(userId:ObjectID, verseIds:string[], insertDateToIgnore) {
+  public removeFromVerses(userId:string, verseIds:string[], insertDateToIgnore:Date) {
     insertDateToIgnore = insertDateToIgnore || null;
     assert(userId);
     assert(verseIds);
@@ -38,7 +40,7 @@ export class MarkDao extends BaseDao {
       "verse._id": {
         $in: verseIds
       },
-      "user._id": userId
+      "user._id": ObjectID.createFromHexString(userId)
     };
     if (insertDateToIgnore) {
       query.insertDate = {
@@ -46,10 +48,10 @@ export class MarkDao extends BaseDao {
       }
     }
 
-    return self.remove(query);
+    return this.remove(query);
   }
 
-  public findOneById(userId:ObjectID, markId:string) {
+  public findOneById(userId:ObjectID, markId:string):IPromise<Mark> {
     assert(userId);
     assert(markId);
 
@@ -58,10 +60,10 @@ export class MarkDao extends BaseDao {
       "user._id": userId
     };
 
-    return self.findOne(query);
+    return this.findOne(query);
   }
 
-  public findByVerse(userId:ObjectID, verseId:ObjectID, options:any) {
+  public findByVerse(userId:ObjectID, verseId:ObjectID, options:any):IPromise<Mark[]> {
     assert(userId);
     assert(verseId);
 
@@ -70,10 +72,10 @@ export class MarkDao extends BaseDao {
       "verse._id": verseId
     };
 
-    return self.find(query, options);
+    return this.find(query, options);
   }
 
-  public findByTag(userId:ObjectID, tags:string[]) {
+  public findByTag(userId:ObjectID, tags:string[]):IPromise<Mark[]> {
     assert(userId);
     assert(tags);
 
@@ -84,6 +86,6 @@ export class MarkDao extends BaseDao {
       }
     };
 
-    return self.find(query);
+    return this.find(query);
   }
 }

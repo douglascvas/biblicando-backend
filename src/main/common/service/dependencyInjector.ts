@@ -1,4 +1,6 @@
 'use strict';
+import {ObjectUtils} from "./objectUtils";
+
 interface Dependency {
   value:any;
   classz:Function;

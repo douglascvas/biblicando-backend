@@ -1,16 +1,17 @@
 'use strict';
+import {DependencyInjector} from "./common/service/dependencyInjector";
+import {RedisClient} from "./common/cache/redisClient";
+import {Logger} from "./common/logger";
+import {ObjectUtils} from "./common/service/objectUtils";
+import {Mongo} from "./common/database/mongo/mongo";
+import * as express from "express";
+import * as request from "request-promise";
+import * as bodyParser from "body-parser";
 
-import Configurator = require('configurator-js');
-import moduleInfo = require('../../../../package.json');
-import request = require('request-promise');
-import express = require('express');
-import bodyParser = require('body-parser');
-import requireDir = require('require-dir');
-// import Mongo = require('./database/mongo/mongo');
-// const serviceClasses = require('./service/index');
-// const controllerClasses = require('./api/index');
-// const daos = require('./database/mongo/dao/index');
-// const Logger = require('./others/logger');
+const Configurator = require("configurator-js");
+const moduleInfo =require("../../package.json");
+const requireDir = require("require-dir");
+
 const CONFIG_PATH = process.env.CONFIG_PATH || __dirname + "/resources/config.yml";
 
 export class Server {

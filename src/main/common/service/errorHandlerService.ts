@@ -1,5 +1,7 @@
 'use strict';
-@Inject
+import {Inject} from "../decorators/inject";
+
+@Inject()
 export class ErrorHandlerService {
   constructor(private logger) {
   }

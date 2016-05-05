@@ -8,6 +8,7 @@ import {Chapter} from "./chapter";
 import {Book} from "../book/book";
 import * as Q from "q";
 import IPromise = Q.IPromise;
+import * as assert from "assert";
 
 @Inject()
 export class ChapterService {

@@ -1,9 +1,11 @@
 'use strict';
-import Inject = common.Inject;
-import ValidationService = common.ValidationService;
-import Mark = mark.Mark;
+import {Inject} from "../common/decorators/inject";
+import {MarkDao} from "./markDao";
+import {Mark} from "./mark";
+import {ValidationService} from "../common/service/validationService";
+import * as assert from "assert";
 
-@Inject
+@Inject()
 export class MarkService {
   constructor(private markDao:MarkDao,
               private validationService:ValidationService) {
@@ -14,21 +16,22 @@ export class MarkService {
     return new Set(marks.map(mark => mark.verse._id));
   }
 
-  private validateMarks(marks) {
+  private validateMarks(marks:Mark[]) {
+    const markSchema = this.validationService.getSchema('mark');
     assert(marks && marks instanceof Array);
-    this.validationService.validateAll(marks, Mark);
+    this.validationService.validateAll(marks, markSchema);
   }
 
-  private updateMarksInsertDate(marks, date) {
+  private updateMarksInsertDate(marks:Mark[], date:Date):void {
     marks.forEach(mark => mark.insertDate = date);
   }
 
-  public getMarksForVerses(userId, verseIds) {
+  public getMarksForVerses(userId:string, verseIds:string[]) {
     verseIds.forEach(id => assert(typeof id === 'string'));
     return this.markDao.findFromVerses(userId, verseIds);
   }
 
-  public saveMarks(userId, marks) {
+  public saveMarks(userId: string, marks: Mark[]) {
     assert(userId);
     this.validateMarks(marks);
 
@@ -38,6 +41,6 @@ export class MarkService {
     if (marks.length) {
       this.markDao.insert(marks);
     }
-    this.markDao.removeFromVerses(userId, Array.from(verseIds.values), insertDate);
+    this.markDao.removeFromVerses(userId, Array.from(verseIds.values()), insertDate);
   }
 }

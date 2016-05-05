@@ -1,8 +1,8 @@
 'use strict';
+import {Inject} from "../decorators/inject";
+import {ErrorHandlerService} from "./errorHandlerService";
 
-import Q = require('q');
-
-@Inject
+@Inject()
 export class RestResponseService {
   constructor(private errorHandlerService:ErrorHandlerService) {
   }

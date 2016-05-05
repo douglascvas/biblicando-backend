@@ -1,6 +1,8 @@
 'use strict';
-import ValidationException = exception.ValidationException;
-const Validator = require('jsonschema').Validator;
+import {ValidationException} from "../exception/validationException";
+
+const jsonschema = require("jsonschema");
+const Validator = jsonschema.Validator;
 
 export class ValidationService {
   private validator;
@@ -9,16 +11,17 @@ export class ValidationService {
     this.validator = new Validator();
   }
 
+  public getSchema(name:string):any {
+    return require(`../common/schema/mark${name}`);
+  }
+
   public rejectRequest(response, error) {
     response.status(error.status || 500).json({
       message: error.message
     });
   }
 
-  public validate(obj, schema, throwException) {
-    if (throwException === undefined) {
-      throwException = true;
-    }
+  public validate(obj:any, schema:any, throwException:boolean = true) {
     var result = this.validator.validate(obj, schema);
     if (result.valid) {
       return result;

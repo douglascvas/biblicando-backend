@@ -1,20 +1,21 @@
 'use strict';
+import {Inject} from "../common/decorators/inject";
+import {Controller} from "../common/decorators/controller";
+import {AuthenticationService} from "../common/service/restAuthenticationService";
+import {MarkService} from "./markService";
+import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
+import {RestResponseService} from "../common/service/restResponseService";
 
-import Inject = common.Inject;
-import Controller = common.Controller;
-import Request = common.RequestMapping;
-import RequestType = common.RequestType;
-
-@Inject
-@Controller
+@Inject()
+@Controller()
 export class MarkController {
 
   constructor(private markService:MarkService,
-              private authenticationService,
-              private restResponseService) {
+              private authenticationService:AuthenticationService,
+              private restResponseService:RestResponseService) {
   }
 
-  @Request('marks', RequestType.GET)
+  @RequestMapping('marks', RequestType.GET)
   public getMarks(request, response) {
     const userId = request.user.id;
     const verseIds = (request.query.verses || '').split(',');
@@ -23,7 +24,7 @@ export class MarkController {
     this.restResponseService.respond(request, response, result);
   }
 
-  @Request('marks', RequestType.PUT)
+  @RequestMapping('marks', RequestType.PUT)
   public saveMarks(request, response) {
     const userId = request.user.id;
     const marks = request.body;

@@ -6,7 +6,6 @@ import {Controller} from "../common/decorators/controller";
 import {BibleService} from "./bibleService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
-import {Request, Response} from "express";
 
 @Inject()
 @Controller()
@@ -17,20 +16,20 @@ export class BibleController {
   }
 
   @RequestMapping('/bibles', RequestType.GET)
-  public getBibles(request:Request, response:Response) {
+  public getBibles(request, response) {
     var result = this.bibleService.getBibles();
     this.restResponseService.respond(request, response, result);
   }
 
   @RequestMapping('/bible/{bibleId}', RequestType.GET)
-  public getBible(request:Request, response:Response) {
+  public getBible(request, response) {
     const bibleId = request.params.bibleId;
     let result = this.bibleService.getBible(bibleId);
     this.restResponseService.respond(request, response, result);
   }
 
   @RequestMapping('/bibles/sync', RequestType.POST)
-  public syncBibles(request:Request, response:Response) {
+  public syncBibles(request, response) {
     this.bibleService.synchronizeRemoteBibles();
     this.restResponseService.respond(request, response);
   }

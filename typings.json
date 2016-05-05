@@ -3,15 +3,17 @@
   "version": false,
   "dependencies": {},
   "ambientDependencies": {
-    "assert": "registry:dt/assert#0.0.0+20160317120654",
     "body-parser": "registry:dt/body-parser#0.0.0+20160317120654",
     "express": "registry:dt/express#4.0.0+20160317120654",
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
+    "form-data": "registry:dt/form-data#0.0.0+20160316155526",
     "ioredis": "registry:dt/ioredis#0.0.0+20160412133314",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "mongodb": "registry:dt/mongodb#2.1.0+20160425144419",
     "node": "registry:dt/node#4.0.0+20160423143914",
     "q": "registry:dt/q#0.0.0+20160417152954",
-    "rx": "registry:dt/rx#0.0.0+20160317120654"
+    "request": "registry:dt/request#0.0.0+20160316155526",
+    "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
   }
 }

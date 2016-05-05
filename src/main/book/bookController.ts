@@ -4,7 +4,6 @@ import {RestResponseService} from "../common/service/restResponseService";
 import {RequestType, RequestMapping} from "../common/decorators/requestMapping";
 import {Inject} from "../common/decorators/inject";
 import {Controller} from "../common/decorators/controller";
-import {Request, Response} from "express-serve-static-core";
 
 @Inject()
 @Controller()
@@ -21,7 +20,7 @@ export class BookController {
   }
 
   @RequestMapping('book/{bookId}', RequestType.GET)
-  public getBook(request:Request, response:Response) {
+  public getBook(request, response) {
     const bookId = request.params.bookId;
     let result = this.bookService.getBook(bookId);
     this.restResponseService.respond(request, response, result);

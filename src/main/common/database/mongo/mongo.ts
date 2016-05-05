@@ -1,10 +1,10 @@
 'use strict';
+import {Inject} from "../../decorators/inject";
+import {MongoClient} from "mongodb";
 
-import jsonutils = require('jsonutils');
-import mongodb = require('mongodb');
-import MongoClient = mongodb.MongoClient;
+const jsonutils = require("jsonutils");
 
-@Inject
+@Inject()
 export class Mongo {
   private connection;
 
@@ -18,7 +18,7 @@ export class Mongo {
     }
   }
 
-  private getCredentialsString(databaseConfig) {
+  private getCredentialsString(databaseConfig):string {
     let credentials = '';
     if (databaseConfig.username && databaseConfig.password) {
       credentials = databaseConfig.username + ':' + databaseConfig.password + '@';

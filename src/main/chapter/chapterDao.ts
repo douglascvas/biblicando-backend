@@ -5,11 +5,12 @@ import {BaseDao} from "../common/dao/baseDao";
 import {Chapter} from "./chapter";
 import {ObjectID} from "mongodb";
 import IPromise = Q.IPromise;
+import {Db} from "mongodb";
 
 @Inject()
 export class ChapterDao extends BaseDao<Chapter> {
 
-  constructor(private database) {
+  constructor(private database: Db) {
     super(database, Collection.CHAPTER);
   }
 

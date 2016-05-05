@@ -8,6 +8,7 @@ import {Book} from "./book";
 import {Bible} from "../bible/bible";
 import * as Q from "q";
 import IPromise = Q.IPromise;
+import * as assert from "assert";
 
 @Inject()
 export class BookService {

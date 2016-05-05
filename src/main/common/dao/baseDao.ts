@@ -3,6 +3,7 @@
 import {Db, ObjectID} from "mongodb";
 import {InsertOneWriteOpResult} from "mongodb";
 import {UpdateWriteOpResult} from "mongodb";
+import * as Q from "q";
 import IPromise = Q.IPromise;
 
 export class BaseDao<T> {
@@ -19,7 +20,7 @@ export class BaseDao<T> {
     return collection.find(query).limit(1).toArray().then(result=>result[0]);
   }
 
-  public find(query, options):IPromise<T[]> {
+  public find(query, options?):IPromise<T[]> {
     options = options || {};
     query = query || {};
     let collection = this.db.collection(this.collectionName);

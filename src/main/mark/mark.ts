@@ -1,7 +1,6 @@
 'use strict';
-
-import Verse = verse.Verse;
-import User = user.User;
+import {Verse} from "../verse/verse";
+import {User} from "../user/user";
 
 export interface Mark {
   _id:string;
