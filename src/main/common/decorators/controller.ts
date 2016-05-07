@@ -1,6 +1,6 @@
 export function Controller() {
   return function (target:any) {
-    target.$controller = function () {
-    }
+    target.$controller = target.$controller || function () {
+      };
   };
 }

@@ -1,6 +1,5 @@
 'use strict';
 
-
 export interface Bible {
   _id:string;
   remoteId:string;

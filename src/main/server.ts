@@ -1,7 +1,6 @@
 'use strict';
-import * as bla from 'source-map-support';
-bla.install();
-// require('source-map-support').install();
+// Maps the stack trace to the right typescript sources
+require('source-map-support').install();
 
 import {DependencyInjector} from "./common/service/dependencyInjector";
 import {RedisClient} from "./common/cache/redisClient";
@@ -12,9 +11,9 @@ import * as express from "express";
 import * as request from "request-promise";
 import * as bodyParser from "body-parser";
 
+const requireDir = require("require-dir-all");
 const Configurator = require("configurator-js");
-const moduleInfo =require("../package.json");
-const requireDir = require("require-dir");
+const moduleInfo = require("../package.json");
 
 const CONFIG_PATH = process.env.CONFIG_PATH || __dirname + "/resources/config.yml";
 
@@ -23,6 +22,7 @@ export class Server {
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
+
     return app;
   }
 
@@ -31,9 +31,19 @@ export class Server {
     return new Configurator(CONFIG_PATH, moduleInfo.name, moduleInfo.version);
   }
 
-  private registerServices(builder) {
-    var classes = requireDir('.');
-    Reflect.ownKeys(classes).forEach(key => builder.service(classes[key]));
+  private registerServices(dependencyInjector) {
+    var classes = requireDir('.', {
+      recursive: true,
+      map: function (mod) {
+        return Object.keys(mod.exports)
+          .map(key => {
+            if (mod.exports.hasOwnProperty(key)) {
+              return dependencyInjector.service(mod.exports[key]);
+            }
+          });
+      }
+    });
+    console.log("### finall");
   }
 
   private startServer(app, config) {

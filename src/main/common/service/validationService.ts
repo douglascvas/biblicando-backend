@@ -21,7 +21,10 @@ export class ValidationService {
     });
   }
 
-  public validate(obj:any, schema:any, throwException:boolean = true) {
+  public validate(obj:any, schema:any, throwException?:boolean) {
+    if (throwException === undefined) {
+      throwException = true;
+    }
     var result = this.validator.validate(obj, schema);
     if (result.valid) {
       return result;
@@ -32,7 +35,7 @@ export class ValidationService {
     return result;
   }
 
-  public validateAll(objects, schema, throwException = true) {
+  public validateAll(objects:any, schema:any, throwException?:boolean) {
     if (throwException === undefined) {
       throwException = true;
     }

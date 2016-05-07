@@ -1,20 +1,33 @@
+'use strict';
+
 export class ObjectUtils {
-  public extractClassName(classz) {
-    var match = classz.toString().match(/function ([^(]+?)\(/);
+  public extractClassName(classz:Function):string {
+    var asString = classz.toString();
+    var match = asString.match(/(?:function|class) ([^({]+?)(\(|\{)/);
     if (!match) {
-      throw new Error('The class must specify a name.');
+      console.log('The class must specify a name.', classz);
+      return null;
     }
     return match[1].trim();
   }
 
-  public extractArgs(classz) {
-    var match = classz.toString().match(/\(([^)]*)\)/);
+  public isClass(classz:Function):boolean {
+    return classz.toString().indexOf('class') === 0;
+  }
+
+  public extractArgs(classz:Function):string[] {
+    var regexStr = '\\(([^)]*)\\)';
+    if (this.isClass(classz)) {
+      regexStr = 'constructor[ ]*' + regexStr;
+    }
+    var match = classz.toString().match(new RegExp(regexStr));
     if (!match) {
-      throw new Error('The class must specify the arguments.');
+      console.log('The class must specify the arguments.', classz);
+      return [];
     }
     return match[1]
       .split(',')
-      .map(name => name.trim()).filter(name => name);
+      .map(name => name.trim()).filter((value:string, index:number, array:string[]) => !!value);
   }
 
   /**

@@ -43,5 +43,3 @@ export class BookDao extends BaseDao<Book> {
     return this.find(query, {});
   }
 }
-
-module.exports = BookDao;

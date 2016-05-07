@@ -102,7 +102,11 @@ export class DependencyInjector {
     const injectable:boolean = classz.hasOwnProperty('$inject');
 
     if (!name) {
-      name = self.objectUtils.toInstanceName(self.objectUtils.extractClassName(classz));
+      let className = self.objectUtils.extractClassName(classz);
+      if (!className) {
+        return;
+      }
+      name = self.objectUtils.toInstanceName(className);
     }
     var classArgs:string[] = self.objectUtils.extractArgs(classz);
     if (!injectable && classArgs.length > 0) {

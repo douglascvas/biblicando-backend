@@ -10,5 +10,3 @@ export class Logger {
 
   public getLogger = log4js.getLogger;
 }
-
-module.exports = Logger;

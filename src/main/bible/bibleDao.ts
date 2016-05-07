@@ -31,5 +31,3 @@ export class BibleDao extends BaseDao<Bible> {
     return this.updateOne(query, bible, {upsert: true});
   }
 }
-
-module.exports = BibleDao;
