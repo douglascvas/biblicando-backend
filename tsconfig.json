@@ -2,22 +2,26 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
+    "moduleResolution": "node",
     "outDir": "build",
     "listFiles": true,
     "watch": false,
     "noLib": false,
+    "noResolve": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "declaration": false
   },
   "filesGlob": [
-    "src/main/**/*.ts",
-    "typings/main.d.ts",
-    "typings/main/**.ts"
+    "**/*.ts",
+    "**/*.tsx",
+    "!node_modules/**"
   ],
-  "exclude": [
-    "typings/browser",
-    "typings/browser.d.ts",
-    "node_modules/**/*.ts"
+  "files": [
+    "src/main/server.ts",
+    "typings/main.d.ts"
   ]
+
 }
