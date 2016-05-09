@@ -3,12 +3,12 @@
 export class ObjectUtils {
   public extractClassName(classz:Function):string {
     var asString = classz.toString();
-    var match = asString.match(/(?:function|class) ([^({]+?)(\(|\{)/);
+    var match = asString.match(/(?:function|class)[\s]*(\w+).*(\(|\{)/);
     if (!match) {
       console.log('The class must specify a name.', classz);
       return null;
     }
-    return match[1].trim();
+    return match[1];
   }
 
   public isClass(classz:Function):boolean {
@@ -22,7 +22,6 @@ export class ObjectUtils {
     }
     var match = classz.toString().match(new RegExp(regexStr));
     if (!match) {
-      console.log('The class must specify the arguments.', classz);
       return [];
     }
     return match[1]

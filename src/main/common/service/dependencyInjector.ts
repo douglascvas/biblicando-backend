@@ -9,13 +9,19 @@ interface Dependency {
   order:number;
 }
 
+export interface DependencyEntry {
+  name:string;
+  value:any;
+}
+
 export class DependencyInjector {
 
   private values:Map<string, Dependency>;
   private factories;
   private proxies;
 
-  constructor(private objectUtils:ObjectUtils) {
+  constructor(private objectUtils:ObjectUtils,
+              private logger:any) {
     this.values = new Map<string,Dependency>();
     this.factories = new Map();
     this.proxies = new Map();
@@ -32,7 +38,7 @@ export class DependencyInjector {
     entries = this.sortEntriesByDependencyOrder(entries);
     // Resolve each value
     // entries.forEach((entry, index) => console.log(`Should entry ${index}: ${entry[0]} - ${entry[1].order}`));
-    entries.forEach(this.resolveInstanceFromEntry);
+    entries.forEach((entry, index, list) => this.resolveInstanceFromEntry(entry));
   }
 
   public get(name:any):any {
@@ -40,6 +46,16 @@ export class DependencyInjector {
       name = this.objectUtils.extractClassName(name);
     }
     return this.values.get(name).value;
+  }
+
+  public getAll():DependencyEntry[] {
+    return Array.from(this.values.entries())
+      .map(item => {
+        return {
+          name: item[0],
+          value: item[1].value
+        };
+      });
   }
 
   /**
@@ -56,23 +72,26 @@ export class DependencyInjector {
   public factory(classz:any, factoryFn:Function) {
     var className = this.getFunctionName(classz);
     this.assertIsFunction(factoryFn, 'The factory must be a function.');
+    this.logger.debug(`Registering factory for ${name}`);
     this.factories.set(className, factoryFn);
   }
 
   /**
-   * Uses a custom function to decorate the value to be injected. That means that whenever the dependency `classz`
-   * is injected, it passes through the decorator function, that provides the final value that will be injected.
+   * Calls a custom function when the value is to be injected. That means that whenever the dependency `classz`
+   * is injected, it passes through the hook function first. This callback function must return the value that will
+   * be injected, either the original or a modified one.
    *
    * @param classz {string|function} The name of the dependency that will be wrapped by the decorator. If a function
    * is passed to this parameter, the name of the function will be extracted and used.
-   * @param decoratorFn {function} Function to be called to transform the dependency value. Parameters:
+   * @param callback {function} Function to be called when injecting the dependency value. Parameters:
    * - className {string} Name of the class in which the dependency is being injected
-   * - dependencyValue {*} value that will be injected in the class parameter.
+   * - dependencyValue {*} value that is being injected in the class parameter.
    */
-  public decorate(classz:any, decoratorFn:Function) {
+  public hookInjection(classz:any, callback:Function) {
     var className = this.getFunctionName(classz);
-    this.assertIsFunction(decoratorFn, 'The decorator must be a function.');
-    this.proxies.set(className, decoratorFn);
+    this.assertIsFunction(callback, 'The decorator must be a function.');
+    this.logger.debug(`Registering injection hook for ${className}`);
+    this.proxies.set(className, callback);
   }
 
   /**
@@ -83,6 +102,7 @@ export class DependencyInjector {
    * @param value {string} Value of the dependency.
    */
   public value(name:string, value:any) {
+    this.logger.debug(`Registering value ${name}.`);
     this.values.set(name, <Dependency>{
       value: value,
       missingDependencies: [],
@@ -97,9 +117,9 @@ export class DependencyInjector {
    * class name.
    * @param classz {function} Function to be instantiated.
    */
-  public service(classz:Function, name?:string) {
+  public service(classz:any, name?:string) {
     const self = this;
-    const injectable:boolean = classz.hasOwnProperty('$inject');
+    const injectable:boolean = classz.$inject;
 
     if (!name) {
       let className = self.objectUtils.extractClassName(classz);
@@ -110,8 +130,10 @@ export class DependencyInjector {
     }
     var classArgs:string[] = self.objectUtils.extractArgs(classz);
     if (!injectable && classArgs.length > 0) {
+      this.logger.debug(`Skipping registration of service ${name}. Not an injectable (not annotated with @Inject)`);
       return;
     }
+    this.logger.debug(`Registering service ${name}`);
     classArgs.forEach(arg => {
       // Insert the argument in the list
       if (!self.values.has(arg)) {
@@ -234,7 +256,7 @@ export class DependencyInjector {
     }
   }
 
-  private resolveInstanceFromEntry(entry, index) {
+  private resolveInstanceFromEntry(entry) {
     if (!entry[1].resolved) {
       this.buildValue(entry[0], entry[1]);
     }

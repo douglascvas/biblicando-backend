@@ -1,7 +1,9 @@
 'use strict';
 
 import * as Redis from "ioredis";
+import {Inject} from "../decorators/inject";
 
+@Inject()
 export class RedisClient {
   private client;
 

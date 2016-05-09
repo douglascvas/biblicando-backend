@@ -1,7 +1,9 @@
 'use strict';
+import {Inject} from "./decorators/inject";
 
 const log4js = require('log4js');
 
+@Inject()
 export class Logger {
   constructor(private config) {
     const loggerConfig = config.get('logger') || {};
