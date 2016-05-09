@@ -47,7 +47,7 @@ export class Server {
             if (typeof classz === 'function' && self.doNotRegister.indexOf(key) < 0) {
               dependencyInjector.service(classz);
             } else {
-              self.logger.debug("Skipping registration of " + key);
+              self.logger.debug(`Skipping registration of ${key}. Not a function/class.`);
             }
           }
         });
