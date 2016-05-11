@@ -11,7 +11,7 @@ export class CacheService {
   }
 
   public getFromCache(url: string): any {
-    return this.cacheClient.get(url)
+    return this.cacheClient.getFromCache(url)
       .then(value => {
         if (typeof value === 'string') {
           return JSON.parse(value);
@@ -20,7 +20,7 @@ export class CacheService {
       });
   }
 
-  public storeInCache(url: string, resource: any, timeout: number): IPromise<any> {
+  public saveToCache(url: string, resource: any, timeout: number): IPromise<any> {
     if (!resource) {
       return;
     }
@@ -28,7 +28,7 @@ export class CacheService {
       resource = JSON.stringify(resource)
     }
     if (resource) {
-      return this.cacheClient.set(url, resource, timeout);
+      return this.cacheClient.saveToCache(url, resource, timeout);
     }
     return Q.when();
   }

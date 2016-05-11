@@ -1,15 +1,13 @@
 'use strict';
 
-const Q = require('q');
+import {ChapterService} from "../../../../main/chapter/chapterService";
+import {AssertThat} from "../../assertThat";
+import * as Q from 'q'
+import * as sinon from 'sinon';
+import * as chai from 'chai';
 
-const sinon = require('sinon');
-const chai = require("chai");
 const assert = chai.assert;
-
-const AssertThat = require('../../assertThat');
-const assertThat = new AssertThat({debug: console.log});
-
-const ChapterService = require('../../.././chapterService');
+const assertThat = new AssertThat();
 const CACHE_TIMEOUT = 1000;
 const BOOK_ID = 'aBook';
 const REMOTE_BOOK_ID = 'aRemoteBook';
@@ -17,7 +15,9 @@ const REMOTE_SOURCE = 'remoteApi';
 
 describe('ChapterService', function () {
 
-  var cacheService, config, httpClient, chapterService, chapterDao, bookDao, remoteApiInfoService, book, returnedValue;
+  var cacheService, config, httpClient,
+    chapterService:ChapterService,
+    chapterDao, bookDao, remoteApiInfoService, book, returnedValue;
   var aChapter, anotherChapter, chapterList, chapterIdList;
   var mockRemoteResourceClassConstructorArgs, mockRemoteResource;
   var MockRemoteResourceClass;
@@ -27,7 +27,7 @@ describe('ChapterService', function () {
   }
 
   beforeEach(()=> {
-    MockRemoteResourceClass = function() {
+    MockRemoteResourceClass = function () {
       mockRemoteResourceClassConstructorArgs = Array.prototype.slice.call(arguments);
       mockRemoteResource = this;
     };
@@ -43,7 +43,7 @@ describe('ChapterService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), storeInCache: stub()};
+    cacheService = {getFromCache: stub(), saveToCache: stub()};
 
     bookDao = {find: stub(), findOne: stub()};
 
@@ -57,7 +57,7 @@ describe('ChapterService', function () {
   });
 
   describe('#getChapters()', function () {
-    it.only('should return the chapters from cache', function () {
+    it('should return the chapters from cache', function () {
       return assertThat
         .given(cacheContainsSomeChapters)
 
@@ -188,7 +188,7 @@ describe('ChapterService', function () {
   function chaptersContainBookId() {
     var chapterBookIds = [], bookIds = [];
     chapterList.forEach(chapter => {
-      chapterBookIds.push(chapter.book.id);
+      chapterBookIds.push(chapter.book._id);
       bookIds.push(BOOK_ID);
     });
     return assert.deepEqual(chapterBookIds, bookIds);
@@ -217,11 +217,11 @@ describe('ChapterService', function () {
   }
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.storeInCache.callCount, 0);
+    return assert.equal(cacheService.saveToCache.callCount, 0);
   }
 
   function theChaptersAreStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`chapters_${BOOK_ID}`, chapterList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`chapters_${BOOK_ID}`, chapterList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theChaptersAreStoredInTheDatabase() {
@@ -231,7 +231,7 @@ describe('ChapterService', function () {
   }
 
   function theChapterIsStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`chapter_${aChapter._id}`, aChapter, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`chapter_${aChapter._id}`, aChapter, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeChapters() {
@@ -268,7 +268,7 @@ describe('ChapterService', function () {
 
   function callingGetChapters() {
     return chapterService.getChapters(BOOK_ID)
-      // resolve the promise value so it can be use in the next steps
+    // resolve the promise value so it can be use in the next steps
       .then(resultChapters => {
         returnedValue = resultChapters;
       });
@@ -276,7 +276,7 @@ describe('ChapterService', function () {
 
   function callingGetChapter() {
     return chapterService.getChapter(aChapter._id)
-      // resolve the promise value so it can be use in the next steps
+    // resolve the promise value so it can be use in the next steps
       .then(resultChapter => {
         returnedValue = resultChapter;
       });

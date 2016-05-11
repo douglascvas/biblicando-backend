@@ -6,6 +6,7 @@ import {Collection} from "../common/enums/collection";
 import {Bible} from "./bible";
 import {Db} from "mongodb";
 import {UpdateWriteOpResult} from "mongodb";
+import * as Q from 'q';
 import IPromise = Q.IPromise;
 
 @Inject()

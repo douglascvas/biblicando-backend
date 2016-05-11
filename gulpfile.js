@@ -11,7 +11,7 @@ gulp.task('clean', function () {
 // TypeScript compile
 var tsProject = typescript.createProject('tsconfig.json');
 gulp.task('compile', function () {
-  var sourceTsFiles = ['src/main/**/*.ts',
+  var sourceTsFiles = ['src/**/*.ts',
     'typings/main/**/*.ts', 'typings/main.d.ts'];
 
   var tsResult = gulp.src(sourceTsFiles)
@@ -25,13 +25,13 @@ gulp.task('compile', function () {
 });
 
 gulp.task('copy:resources', ['clean'], function () {
-  return gulp.src(['src/main/**/*', '!src/main/**/*.ts'], {base: './src/main/'})
-    .pipe(gulp.dest('build/'))
+  return gulp.src(['src/**/*', '!src/**/*.ts'], {base: './src/'})
+    .pipe(gulp.dest('build'))
 });
 
 gulp.task('build', ['copy:resources', 'compile']);
 // Run browsersync for development
 gulp.task('watch', ['build'], function () {
-  gulp.watch(['src/main/**/*'], ['build']);
+  gulp.watch(['src/**/*'], ['build']);
 });
 

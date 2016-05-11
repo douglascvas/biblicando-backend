@@ -1,23 +1,24 @@
 'use strict';
 
-const Q = require('q');
+require('source-map-support').install();
+import {BibleService} from "../../../../main/bible/bibleService";
+import {AssertThat} from "../../assertThat";
+import * as Q from 'q';
+import * as sinon from 'sinon';
+import * as chai from "chai";
 
-const sinon = require('sinon');
-const chai = require("chai");
 const assert = chai.assert;
 const stub = sinon.stub;
-
-const AssertThat = require('../../assertThat');
 const assertThat = new AssertThat();
-
-const BibleService = require('../../.././bibleService');
 const CACHE_TIMEOUT = 1000;
 
 describe('BibleOrgService', function () {
-  var cacheService, config, httpClient, bibleService, bibleDao, remoteApiInfoService,
+  var cacheService, config, httpClient,
+    bibleService: BibleService,
+    bibleDao, remoteApiInfoService,
     bibleList, aBible, anotherBible, returnedValue;
 
-  beforeEach(()=> {
+  beforeEach(() => {
     aBible = {_id: 'id1'};
     anotherBible = {_id: 'id2'};
     bibleList = [aBible, anotherBible];
@@ -26,7 +27,7 @@ describe('BibleOrgService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), storeInCache: stub()};
+    cacheService = {getFromCache: stub(), saveToCache: stub()};
 
     bibleDao = {find: stub(), findOne: stub()};
     remoteApiInfoService = stub();
@@ -121,15 +122,15 @@ describe('BibleOrgService', function () {
   });
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.storeInCache.callCount, 0);
+    return assert.equal(cacheService.saveToCache.callCount, 0);
   }
 
   function theBiblesAreStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`bibles`, bibleList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`bibles`, bibleList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theBibleIsStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`bible_${aBible._id}`, aBible, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`bible_${aBible._id}`, aBible, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeBibles() {
@@ -177,7 +178,7 @@ describe('BibleOrgService', function () {
       .then(value => {
         returnedValue = value;
         return value;
-      })
+      });
   }
 
   function theDatabaseIsQueriedForBibles() {

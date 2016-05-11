@@ -52,7 +52,7 @@ export class VerseService {
       return verses;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.storeInCache(`verses_${chapterId}`, verses, timeout);
+    this.cacheService.saveToCache(`verses_${chapterId}`, verses, timeout);
     return verses;
   }
 
@@ -61,7 +61,7 @@ export class VerseService {
       return verse;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.storeInCache(`verse_${verse._id.toString()}`, verse, timeout);
+    this.cacheService.saveToCache(`verse_${verse._id.toString()}`, verse, timeout);
     return verse;
   }
 

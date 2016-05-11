@@ -4,16 +4,20 @@
   "dependencies": {},
   "ambientDependencies": {
     "body-parser": "registry:dt/body-parser#0.0.0+20160317120654",
+    "chai": "registry:dt/chai#3.4.0+20160317120654",
     "express": "registry:dt/express#4.0.0+20160317120654",
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
     "form-data": "registry:dt/form-data#0.0.0+20160316155526",
     "ioredis": "registry:dt/ioredis#0.0.0+20160412133314",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
+    "mocha": "registry:dt/mocha#2.2.5+20160317120654",
     "mongodb": "registry:dt/mongodb#2.1.0+20160425144419",
     "node": "registry:dt/node#4.0.0+20160423143914",
     "q": "registry:dt/q#0.0.0+20160417152954",
     "request": "registry:dt/request#0.0.0+20160316155526",
     "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
-    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
+    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543",
+    "sinon": "registry:dt/sinon#1.16.0+20160317120654",
+    "source-map-support": "registry:dt/source-map-support#0.2.10+20160316155526"
   }
 }

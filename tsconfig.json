@@ -3,7 +3,7 @@
     "module": "commonjs",
     "target": "es2015",
     "moduleResolution": "node",
-    "outDir": "build",
+    "outDir": "build/main",
     "listFiles": true,
     "watch": false,
     "noLib": false,

@@ -31,7 +31,7 @@ export class ChapterService {
   public getChapter(chapterId:string):IPromise<Chapter> {
     return this.cacheService.getFromCache(`chapter_${chapterId}`)
       .then(chapter=> chapter ? chapter : this.chapterDao.findOne(chapterId))
-      .then(this.storeChapterInCache);
+      .then(chapter => this.storeChapterInCache(chapter));
   }
 
   private fetchChaptersRemotely(bookId, book):IPromise<Chapter[]> {
@@ -52,7 +52,7 @@ export class ChapterService {
       return chapters;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.storeInCache(`chapters_${bookId}`, chapters, timeout);
+    this.cacheService.saveToCache(`chapters_${bookId}`, chapters, timeout);
     return chapters;
   }
 
@@ -61,7 +61,7 @@ export class ChapterService {
       return chapter;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.storeInCache(`chapter_${chapter._id.toString()}`, chapter, timeout);
+    this.cacheService.saveToCache(`chapter_${chapter._id.toString()}`, chapter, timeout);
     return chapter;
   }
 

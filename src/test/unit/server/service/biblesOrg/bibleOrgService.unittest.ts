@@ -1,20 +1,24 @@
 'use strict';
 
-const Q = require('q');
-const sinon = require('sinon');
-const chai = require("chai");
+import * as sourceMapSupport from 'source-map-support';
+sourceMapSupport.install();
+
+import {BibleOrgService} from "../../../../../main/common/service/biblesOrg/bibleOrgService";
+import {AssertThat} from "../../../assertThat";
+import * as Q from 'q';
+import * as sinon from 'sinon';
+import * as chai from "chai";
+
 const assert = chai.assert;
 const stub = sinon.stub;
 
-const AssertThat = require('../../../assertThat');
 const assertThat = new AssertThat({debug: console.log});
-
-const BiblesOrgService = require('../../../.././biblesOrg/bibleOrgService');
 
 describe('MarkService', function () {
   const BASE_URL = 'http://bibles.org';
   const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-  var biblesOrgService, httpClient, cacheService, config, bibleList, bookList, chapterList, verseList,
+  var biblesOrgService:BibleOrgService,
+    httpClient, cacheService, config, bibleList, bookList, chapterList, verseList,
     aBible, aBook, aChapter, aVerse, anotherBible, anotherBook, anotherChapter, anotherVerse, returnedValue,
     BIBLES_URL, BIBLE_URL, BOOKS_URL, BOOK_URL, CHAPTERS_URL, CHAPTER_URL, VERSES_URL, VERSE_URL,
     biblesResponse, bibleResponse, booksResponse, bookResponse, chaptersResponse, chapterResponse,
@@ -44,7 +48,7 @@ describe('MarkService', function () {
 
     config = {get: stub()};
     httpClient = {get: stub()};
-    cacheService = {get: stub(), set: stub()};
+    cacheService = {getFromCache: stub(), saveToCache: stub()};
 
     config.get.withArgs('remote.api.biblesOrg.url').returns(BASE_URL);
 
@@ -60,7 +64,7 @@ describe('MarkService', function () {
     httpClient.get.withArgs(VERSES_URL).returns(Q.when(versesResponse));
     httpClient.get.withArgs(VERSE_URL).returns(Q.when(verseResponse));
 
-    biblesOrgService = new BiblesOrgService(config, httpClient, cacheService);
+    biblesOrgService = new BibleOrgService(config, httpClient, cacheService);
   });
 
   function toRestResponse(value, label) {
@@ -428,35 +432,35 @@ describe('MarkService', function () {
   }
 
   function biblesAreSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(BIBLES_URL, bibleList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(BIBLES_URL, bibleList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function bibleIsSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(BIBLE_URL, aBible, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(BIBLE_URL, aBible, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function booksAreSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(BOOKS_URL, bookList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(BOOKS_URL, bookList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function bookIsSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(BOOK_URL, aBook, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(BOOK_URL, aBook, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function chaptersAreSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(CHAPTERS_URL, chapterList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(CHAPTERS_URL, chapterList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function chapterIsSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(CHAPTER_URL, aChapter, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(CHAPTER_URL, aChapter, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function versesAreSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(VERSES_URL, verseList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(VERSES_URL, verseList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function verseIsSavedInCache() {
-    assert.isTrue(cacheService.set.withArgs(VERSE_URL, aVerse, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.saveToCache.withArgs(VERSE_URL, aVerse, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function callingGetBibles() {
@@ -532,38 +536,38 @@ describe('MarkService', function () {
   }
 
   function cacheContainsTheBibles() {
-    cacheService.get.returns(Q.when(bibleList));
+    cacheService.getFromCache.returns(Q.when(bibleList));
   }
 
   function cacheDoesNotContainAnyResource() {
-    cacheService.get.returns(Q.when(null));
+    cacheService.getFromCache.returns(Q.when(null));
   }
 
   function cacheContainsTheBible() {
-    cacheService.get.returns(Q.when(aBible));
+    cacheService.getFromCache.returns(Q.when(aBible));
   }
 
   function cacheContainsTheBooks() {
-    cacheService.get.returns(Q.when(bookList));
+    cacheService.getFromCache.returns(Q.when(bookList));
   }
 
   function cacheContainsTheBook() {
-    cacheService.get.returns(Q.when(aBook));
+    cacheService.getFromCache.returns(Q.when(aBook));
   }
 
   function cacheContainsTheChapters() {
-    cacheService.get.returns(Q.when(chapterList));
+    cacheService.getFromCache.returns(Q.when(chapterList));
   }
 
   function cacheContainsTheChapter() {
-    cacheService.get.returns(Q.when(aChapter));
+    cacheService.getFromCache.returns(Q.when(aChapter));
   }
 
   function cacheContainsTheVerses() {
-    cacheService.get.returns(Q.when(verseList));
+    cacheService.getFromCache.returns(Q.when(verseList));
   }
 
   function cacheContainsTheVerse() {
-    cacheService.get.returns(Q.when(aVerse));
+    cacheService.getFromCache.returns(Q.when(aVerse));
   }
 });

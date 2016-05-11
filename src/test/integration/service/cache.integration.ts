@@ -1,12 +1,13 @@
 'use strict';
 
+import * as sinon from 'sinon'
+  ;
 var path = require('path');
 var Configurator = require('configurator-js');
 var assert = require('assert');
 var CONFIG_PATH = path.resolve(__dirname, '../config/config.yml');
 var config = new Configurator(CONFIG_PATH, 'biblicando');
 var Cache = require('../.././redisClient');
-var sinon = require('sinon');
 
 describe.only('cache', function () {
   const CACHE_KEY = 'biblicando-cache-test';

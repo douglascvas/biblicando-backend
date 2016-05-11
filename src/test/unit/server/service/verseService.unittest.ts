@@ -1,15 +1,14 @@
 'use strict';
 
-const Q = require('q');
+import {VerseService} from "../../../../main/verse/verseService";
+import {AssertThat} from "../../assertThat";
+import * as Q from 'q';
+import * as sinon from 'sinon';
+import * as chai from 'chai';
 
-const sinon = require('sinon');
-const chai = require("chai");
 const assert = chai.assert;
+const assertThat = new AssertThat();
 
-const AssertThat = require('../../assertThat');
-const assertThat = new AssertThat({debug: console.log});
-
-const VerseService = require('../../.././verseService');
 const CACHE_TIMEOUT = 1000;
 const CHAPTER_ID = 'aChapter';
 const REMOTE_CHAPTER_ID = 'aRemoteChapter';
@@ -43,7 +42,7 @@ describe('VerseService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), storeInCache: stub()};
+    cacheService = {getFromCache: stub(), saveToCache: stub()};
 
     chapterDao = {find: stub(), findOne: stub()};
 
@@ -215,11 +214,11 @@ describe('VerseService', function () {
   }
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.storeInCache.callCount, 0);
+    return assert.equal(cacheService.saveToCache.callCount, 0);
   }
 
   function theVersesAreStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`verses_${CHAPTER_ID}`, verseList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`verses_${CHAPTER_ID}`, verseList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theVersesAreStoredInTheDatabase() {
@@ -229,7 +228,7 @@ describe('VerseService', function () {
   }
 
   function theVerseIsStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`verse_${aVerse._id}`, aVerse, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`verse_${aVerse._id}`, aVerse, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeVerses() {

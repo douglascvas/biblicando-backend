@@ -1,14 +1,14 @@
 'use strict';
 
-const sinon = require('sinon');
-const chai = require("chai");
+import {MarkService} from "../../../../main/mark/markService";
+import {AssertThat} from "../../assertThat";
+import * as sinon from 'sinon';
+import * as chai from 'chai';
+
 const assert = chai.assert;
 const stub = sinon.stub;
 
-const AssertThat = require('../../assertThat');
-const assertThat = new AssertThat({debug: console.log});
-
-const MarkService = require('../../.././markService');
+const assertThat = new AssertThat();
 
 describe('MarkService', function () {
   const USER_ID = 'userId';

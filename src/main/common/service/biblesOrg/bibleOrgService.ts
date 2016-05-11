@@ -36,9 +36,9 @@ export class BibleOrgService {
     })
   }
 
-  private storeInCache(url:string, resource:any):IPromise<any> {
+  private saveToCache(url:string, resource:any):IPromise<any> {
     if (resource) {
-      return this.cacheService.storeInCache(url, resource, 5 * DAY_IN_MILLIS);
+      return this.cacheService.saveToCache(url, resource, 5 * DAY_IN_MILLIS);
     }
     return Q.when();
   }
@@ -50,7 +50,7 @@ export class BibleOrgService {
       .then(result => result.response)
       .then(filter)
       .then(resource => {
-        self.storeInCache(url, resource);
+        self.saveToCache(url, resource);
         return resource;
       })
   }

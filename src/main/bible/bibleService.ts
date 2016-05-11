@@ -25,7 +25,7 @@ export class BibleService {
       .then(bibles=> bibles ? bibles : this.getBiblesFromDatabaseAndUpdateCache());
   }
 
-  public  getBible(bibleId:string):IPromise<Bible> {
+  public getBible(bibleId:string):IPromise<Bible> {
     return this.cacheService.getFromCache(`bible_${bibleId}`)
       .then(bible=> bible ? bible : this.getBibleFromDatabaseAndUpdateCache(bibleId));
   }
@@ -34,7 +34,7 @@ export class BibleService {
     return this.bibleDao.findOne(bibleId)
       .then(bible=> {
         if (bible) {
-          this.cacheService.storeInCache(`bible_${bibleId}`, bible, this.CACHE_TIMEOUT);
+          this.cacheService.saveToCache(`bible_${bibleId}`, bible, this.CACHE_TIMEOUT);
         }
         return bible;
       });
@@ -44,12 +44,12 @@ export class BibleService {
     if (!bibles || !bibles.length) {
       return [];
     }
-    this.cacheService.storeInCache(`bibles`, bibles, this.CACHE_TIMEOUT);
+    this.cacheService.saveToCache(`bibles`, bibles, this.CACHE_TIMEOUT);
     return bibles;
   }
 
   private getBiblesFromDatabaseAndUpdateCache():IPromise<Bible[]> {
-    return this.bibleDao.find({}, {}).then(this.storeBiblesInCache);
+    return this.bibleDao.find({}, {}).then(bibles => this.storeBiblesInCache(bibles));
   }
 
   private updateBiblesInDatabase(bibles:Bible[]):IPromise<UpdateWriteOpResult[]> {

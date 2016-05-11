@@ -1,16 +1,15 @@
 'use strict';
+import {BookService} from "../../../../main/book/bookService";
+import {AssertThat} from "../../assertThat";
+import * as Q from 'q';
+import * as sinon from 'sinon';
+import * as chai from "chai";
 
-const Q = require('q');
-
-const sinon = require('sinon');
-const chai = require("chai");
 const assert = chai.assert;
 const stub = sinon.stub;
 
-const AssertThat = require('../../assertThat');
-const assertThat = new AssertThat({debug: console.log});
+const assertThat = new AssertThat();
 
-const BookService = require('../../.././bookService');
 const CACHE_TIMEOUT = 1000;
 const BIBLE_ID = 'aBible';
 const REMOTE_BIBLE_ID = 'aRemoteBible';
@@ -18,7 +17,9 @@ const REMOTE_SOURCE = 'remoteApi';
 
 describe('BookService', function () {
 
-  var cacheService, config, httpClient, bookService, bookDao, bibleDao, remoteApiInfoService, bible, returnedValue;
+  var cacheService, config, httpClient,
+    bookService: BookService,
+    bookDao, bibleDao, remoteApiInfoService, bible, returnedValue;
   var aBook, anotherBook, bookList, bookIdList;
   var mockRemoteResourceClassConstructorArgs, mockRemoteResource;
   var MockRemoteResourceClass;
@@ -28,6 +29,7 @@ describe('BookService', function () {
   }
 
   beforeEach(()=> {
+    console.log("########## testt");
     MockRemoteResourceClass = function() {
       mockRemoteResourceClassConstructorArgs = Array.prototype.slice.call(arguments);
       mockRemoteResource = this;
@@ -44,7 +46,7 @@ describe('BookService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), storeInCache: stub()};
+    cacheService = {getFromCache: stub(), saveToCache: stub()};
 
     bibleDao = {find: stub(), findOne: stub()};
 
@@ -189,7 +191,7 @@ describe('BookService', function () {
   function booksContainBibleId() {
     var bookBibleIds = [], bibleIds = [];
     bookList.forEach(book => {
-      bookBibleIds.push(book.bible.id);
+      bookBibleIds.push(book.bible._id);
       bibleIds.push(BIBLE_ID);
     });
     return assert.deepEqual(bookBibleIds, bibleIds);
@@ -218,11 +220,11 @@ describe('BookService', function () {
   }
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.storeInCache.callCount, 0);
+    return assert.equal(cacheService.saveToCache.callCount, 0);
   }
 
   function theBooksAreStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`books_${BIBLE_ID}`, bookList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`books_${BIBLE_ID}`, bookList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theBooksAreStoredInTheDatabase() {
@@ -232,7 +234,7 @@ describe('BookService', function () {
   }
 
   function theBookIsStoredInCache() {
-    return assert.isTrue(cacheService.storeInCache.withArgs(`book_${aBook._id}`, aBook, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.saveToCache.withArgs(`book_${aBook._id}`, aBook, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeBooks() {

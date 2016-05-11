@@ -32,7 +32,7 @@ export class BookService {
   public getBook(bookId:string):IPromise<Book> {
     return this.cacheService.getFromCache(`book_${bookId}`)
       .then(book=> book ? book : this.bookDao.findOne(bookId))
-      .then(this.storeBookInCache);
+      .then(book => this.storeBookInCache(book));
   }
 
   private fetchBooksRemotely(bibleId:string, bible:Bible) {
@@ -53,16 +53,16 @@ export class BookService {
       return books;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.storeInCache(`books_${bibleId}`, books, timeout);
+    this.cacheService.saveToCache(`books_${bibleId}`, books, timeout);
     return books;
   }
 
-  private  storeBookInCache(book:Book):Book {
+  private storeBookInCache(book:Book):Book {
     if (!book || !book._id) {
       return book;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.storeInCache(`book_${book._id.toString()}`, book, timeout);
+    this.cacheService.saveToCache(`book_${book._id.toString()}`, book, timeout);
     return book;
   }
 
