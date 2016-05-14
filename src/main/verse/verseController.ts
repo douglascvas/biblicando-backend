@@ -5,8 +5,8 @@ import {VerseService} from "./verseService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 
-@Inject()
-@Controller()
+@Inject
+@Controller
 export class VerseController {
 
   constructor(private verseService:VerseService,

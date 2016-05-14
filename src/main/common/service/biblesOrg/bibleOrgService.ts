@@ -11,7 +11,7 @@ import {Verse} from "../../../verse/verse";
 
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
-@Inject()
+@Inject
 export class BibleOrgService {
   private baseUrl;
 

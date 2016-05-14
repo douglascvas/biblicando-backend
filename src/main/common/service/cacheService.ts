@@ -4,7 +4,7 @@ import {Inject} from "../decorators/inject";
 import * as Q from "q";
 import IPromise = Q.IPromise;
 
-@Inject()
+@Inject
 export class CacheService {
 
   constructor(private cacheClient) {

@@ -28,6 +28,7 @@ export class DependencyInjector {
     this.values = new Map<string,Dependency>();
     this.factories = new Map();
     this.hooks = new Map();
+    this.translationMap = new Map();
   }
 
   /**

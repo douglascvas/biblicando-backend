@@ -1,6 +1,7 @@
 'use strict';
 // Maps the stack trace to the right typescript sources
-require('source-map-support').install();
+import * as sourceMapSupport from 'source-map-support';
+sourceMapSupport.install();
 
 import {ModuleScannerService} from "./common/service/moduleScannerService";
 import {ValidationService} from "./common/service/validationService";
@@ -14,16 +15,12 @@ import * as bodyParser from "body-parser";
 
 export class Server {
   private logger;
-  private loggerFactory;
-  private moduleScannerService:ModuleScannerService;
-  private dependencyInjector:DependencyInjector;
 
-  constructor(config) {
-    this.moduleScannerService = new ModuleScannerService();
-    this.loggerFactory = new LoggerFactory(config);
-    this.logger = this.loggerFactory.getLogger("server");
-    this.dependencyInjector = new DependencyInjector(this.loggerFactory);
-    this.initialize(config);
+  constructor(private config,
+              private dependencyInjector:DependencyInjector,
+              private loggerFactory:LoggerFactory,
+              private moduleScannerService:ModuleScannerService) {
+    this.logger = loggerFactory.getLogger("server");
   }
 
   private createServer() {
@@ -33,10 +30,10 @@ export class Server {
     return app;
   }
 
-  private startServer(app, config) {
+  private startServer(app, config):any {
     var self = this;
     var serverConfig = config.get('server');
-    app.listen(serverConfig.port, function () {
+    return app.listen(serverConfig.port, function () {
       self.logger.info(`Listening on port ${serverConfig.port}`);
     });
   }
@@ -48,16 +45,16 @@ export class Server {
     }
   }
 
-  private initialize(config) {
+  public initialize():Promise<any> {
     var self = this;
-    const mongoDb:Mongo = new Mongo(config);
+    const mongoDb:Mongo = new Mongo(self.config);
     return mongoDb.connect()
       .then(connection => {
         var app = this.createServer();
-        self.registerDependencies(self.dependencyInjector, config, app, connection);
+        self.registerDependencies(self.dependencyInjector, self.config, app, connection);
         self.registerApis(self.dependencyInjector);
         self.registerSchemas(self.dependencyInjector);
-        self.startServer(app, config);
+        return self.startServer(app, self.config);
       })
       .catch(e => {
         self.logger.error(e.stack);
@@ -82,10 +79,13 @@ export class Server {
     var dependencies = ObjectUtils.toIterable(dependencyInjector.getAll());
     var app = dependencyInjector.get('router');
     for (let instance of dependencies) {
-      if (typeof instance.value.$controller === 'function') {
-        const controllerLogger = this.loggerFactory.getLogger(`${instance.name}`);
-        instance.value.$controller(app, controllerLogger);
+      if (!instance.value.$controller) {
+        continue;
       }
+      if (typeof instance.value.$controller.register !== 'function') {
+        throw new Error(`The controller ${instance.name} must be annotated with @Controller`)
+      }
+      instance.value.$controller.register(app, this.loggerFactory);
     }
   }
 
@@ -97,7 +97,6 @@ export class Server {
     var validationService:ValidationService = dependencyInjector.get('validationService');
     for (let instance of dependencies) {
       if (instance.value.$resource) {
-        this.logger.debug(`Registering resource ${instance.value.$resource.id}`);
         validationService.addSchema(instance.value.$resource);
       }
     }

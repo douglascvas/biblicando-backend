@@ -1,17 +1,23 @@
 'use strict';
 import {ValidationException} from "../exception/validationException";
+import {LoggerFactory} from "../loggerFactory";
+import {Inject} from "../decorators/inject";
 
 const jsonschema = require("jsonschema");
 const Validator = jsonschema.Validator;
 
+@Inject
 export class ValidationService {
   private validator;
+  private logger;
 
-  constructor() {
+  constructor(loggerFactory:LoggerFactory) {
     this.validator = new Validator();
+    this.logger = loggerFactory.getLogger('ValidationService');
   }
 
-  public addSchema(schema: any){
+  public addSchema(schema:any) {
+    this.logger.debug(`Registering resource ${schema.id}`);
     this.validator.addSchema(schema);
   }
 

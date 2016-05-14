@@ -7,7 +7,7 @@ import {ObjectID} from "mongodb";
 import IPromise = Q.IPromise;
 import {Db} from "mongodb";
 
-@Inject()
+@Inject
 export class ChapterDao extends BaseDao<Chapter> {
 
   constructor(private database: Db) {

@@ -2,7 +2,7 @@
 import {Inject} from "../decorators/inject";
 import {LoggerFactory} from "../loggerFactory";
 
-@Inject()
+@Inject
 export class ErrorHandlerService {
   private logger;
 

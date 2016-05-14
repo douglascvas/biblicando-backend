@@ -4,7 +4,7 @@ import * as sourceMapSupport from 'source-map-support';
 sourceMapSupport.install();
 
 import {BibleOrgService} from "../../../../../main/common/service/biblesOrg/bibleOrgService";
-import {AssertThat} from "../../../assertThat";
+import {AssertThat} from "../../../../assertThat";
 import * as Q from 'q';
 import * as sinon from 'sinon';
 import * as chai from "chai";

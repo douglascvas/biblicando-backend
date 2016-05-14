@@ -6,7 +6,7 @@ import {User} from "./user";
 import {BaseDao} from "../common/dao/baseDao";
 import IPromise = Q.IPromise;
 
-@Inject()
+@Inject
 export class UserDao extends BaseDao<User> {
   constructor(private database:Db) {
     super(database, Collection.USER);

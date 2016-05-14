@@ -9,7 +9,7 @@ import {UpdateWriteOpResult} from "mongodb";
 import * as Q from 'q';
 import IPromise = Q.IPromise;
 
-@Inject()
+@Inject
 export class BibleDao extends BaseDao<Bible> {
 
   constructor(private database:Db) {

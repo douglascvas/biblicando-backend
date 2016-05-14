@@ -5,8 +5,8 @@ import {RequestType, RequestMapping} from "../common/decorators/requestMapping";
 import {Inject} from "../common/decorators/inject";
 import {Controller} from "../common/decorators/controller";
 
-@Inject()
-@Controller()
+@Inject
+@Controller
 export class BookController {
   constructor(private bookService:BookService,
               private restResponseService:RestResponseService) {

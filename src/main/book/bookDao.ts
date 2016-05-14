@@ -6,7 +6,7 @@ import {Collection} from "../common/enums/collection";
 import {Book} from "./book";
 import IPromise = Q.IPromise;
 
-@Inject()
+@Inject
 export class BookDao extends BaseDao<Book> {
 
   constructor(private database) {

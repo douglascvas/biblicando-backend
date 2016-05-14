@@ -2,7 +2,7 @@
 import {Inject} from "../decorators/inject";
 import {ErrorHandlerService} from "./errorHandlerService";
 
-@Inject()
+@Inject
 export class RestResponseService {
   constructor(private errorHandlerService:ErrorHandlerService) {
   }

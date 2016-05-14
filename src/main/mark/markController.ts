@@ -6,8 +6,8 @@ import {MarkService} from "./markService";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 import {RestResponseService} from "../common/service/restResponseService";
 
-@Inject()
-@Controller()
+@Inject
+@Controller
 export class MarkController {
 
   constructor(private markService:MarkService,

@@ -5,7 +5,7 @@ import {Mark} from "./mark";
 import {ValidationService} from "../common/service/validationService";
 import * as assert from "assert";
 
-@Inject()
+@Inject
 export class MarkService {
   constructor(private markDao:MarkDao,
               private validationService:ValidationService) {

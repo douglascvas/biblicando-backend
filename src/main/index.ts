@@ -1,4 +1,7 @@
 import {Server} from './server';
+import {DependencyInjector} from "./common/service/dependencyInjector";
+import {LoggerFactory} from "./common/loggerFactory";
+import {ModuleScannerService} from "./common/service/moduleScannerService";
 
 const Configurator = require("configurator-js");
 const moduleInfo = require("../../package.json");
@@ -11,4 +14,8 @@ function loadConfiguration() {
 }
 
 var config = loadConfiguration();
-new Server(config);
+var moduleScannerService = new ModuleScannerService();
+var loggerFactory = new LoggerFactory(config);
+var dependencyInjector = new DependencyInjector(loggerFactory);
+var server = new Server(config, dependencyInjector, loggerFactory, moduleScannerService);
+server.initialize();

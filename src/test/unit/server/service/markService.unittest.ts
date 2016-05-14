@@ -1,7 +1,7 @@
 'use strict';
 
 import {MarkService} from "../../../../main/mark/markService";
-import {AssertThat} from "../../assertThat";
+import {AssertThat} from "../../../assertThat";
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 

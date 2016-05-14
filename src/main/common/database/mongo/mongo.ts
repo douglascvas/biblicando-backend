@@ -4,7 +4,7 @@ import {MongoClient} from "mongodb";
 
 const jsonutils = require("jsonutils");
 
-@Inject()
+@Inject
 export class Mongo {
   private connection;
 

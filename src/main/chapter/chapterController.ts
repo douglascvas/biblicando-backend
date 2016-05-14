@@ -3,8 +3,8 @@ import {Controller} from "../common/decorators/controller";
 import {Inject} from "../common/decorators/inject";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 
-@Inject()
-@Controller()
+@Inject
+@Controller
 export class ChapterController {
 
   constructor(private chapterService,

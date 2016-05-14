@@ -8,7 +8,7 @@ import {UpdateWriteOpResult} from "mongodb";
 import * as Q from "q";
 import IPromise = Q.IPromise;
 
-@Inject()
+@Inject
 export class BibleService {
   private CACHE_TIMEOUT = this.config.get('cache.expirationInMillis');
 

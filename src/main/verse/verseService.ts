@@ -10,7 +10,7 @@ import * as Q from "q";
 import IPromise = Q.IPromise;
 import * as assert from "assert";
 
-@Inject()
+@Inject
 export class VerseService {
 
   constructor(private config,

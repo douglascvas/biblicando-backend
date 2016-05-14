@@ -1,14 +1,13 @@
 'use strict';
 
-// import Controller = common.Controller;
 import {Inject} from "../common/decorators/inject";
 import {Controller} from "../common/decorators/controller";
 import {BibleService} from "./bibleService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 
-@Inject()
-@Controller()
+@Inject
+@Controller
 export class BibleController {
 
   constructor(private bibleService:BibleService,

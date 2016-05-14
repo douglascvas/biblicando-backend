@@ -8,7 +8,7 @@ import IPromise = Q.IPromise;
 import {ObjectID} from "mongodb";
 import * as assert from "assert";
 
-@Inject()
+@Inject
 export class MarkDao extends BaseDao<Mark> {
   constructor(private database) {
     super(database, Collection.MARK);

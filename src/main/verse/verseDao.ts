@@ -6,7 +6,7 @@ import {Collection} from "../common/enums/collection";
 import {Verse} from "./verse";
 import IPromise = Q.IPromise;
 
-@Inject()
+@Inject
 export class VerseDao extends BaseDao<Verse> {
   constructor(private database:Db) {
     super(database, Collection.VERSE);
