@@ -2,16 +2,19 @@
 
 import * as Redis from "ioredis";
 import {Inject} from "../decorators/inject";
+import {LoggerFactory} from "../loggerFactory";
 
 @Inject()
 export class RedisClient {
   private client;
+  private logger;
 
-  constructor(private config, private logger) {
+  constructor(private config, private loggerFactory:LoggerFactory) {
+    this.logger = loggerFactory.getLogger('RedisClient');
     const redisConfig = config.get('cache');
     const host = redisConfig.host || 'localhost';
     const port = redisConfig.port || 6379;
-    logger.debug(`Connecting to redis on ${host}:${port}`);
+    this.logger.debug(`Connecting to redis on ${host}:${port}`);
     this.client = new Redis(port, host, redisConfig);
   }
 

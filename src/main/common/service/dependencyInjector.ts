@@ -1,5 +1,6 @@
 'use strict';
 import {ObjectUtils} from "./objectUtils";
+import {LoggerFactory} from "../loggerFactory";
 
 interface Dependency {
   value:any;
@@ -16,15 +17,17 @@ export interface DependencyEntry {
 
 export class DependencyInjector {
 
+  private translationMap:Map<string,string>;
   private values:Map<string, Dependency>;
   private factories;
-  private proxies;
+  private hooks;
+  private logger;
 
-  constructor(private objectUtils:ObjectUtils,
-              private logger:any) {
+  constructor(private loggerFactory:LoggerFactory) {
+    this.logger = loggerFactory.getLogger('dependencyInjector');
     this.values = new Map<string,Dependency>();
     this.factories = new Map();
-    this.proxies = new Map();
+    this.hooks = new Map();
   }
 
   /**
@@ -42,10 +45,16 @@ export class DependencyInjector {
   }
 
   public get(name:any):any {
+    name = this.translateName(name);
     if (typeof name !== 'string') {
-      name = this.objectUtils.extractClassName(name);
+      name = ObjectUtils.extractClassName(name);
     }
-    return this.values.get(name).value;
+    var item = this.values.get(name);
+    if (item) {
+      return item.value;
+    } else {
+      return null;
+    }
   }
 
   public getAll():DependencyEntry[] {
@@ -56,6 +65,18 @@ export class DependencyInjector {
           value: item[1].value
         };
       });
+  }
+
+  /**
+   * Renames a dependency.
+   */
+  public rename(fromName:string, toName:string):void {
+    fromName = ObjectUtils.toInstanceName(fromName);
+    if (this.values.has(fromName)) {
+      this.values.set(toName, this.values.get(fromName));
+      this.values.delete(fromName);
+    }
+    this.translationMap.set(fromName, toName);
   }
 
   /**
@@ -70,7 +91,7 @@ export class DependencyInjector {
    * - dependencyValue {*} dependencies to be injected into the class constructor.
    */
   public factory(classz:any, factoryFn:Function) {
-    var className = this.getFunctionName(classz);
+    var className = this.translateName(this.getFunctionName(classz));
     this.assertIsFunction(factoryFn, 'The factory must be a function.');
     this.logger.debug(`Registering factory for ${name}`);
     this.factories.set(className, factoryFn);
@@ -88,10 +109,10 @@ export class DependencyInjector {
    * - dependencyValue {*} value that is being injected in the class parameter.
    */
   public hookInjection(classz:any, callback:Function) {
-    var className = this.getFunctionName(classz);
+    var className = this.translateName(this.getFunctionName(classz));
     this.assertIsFunction(callback, 'The decorator must be a function.');
     this.logger.debug(`Registering injection hook for ${className}`);
-    this.proxies.set(className, callback);
+    this.hooks.set(className, callback);
   }
 
   /**
@@ -103,6 +124,7 @@ export class DependencyInjector {
    */
   public value(name:string, value:any) {
     this.logger.debug(`Registering value ${name}.`);
+    name = this.translateName(name);
     this.values.set(name, <Dependency>{
       value: value,
       missingDependencies: [],
@@ -122,13 +144,15 @@ export class DependencyInjector {
     const injectable:boolean = classz.$inject;
 
     if (!name) {
-      let className = self.objectUtils.extractClassName(classz);
+      let className = ObjectUtils.extractClassName(classz);
       if (!className) {
         return;
       }
-      name = self.objectUtils.toInstanceName(className);
+      name = ObjectUtils.toInstanceName(className);
     }
-    var classArgs:string[] = self.objectUtils.extractArgs(classz);
+    name = this.translateName(name);
+
+    var classArgs:string[] = ObjectUtils.extractArgs(classz);
     if (!injectable && classArgs.length > 0) {
       this.logger.debug(`Skipping registration of service ${name}. Not an injectable (not annotated with @Inject)`);
       return;
@@ -150,6 +174,13 @@ export class DependencyInjector {
       missingDependencies: classArgs,
       resolved: false
     });
+  }
+
+  private translateName(name:string):string {
+    if (this.translationMap.has(name)) {
+      return this.translationMap.get(name);
+    }
+    return name;
   }
 
   /**
@@ -217,7 +248,7 @@ export class DependencyInjector {
   }
 
   /**
-   * Gets a list of all dependencies of the class. At this point the proxies are called, passing
+   * Gets a list of all dependencies of the class. At this point the hooks are called, passing
    * the real resolved value as parameter.
    */
   private getResolvedDependencies(entryName:string, entryValue:any) {
@@ -227,9 +258,9 @@ export class DependencyInjector {
       if (!value.resolved) {
         throw new Error(`Failed to resolve dependency ${dep} (from ref. ${entryName}).`);
       }
-      let proxy = self.proxies.get(dep);
-      if (proxy) {
-        return proxy(entryName, value.value);
+      let hook = self.hooks.get(dep);
+      if (hook) {
+        return hook(entryName, value.value);
       }
       return value.value;
     });
@@ -270,7 +301,7 @@ export class DependencyInjector {
 
   private getFunctionName(classz:any) {
     if (typeof classz !== 'string') {
-      return this.objectUtils.extractClassName(classz);
+      return ObjectUtils.extractClassName(classz);
     }
     return classz;
   }

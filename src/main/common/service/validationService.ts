@@ -11,6 +11,10 @@ export class ValidationService {
     this.validator = new Validator();
   }
 
+  public addSchema(schema: any){
+    this.validator.addSchema(schema);
+  }
+
   public getSchema(name:string):any {
     return require(`../common/schema/mark${name}`);
   }

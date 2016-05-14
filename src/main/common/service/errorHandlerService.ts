@@ -1,9 +1,13 @@
 'use strict';
 import {Inject} from "../decorators/inject";
+import {LoggerFactory} from "../loggerFactory";
 
 @Inject()
 export class ErrorHandlerService {
-  constructor(private logger) {
+  private logger;
+
+  constructor(private loggerFactory:LoggerFactory) {
+    this.logger = loggerFactory.getLogger('ErrorHandlerService');
   }
 
   public toJson(error, message) {

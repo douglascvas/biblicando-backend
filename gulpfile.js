@@ -4,6 +4,14 @@ const typescript = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const tslint = require('gulp-tslint');
 
+var generateSchema = require('gulp-typescript-schema').generateSchema
+
+gulp.task('shema', function () {
+  gulp.src('src/main/**/*.ts').pipe(generateSchema({
+    path: './schema.json'
+  })).pipe(gulp.dest('schemas'))
+});
+
 gulp.task('clean', function () {
   return del('build');
 });

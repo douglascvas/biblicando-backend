@@ -1,7 +1,24 @@
 'use strict';
 
+import "reflect-metadata";
+
 export class ObjectUtils {
-  public extractClassName(classz:Function):string {
+  public static *toIterable(value) {
+    if (value instanceof Array) {
+      for (let i = 0; i < value.length; i++) {
+        yield value[i];
+      }
+      return;
+    }
+    if (typeof value === 'object') {
+      let keys = Object.keys[value];
+      for (let key of Reflect.ownKeys(value)) {
+        yield {key: key, value: value[key]};
+      }
+    }
+  }
+
+  public static extractClassName(classz:Function):string {
     var asString = classz.toString();
     var match = asString.match(/(?:function|class)[\s]*(\w+).*(\(|\{)/);
     if (!match) {
@@ -11,11 +28,11 @@ export class ObjectUtils {
     return match[1];
   }
 
-  public isClass(classz:Function):boolean {
+  public static isClass(classz:Function):boolean {
     return classz.toString().indexOf('class') === 0;
   }
 
-  public extractArgs(classz:Function):string[] {
+  public static extractArgs(classz:Function):string[] {
     var regexStr = '\\(([^)]*)\\)';
     if (this.isClass(classz)) {
       regexStr = 'constructor[ ]*' + regexStr;
@@ -32,7 +49,7 @@ export class ObjectUtils {
   /**
    * Make sure the first char is lower case.
    */
-  public toInstanceName(name) {
+  public static toInstanceName(name) {
     return name.replace(/^./, name[0].toLowerCase());
   }
 }
