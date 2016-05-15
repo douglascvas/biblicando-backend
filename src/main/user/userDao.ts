@@ -4,7 +4,7 @@ import {Collection} from "../common/enums/collection";
 import {Db} from "mongodb";
 import {User} from "./user";
 import {BaseDao} from "../common/dao/baseDao";
-import IPromise = Q.IPromise;
+import {Promise} from "../common/interface/promise";
 
 @Inject
 export class UserDao extends BaseDao<User> {
@@ -12,7 +12,7 @@ export class UserDao extends BaseDao<User> {
     super(database, Collection.USER);
   }
 
-  public findOneByEmail(email:string):IPromise<User> {
+  public findOneByEmail(email:string):Promise<User> {
     var query = {
       email: email
     };

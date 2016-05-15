@@ -3,10 +3,9 @@ import {Inject} from "../common/decorators/inject";
 import {BaseDao} from "../common/dao/baseDao";
 import {Collection} from "../common/enums/collection";
 import {Mark} from "./mark";
-import * as Q from "q";
-import IPromise = Q.IPromise;
 import {ObjectID} from "mongodb";
 import * as assert from "assert";
+import {Promise} from "../common/interface/promise";
 
 @Inject
 export class MarkDao extends BaseDao<Mark> {
@@ -14,7 +13,7 @@ export class MarkDao extends BaseDao<Mark> {
     super(database, Collection.MARK);
   }
 
-  public findFromVerses(userId:string, verseIds:string[]):IPromise<Mark[]> {
+  public findFromVerses(userId:string, verseIds:string[]):Promise<Mark[]> {
     assert(userId);
     assert(verseIds);
 
@@ -51,7 +50,7 @@ export class MarkDao extends BaseDao<Mark> {
     return this.remove(query);
   }
 
-  public findOneById(userId:ObjectID, markId:string):IPromise<Mark> {
+  public findOneById(userId:ObjectID, markId:string):Promise<Mark> {
     assert(userId);
     assert(markId);
 
@@ -63,7 +62,7 @@ export class MarkDao extends BaseDao<Mark> {
     return this.findOne(query);
   }
 
-  public findByVerse(userId:ObjectID, verseId:ObjectID, options:any):IPromise<Mark[]> {
+  public findByVerse(userId:ObjectID, verseId:ObjectID, options:any):Promise<Mark[]> {
     assert(userId);
     assert(verseId);
 
@@ -75,7 +74,7 @@ export class MarkDao extends BaseDao<Mark> {
     return this.find(query, options);
   }
 
-  public findByTag(userId:ObjectID, tags:string[]):IPromise<Mark[]> {
+  public findByTag(userId:ObjectID, tags:string[]):Promise<Mark[]> {
     assert(userId);
     assert(tags);
 

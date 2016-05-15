@@ -4,7 +4,7 @@ import {Db} from "mongodb";
 import {BaseDao} from "../common/dao/baseDao";
 import {Collection} from "../common/enums/collection";
 import {Verse} from "./verse";
-import IPromise = Q.IPromise;
+import {Promise} from "../common/interface/promise";
 
 @Inject
 export class VerseDao extends BaseDao<Verse> {
@@ -12,7 +12,7 @@ export class VerseDao extends BaseDao<Verse> {
     super(database, Collection.VERSE);
   }
 
-  public findOneByNumber(chapterId:string, number:number):IPromise<Verse> {
+  public findOneByNumber(chapterId:string, number:number):Promise<Verse> {
     var query = {
       "chapter.id": chapterId,
       "number": number
@@ -20,7 +20,7 @@ export class VerseDao extends BaseDao<Verse> {
     return this.findOne(query);
   }
 
-  public findByChapter(chapterId:string, options?:any):IPromise<Verse[]> {
+  public findByChapter(chapterId:string, options?:any):Promise<Verse[]> {
     var query = {
       "chapter.id": chapterId
     };

@@ -7,8 +7,8 @@ import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
 import {Verse} from "./verse";
 import {Chapter} from "../chapter/chapter";
 import * as Q from "q";
-import IPromise = Q.IPromise;
 import * as assert from "assert";
+import {Promise} from "../common/interface/promise";
 
 @Inject
 export class VerseService {
@@ -21,27 +21,27 @@ export class VerseService {
               private remoteApiInfoService:RemoteApiInfoService) {
   }
 
-  public getVerses(chapterId:string):IPromise<Verse[]> {
-    return this.cacheService.getFromCache(`verses_${chapterId}`)
+  public getVerses(chapterId:string):Promise<Verse[]> {
+    return this.cacheService.get(`verses_${chapterId}`)
       .then(verses => verses ? verses : this.verseDao.findByChapter(chapterId))
       .then(verses => this.storeVersesInCache(chapterId, verses))
       .then(verses => verses ? verses : this.fetchVersesRemotelyAndSaveInCache(chapterId));
   }
 
-  public getVerse(verseId:string):IPromise<Verse> {
-    return this.cacheService.getFromCache(`verse_${verseId}`)
+  public getVerse(verseId:string):Promise<Verse> {
+    return this.cacheService.get(`verse_${verseId}`)
       .then(verse => verse ? verse : this.verseDao.findOne(verseId))
       .then(this.storeVerseInCache);
   }
 
-  private fetchVersesRemotely(chapterId:string, chapter:Chapter):IPromise<Verse[]> {
+  private fetchVersesRemotely(chapterId:string, chapter:Chapter):Promise<Verse[]> {
     if (!chapter.remoteSource) {
       console.log(`No verse found for chapter '${chapterId}'.`);
       return Q.when([]);
     }
     let remoteApiInfo = this.remoteApiInfoService.resolveFromName(chapter.remoteSource);
     assert(remoteApiInfo, `No service found for fetching chapter ${chapterId}.`);
-    let RemoteService: any = remoteApiInfo.serviceClass;
+    let RemoteService:any = remoteApiInfo.serviceClass;
     let remoteService = new RemoteService(this.config, this.httpClient, this.cacheService);
     return remoteService.getVerses(chapter.remoteId)
       .then(verses=>this.storeVersesInCache(chapterId, verses));
@@ -52,7 +52,7 @@ export class VerseService {
       return verses;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.saveToCache(`verses_${chapterId}`, verses, timeout);
+    this.cacheService.set(`verses_${chapterId}`, verses, timeout);
     return verses;
   }
 
@@ -61,11 +61,11 @@ export class VerseService {
       return verse;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.saveToCache(`verse_${verse._id.toString()}`, verse, timeout);
+    this.cacheService.set(`verse_${verse._id.toString()}`, verse, timeout);
     return verse;
   }
 
-  private fetchVersesRemotelyAndSaveInCache(chapterId:string):IPromise<Verse[]> {
+  private fetchVersesRemotelyAndSaveInCache(chapterId:string):Promise<Verse[]> {
     return this.chapterDao.findOne(chapterId)
       .then(chapter=> this.fetchVersesRemotely(chapterId, chapter));
   }

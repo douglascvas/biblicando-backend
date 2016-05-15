@@ -1,5 +1,4 @@
-import * as Q from 'q';
-import IPromise = Q.IPromise;
+import * as Q from "q";
 
 export class AssertThat {
   constructor(private lastPromise?:any) {
@@ -8,9 +7,9 @@ export class AssertThat {
     this.then = this.wrapValueInPromise.bind(this);
   }
 
-  public given: (value:any, extraArg?:any) => AssertThat;
-  public when: (value:any, extraArg?:any) => AssertThat;
-  public then: (value:any, extraArg?:any) => AssertThat;
+  public given:(value:any, extraArg?:any) => AssertThat;
+  public when:(value:any, extraArg?:any) => AssertThat;
+  public then:(value:any, extraArg?:any) => AssertThat;
 
   private isFunction(value) {
     return (typeof value === 'function');

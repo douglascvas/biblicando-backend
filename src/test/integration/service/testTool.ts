@@ -15,6 +15,11 @@ export class TestTool {
   private _server:Server;
 
   constructor() {
+    this._config = this.loadConfiguration();
+    this._moduleScannerService = new ModuleScannerService();
+    this._loggerFactory = new LoggerFactory(this._config);
+    this._dependencyInjector = new DependencyInjector(this._loggerFactory);
+    this._server = new Server(this._config, this._dependencyInjector, this._loggerFactory, this._moduleScannerService);
   }
 
   private loadConfiguration() {
@@ -24,11 +29,6 @@ export class TestTool {
   }
 
   public initialize() {
-    this._config = this.loadConfiguration();
-    this._moduleScannerService = new ModuleScannerService();
-    this._loggerFactory = new LoggerFactory(this._config);
-    this._dependencyInjector = new DependencyInjector(this._loggerFactory);
-    this._server = new Server(this._config, this._dependencyInjector, this._loggerFactory, this._moduleScannerService);
     return this._server.initialize();
   }
 

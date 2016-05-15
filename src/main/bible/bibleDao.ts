@@ -6,8 +6,7 @@ import {Collection} from "../common/enums/collection";
 import {Bible} from "./bible";
 import {Db} from "mongodb";
 import {UpdateWriteOpResult} from "mongodb";
-import * as Q from 'q';
-import IPromise = Q.IPromise;
+import {Promise} from "../common/interface/promise";
 
 @Inject
 export class BibleDao extends BaseDao<Bible> {
@@ -16,14 +15,14 @@ export class BibleDao extends BaseDao<Bible> {
     super(database, Collection.BIBLE);
   }
 
-  public findOneByName(name:string):IPromise<Bible> {
+  public findOneByName(name:string):Promise<Bible> {
     var query = {
       name: name
     };
     return this.findOne(query);
   }
 
-  public updateRemoteBible(bible:Bible):IPromise<UpdateWriteOpResult> {
+  public updateRemoteBible(bible:Bible):Promise<UpdateWriteOpResult> {
     var query = {
       remoteSource: bible.remoteSource,
       remoteId: bible.remoteId

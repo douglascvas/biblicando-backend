@@ -2,7 +2,7 @@
 
 import {Inject} from "../decorators/inject";
 import * as Q from "q";
-import IPromise = Q.IPromise;
+import {Promise} from "../interface/promise";
 
 @Inject
 export class CacheService {
@@ -10,8 +10,8 @@ export class CacheService {
   constructor(private cacheClient) {
   }
 
-  public getFromCache(url: string): any {
-    return this.cacheClient.getFromCache(url)
+  public get(url:string):any {
+    return this.cacheClient.get(url)
       .then(value => {
         if (typeof value === 'string') {
           return JSON.parse(value);
@@ -20,7 +20,7 @@ export class CacheService {
       });
   }
 
-  public saveToCache(url: string, resource: any, timeout: number): IPromise<any> {
+  public set(url:string, resource:any, timeout:number):Promise<any> {
     if (!resource) {
       return;
     }
@@ -28,7 +28,7 @@ export class CacheService {
       resource = JSON.stringify(resource)
     }
     if (resource) {
-      return this.cacheClient.saveToCache(url, resource, timeout);
+      return this.cacheClient.set(url, resource, timeout);
     }
     return Q.when();
   }

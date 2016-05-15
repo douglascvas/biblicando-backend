@@ -4,10 +4,10 @@ import {CacheService} from "../common/service/cacheService";
 import {BookDao} from "./bookDao";
 import {BibleDao} from "../bible/bibleDao";
 import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
+import {Promise} from "../common/interface/promise";
 import {Book} from "./book";
 import {Bible} from "../bible/bible";
 import * as Q from "q";
-import IPromise = Q.IPromise;
 import * as assert from "assert";
 
 @Inject
@@ -22,15 +22,15 @@ export class BookService {
 
   }
 
-  public getBooks(bibleId:string):IPromise<Book[]> {
-    return this.cacheService.getFromCache(`books_${bibleId}`)
+  public getBooks(bibleId:string):Promise<Book[]> {
+    return this.cacheService.get(`books_${bibleId}`)
       .then(books=> books ? books : this.bookDao.findByBible(bibleId))
       .then(books=>this.storeBooksInCache(bibleId, books))
       .then(books=> books ? books : this.fetchBooksRemotelyAndSave(bibleId));
   }
 
-  public getBook(bookId:string):IPromise<Book> {
-    return this.cacheService.getFromCache(`book_${bookId}`)
+  public getBook(bookId:string):Promise<Book> {
+    return this.cacheService.get(`book_${bookId}`)
       .then(book=> book ? book : this.bookDao.findOne(bookId))
       .then(book => this.storeBookInCache(book));
   }
@@ -53,7 +53,7 @@ export class BookService {
       return books;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.saveToCache(`books_${bibleId}`, books, timeout);
+    this.cacheService.set(`books_${bibleId}`, books, timeout);
     return books;
   }
 
@@ -62,11 +62,11 @@ export class BookService {
       return book;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.saveToCache(`book_${book._id.toString()}`, book, timeout);
+    this.cacheService.set(`book_${book._id.toString()}`, book, timeout);
     return book;
   }
 
-  private  insertBooksInDatabase(books:Book[], bibleId:string):IPromise<Book[]> {
+  private  insertBooksInDatabase(books:Book[], bibleId:string):Promise<Book[]> {
     const self = this;
     var updatedResources = books.map(book => {
       book.bible = <Bible>{_id: bibleId.toString()};
@@ -79,7 +79,7 @@ export class BookService {
       });
   }
 
-  private  fetchBooksRemotelyAndSave(bibleId:string):IPromise<Book[]> {
+  private  fetchBooksRemotelyAndSave(bibleId:string):Promise<Book[]> {
     return this.bibleDao.findOne(bibleId)
       .then((bible:Bible)=> this.fetchBooksRemotely(bibleId, bible))
       .then(books=> books.length ? this.insertBooksInDatabase(books, bibleId) : books);

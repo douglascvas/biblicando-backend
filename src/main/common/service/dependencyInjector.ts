@@ -46,10 +46,11 @@ export class DependencyInjector {
   }
 
   public get(name:any):any {
-    name = this.translateName(name);
     if (typeof name !== 'string') {
       name = ObjectUtils.extractClassName(name);
     }
+    name = ObjectUtils.toInstanceName(name);
+    name = this.translateName(name);
     var item = this.values.get(name);
     if (item) {
       return item.value;

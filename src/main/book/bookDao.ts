@@ -4,7 +4,7 @@ import {BaseDao} from "../common/dao/baseDao";
 import {ObjectID} from "mongodb";
 import {Collection} from "../common/enums/collection";
 import {Book} from "./book";
-import IPromise = Q.IPromise;
+import {Promise} from "../common/interface/promise";
 
 @Inject
 export class BookDao extends BaseDao<Book> {
@@ -13,7 +13,7 @@ export class BookDao extends BaseDao<Book> {
     super(database, Collection.BOOK);
   }
 
-  public upsertOne(book:Book):IPromise<any> {
+  public upsertOne(book:Book):Promise<any> {
     let queries = [];
     if (book._id) {
       queries.push({_id: ObjectID.createFromHexString(book._id)});
@@ -29,14 +29,14 @@ export class BookDao extends BaseDao<Book> {
     }
   }
 
-  public findOneByName(name:string):IPromise<Book> {
+  public findOneByName(name:string):Promise<Book> {
     var query = {
       name: name
     };
     return this.findOne(query);
   }
 
-  public findByBible(bibleId:string):IPromise<Book[]> {
+  public findByBible(bibleId:string):Promise<Book[]> {
     var query = {
       "bible._id": bibleId
     };

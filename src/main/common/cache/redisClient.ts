@@ -3,6 +3,7 @@
 import * as Redis from "ioredis";
 import {Inject} from "../decorators/inject";
 import {LoggerFactory} from "../loggerFactory";
+import * as Q from 'q';
 
 @Inject
 export class RedisClient {

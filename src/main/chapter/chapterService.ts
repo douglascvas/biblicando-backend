@@ -2,12 +2,12 @@
 import {CacheService} from "../common/service/cacheService";
 import {ChapterDao} from "./chapterDao";
 import {BookDao} from "../book/bookDao";
-import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
 import {Inject} from "../common/decorators/inject";
+import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
+import {Promise} from "../common/interface/promise";
 import {Chapter} from "./chapter";
 import {Book} from "../book/book";
 import * as Q from "q";
-import IPromise = Q.IPromise;
 import * as assert from "assert";
 
 @Inject
@@ -21,20 +21,20 @@ export class ChapterService {
 
   }
 
-  public getChapters(bookId:string):IPromise<Chapter[]> {
-    return this.cacheService.getFromCache(`chapters_${bookId}`)
+  public getChapters(bookId:string):Promise<Chapter[]> {
+    return this.cacheService.get(`chapters_${bookId}`)
       .then(chapters=> chapters ? chapters : this.chapterDao.findByBook(bookId))
       .then(chapters=>this.storeChaptersInCache(bookId, chapters))
       .then(chapters=> chapters ? chapters : this.fetchChaptersRemotelyAndSave(bookId));
   }
 
-  public getChapter(chapterId:string):IPromise<Chapter> {
-    return this.cacheService.getFromCache(`chapter_${chapterId}`)
+  public getChapter(chapterId:string):Promise<Chapter> {
+    return this.cacheService.get(`chapter_${chapterId}`)
       .then(chapter=> chapter ? chapter : this.chapterDao.findOne(chapterId))
       .then(chapter => this.storeChapterInCache(chapter));
   }
 
-  private fetchChaptersRemotely(bookId, book):IPromise<Chapter[]> {
+  private fetchChaptersRemotely(bookId, book):Promise<Chapter[]> {
     if (!book.remoteSource) {
       console.log(`No chapter found for book '${bookId}'.`);
       return Q.when([]);
@@ -52,7 +52,7 @@ export class ChapterService {
       return chapters;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.saveToCache(`chapters_${bookId}`, chapters, timeout);
+    this.cacheService.set(`chapters_${bookId}`, chapters, timeout);
     return chapters;
   }
 
@@ -61,13 +61,13 @@ export class ChapterService {
       return chapter;
     }
     let timeout = this.config.get('cache.expirationInMillis');
-    this.cacheService.saveToCache(`chapter_${chapter._id.toString()}`, chapter, timeout);
+    this.cacheService.set(`chapter_${chapter._id.toString()}`, chapter, timeout);
     return chapter;
   }
 
-  private insertChaptersInDatabase(chapters:Chapter[], bookId:string):IPromise<Chapter[]> {
+  private insertChaptersInDatabase(chapters:Chapter[], bookId:string):Promise<Chapter[]> {
     const self = this;
-    var updatedResources:IPromise<any>[] = chapters.map((chapter:Chapter) => {
+    var updatedResources:Promise<any>[] = chapters.map((chapter:Chapter) => {
       chapter.book = <Book>{_id: bookId.toString()};
       return self.chapterDao.upsertOne(chapter);
     });
@@ -78,7 +78,7 @@ export class ChapterService {
       });
   }
 
-  private  fetchChaptersRemotelyAndSave(bookId:string):IPromise<Chapter[]> {
+  private  fetchChaptersRemotelyAndSave(bookId:string):Promise<Chapter[]> {
     return this.bookDao.findOne(bookId)
       .then(book=> this.fetchChaptersRemotely(bookId, book))
       .then(chapters=> chapters.length ? this.insertChaptersInDatabase(chapters, bookId) : chapters);

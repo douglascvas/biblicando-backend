@@ -55,9 +55,6 @@ export class Server {
         self.registerApis(self.dependencyInjector);
         self.registerSchemas(self.dependencyInjector);
         return self.startServer(app, self.config);
-      })
-      .catch(e => {
-        self.logger.error(e.stack);
       });
   }
 

@@ -3,7 +3,7 @@
 import * as sourceMapSupport from 'source-map-support';
 sourceMapSupport.install();
 
-import {BibleOrgService} from "../../../../../main/common/service/biblesOrg/bibleOrgService";
+import {BiblesOrgService} from "../../../../../main/common/service/biblesOrg/bibleOrgService";
 import {AssertThat} from "../../../../assertThat";
 import * as Q from 'q';
 import * as sinon from 'sinon';
@@ -17,7 +17,7 @@ const assertThat = new AssertThat({debug: console.log});
 describe('MarkService', function () {
   const BASE_URL = 'http://bibles.org';
   const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-  var biblesOrgService:BibleOrgService,
+  var biblesOrgService:BiblesOrgService,
     httpClient, cacheService, config, bibleList, bookList, chapterList, verseList,
     aBible, aBook, aChapter, aVerse, anotherBible, anotherBook, anotherChapter, anotherVerse, returnedValue,
     BIBLES_URL, BIBLE_URL, BOOKS_URL, BOOK_URL, CHAPTERS_URL, CHAPTER_URL, VERSES_URL, VERSE_URL,
@@ -64,7 +64,7 @@ describe('MarkService', function () {
     httpClient.get.withArgs(VERSES_URL).returns(Q.when(versesResponse));
     httpClient.get.withArgs(VERSE_URL).returns(Q.when(verseResponse));
 
-    biblesOrgService = new BibleOrgService(config, httpClient, cacheService);
+    biblesOrgService = new BiblesOrgService(config, httpClient, cacheService);
   });
 
   function toRestResponse(value, label) {

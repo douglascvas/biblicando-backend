@@ -1,22 +1,23 @@
 'use strict';
 
-const requireDir = require("require-dir-all");
+import * as glob from 'glob';
+import * as path from 'path';
+import {ObjectUtils} from "./objectUtils";
 
 export class ModuleScannerService {
   private getModules():Map<string, any> {
-    var entries = new Map();
-    requireDir('../../', {
-      recursive: true,
-      map: (mod) => {
-        Object.keys(mod.exports).forEach(key => {
-          if (mod.exports.hasOwnProperty(key)) {
-            let classz = mod.exports[key];
-            entries.set(key, classz);
-          }
-        });
+    var result = new Map();
+
+    var mainPath = path.resolve(`${__dirname}/../..`);
+    var files = glob.sync(`${mainPath}/**/*.js`, {ignore: `${mainPath}/index.js`});
+    files.forEach(function (file) {
+      var mod = require(path.resolve(file));
+      var entries = ObjectUtils.toIterable(mod);
+      for (let entry of entries) {
+        result.set(entry.key, entry.value);
       }
     });
-    return entries;
+    return result;
   }
 
   public *getServices() {
