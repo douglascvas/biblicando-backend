@@ -1,6 +1,8 @@
 'use strict';
 import {Inject} from "../decorators/inject";
 import {ErrorHandlerService} from "./errorHandlerService";
+import * as Q from "q";
+
 
 @Inject
 export class RestResponseService {

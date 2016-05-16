@@ -14,12 +14,13 @@ export class RequestType {
 
 export function RequestMapping(path:string, type?:RequestType) {
   type = type || RequestType.GET;
+  var self = this;
   return function (target:any, propertyKey:string, descriptor:TypedPropertyDescriptor<any>) {
     target.$controller = target.$controller || {apis: new Set()};
-    function registerApi(app, logger) {
+    function registerApi(app, controllerInstance, logger) {
       let method = type.value;
       logger.debug(`Registering api - ${method.toUpperCase()} ${path}.`);
-      app[method](path, descriptor.value);
+      app[method](path, descriptor.value.bind(controllerInstance));
     }
 
     target.$controller.apis.add(registerApi);

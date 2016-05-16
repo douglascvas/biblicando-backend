@@ -12,7 +12,7 @@ biblicando:
       configFile: '[[CACHE_CONFIG_FILE]]'
       expirationInMillis: 100000
     server:
-      port: 3005
+      port: 3100
     api:
       biblesOrg:
         url: 'https://[[BIBLES_ORG_TOKEN]]:@bibles.org/v2/'

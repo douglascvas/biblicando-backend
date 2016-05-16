@@ -1,3 +1,5 @@
+import {BiblesOrgService} from "../service/biblesOrg/bibleOrgService";
+
 export interface RemoteApiInfo {
   name:string;
   config:string;
@@ -8,6 +10,6 @@ export const RemoteApiConfig = {
   BIBLES_ORG: <RemoteApiInfo>{
     name: 'biblesOrg',
     config: 'remote.api.biblesOrg',
-    serviceClass: require('../service/biblesOrg/bibleOrgService')
+    serviceClass: BiblesOrgService
   }
 };

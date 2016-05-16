@@ -20,7 +20,7 @@ export class CacheService {
       });
   }
 
-  public set(url:string, resource:any, timeout:number):Promise<any> {
+  public set(url:string, resource:any, timeout?:number):Promise<any> {
     if (!resource) {
       return;
     }
@@ -31,5 +31,9 @@ export class CacheService {
       return this.cacheClient.set(url, resource, timeout);
     }
     return Q.when();
+  }
+
+  public remove(url:string):Promise<any> {
+    return this.cacheClient.remove(url);
   }
 }

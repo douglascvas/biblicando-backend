@@ -23,14 +23,14 @@ export class RedisClient {
     return Q.when(this.client);
   }
 
-  public get(key) {
+  public get(key:string):any {
     return this.getClient()
       .then(client => {
         return client.get(key);
       });
   }
 
-  public set(key, value, timeoutInMillis) {
+  public set(key:string, value:any, timeoutInMillis:number) {
     if (timeoutInMillis) {
       return this.getClient()
         .then(client => client.psetex(key, timeoutInMillis, value));
@@ -46,6 +46,6 @@ export class RedisClient {
 
   public remove(key) {
     return this.getClient()
-      .then(client => client.delete(key));
+      .then(client => client.del(key));
   }
 }

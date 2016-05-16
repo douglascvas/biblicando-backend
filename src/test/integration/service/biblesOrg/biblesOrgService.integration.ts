@@ -1,5 +1,4 @@
 'use strict';
-import {BibleService} from "../../../../main/bible/bibleService";
 import {TestTool} from "../testTool";
 import {AssertThat} from "../../../assertThat";
 import {BiblesOrgService} from "../../../../main/common/service/biblesOrg/bibleOrgService";
@@ -8,7 +7,7 @@ var path = require('path');
 var assert = require('assert');
 var request = require('request-promise');
 
-describe('bibleService', function () {
+describe('BibleOrgService', function () {
   var testTool:TestTool;
   var biblesOrgService:BiblesOrgService;
   var assertThat:AssertThat;
@@ -16,7 +15,7 @@ describe('bibleService', function () {
   before(() => {
     assertThat = new AssertThat();
     testTool = new TestTool();
-    return testTool.initialize()
+    return testTool.initialize(false)
       .then(() => {
         biblesOrgService = testTool.dependencyInjector.get(BiblesOrgService);
       });

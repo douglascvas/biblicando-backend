@@ -7,6 +7,7 @@ import {RemoteApiInfo} from "../common/enums/remoteApiInfo";
 import {UpdateWriteOpResult} from "mongodb";
 import {Promise} from "../common/interface/promise";
 import * as Q from "q";
+import {DependencyInjector} from "../common/service/dependencyInjector";
 
 @Inject
 export class BibleService {
@@ -14,6 +15,7 @@ export class BibleService {
 
   constructor(private config,
               private httpClient,
+              private dependencyInjector:DependencyInjector,
               private cacheService:CacheService,
               private bibleDao:BibleDao,
               private remoteApiInfoService:RemoteApiInfoService) {
@@ -61,8 +63,7 @@ export class BibleService {
   }
 
   private fetchFromRemoteApiAndStoreInDatabase(info:RemoteApiInfo):Promise<Bible[]> {
-    var RemoteDataService:any = info.serviceClass;
-    var remoteService = new RemoteDataService(this.config, this.httpClient, this.cacheService);
+    var remoteService = this.dependencyInjector.get(info.serviceClass);
     return remoteService.getBibles()
       .then(bibles=>this.updateBiblesInDatabase(bibles));
   }

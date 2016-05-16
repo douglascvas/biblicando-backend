@@ -20,7 +20,7 @@ export class Server {
               private dependencyInjector:DependencyInjector,
               private loggerFactory:LoggerFactory,
               private moduleScannerService:ModuleScannerService) {
-    this.logger = loggerFactory.getLogger("server");
+    this.logger = loggerFactory.getLogger(Server);
   }
 
   private createServer() {
@@ -45,26 +45,29 @@ export class Server {
     }
   }
 
-  public initialize():Promise<any> {
+  public initialize(startServer:boolean):Promise<any> {
     var self = this;
     const mongoDb:Mongo = new Mongo(self.config);
     return mongoDb.connect()
       .then(connection => {
         var app = this.createServer();
         self.registerDependencies(self.dependencyInjector, self.config, app, connection);
-        self.registerApis(self.dependencyInjector);
         self.registerSchemas(self.dependencyInjector);
-        return self.startServer(app, self.config);
+        if (startServer) {
+          self.registerApis(self.dependencyInjector);
+          return self.startServer(app, self.config);
+        }
       });
   }
 
   private registerDependencies(dependencyInjector:DependencyInjector, config:any, app:any, connection:any) {
-    this.registerServices(dependencyInjector);
     dependencyInjector.rename('redisClient', 'cacheClient');
     dependencyInjector.value('config', config);
     dependencyInjector.value('router', app);
     dependencyInjector.value('httpClient', request);
     dependencyInjector.value('database', connection);
+    dependencyInjector.value('dependencyInjector', dependencyInjector);
+    this.registerServices(dependencyInjector);
     dependencyInjector.build();
     return dependencyInjector;
   }
@@ -82,7 +85,7 @@ export class Server {
       if (typeof instance.value.$controller.register !== 'function') {
         throw new Error(`The controller ${instance.name} must be annotated with @Controller`)
       }
-      instance.value.$controller.register(app, this.loggerFactory);
+      instance.value.$controller.register(app, instance.value, this.loggerFactory);
     }
   }
 
@@ -93,8 +96,9 @@ export class Server {
     var dependencies = ObjectUtils.toIterable(dependencyInjector.getAll());
     var validationService:ValidationService = dependencyInjector.get('validationService');
     for (let instance of dependencies) {
-      if (instance.value.$resource) {
-        validationService.addSchema(instance.value.$resource);
+      if (instance.value.__$resource) {
+        validationService.addSchema(instance.value.__$resource);
+        // delete instance.value.__proto__.__$resource;
       }
     }
   }

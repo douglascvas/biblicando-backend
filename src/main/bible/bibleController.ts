@@ -9,7 +9,6 @@ import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 @Inject
 @Controller
 export class BibleController {
-
   constructor(private bibleService:BibleService,
               private restResponseService:RestResponseService) {
   }

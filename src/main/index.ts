@@ -19,7 +19,7 @@ var loggerFactory = new LoggerFactory(config);
 var logger = loggerFactory.getLogger('Biblicando');
 var dependencyInjector = new DependencyInjector(loggerFactory);
 var server = new Server(config, dependencyInjector, loggerFactory, moduleScannerService);
-server.initialize()
+server.initialize(true)
   .catch(e => {
     logger.error(e.stack);
   });

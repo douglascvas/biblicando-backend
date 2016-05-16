@@ -14,8 +14,8 @@ const CACHE_TIMEOUT = 1000;
 
 describe('BibleOrgService', function () {
   var cacheService, config, httpClient,
-    bibleService: BibleService,
-    bibleDao, remoteApiInfoService,
+    bibleService:BibleService,
+    bibleDao, remoteApiInfoService, dependencyInjector,
     bibleList, aBible, anotherBible, returnedValue;
 
   beforeEach(() => {
@@ -28,11 +28,12 @@ describe('BibleOrgService', function () {
 
     httpClient = stub();
     cacheService = {getFromCache: stub(), saveToCache: stub()};
+    dependencyInjector = {get: stub()};
 
     bibleDao = {find: stub(), findOne: stub()};
     remoteApiInfoService = stub();
 
-    bibleService = new BibleService(config, httpClient, cacheService, bibleDao, remoteApiInfoService);
+    bibleService = new BibleService(config, httpClient, dependencyInjector, cacheService, bibleDao, remoteApiInfoService);
   });
 
   describe('#getBibles()', function () {

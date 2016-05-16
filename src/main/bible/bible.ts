@@ -4,7 +4,7 @@ import {SchemaType} from "../common/enums/schemaType";
 import {Type} from "../common/decorators/type";
 
 @Resource
-export class Bible {
+export class Bible extends Object {
   @Type(SchemaType.STRING)
   _id:string;
 

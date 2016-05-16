@@ -4,9 +4,9 @@ import {ObjectUtils} from "../service/objectUtils";
 export function Type(type:SchemaType, _of?:any) {
   var self = this;
   return function (target, key) {
-    target.$resource = target.$resource || {properties: {}};
+    target.__$resource = target.__$resource || {properties: {}};
     if (_of) {
-      var schemaProperty: any = target.$resource.properties[key] = {};
+      var schemaProperty: any = target.__$resource.properties[key] = {};
       var targetProperty:any;
       if (type.value === SchemaType.ARRAY.value) {
         schemaProperty.type = type.value;
@@ -22,7 +22,7 @@ export function Type(type:SchemaType, _of?:any) {
         targetProperty.$ref = ObjectUtils.extractClassName(_of);
       }
     } else {
-      target.$resource.properties[key] = {
+      target.__$resource.properties[key] = {
         type: type.value
       };
     }

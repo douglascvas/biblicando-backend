@@ -28,8 +28,8 @@ export class TestTool {
     return new Configurator(CONFIG_PATH, moduleInfo.name, moduleInfo.version);
   }
 
-  public initialize() {
-    return this._server.initialize();
+  public initialize(startServer: boolean) {
+    return this._server.initialize(startServer);
   }
 
   get config() {

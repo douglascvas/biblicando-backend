@@ -16,3 +16,4 @@
 /// <reference path="main/ambient/serve-static/index.d.ts" />
 /// <reference path="main/ambient/sinon/index.d.ts" />
 /// <reference path="main/ambient/source-map-support/index.d.ts" />
+/// <reference path="main/definitions/node-uuid/index.d.ts" />
