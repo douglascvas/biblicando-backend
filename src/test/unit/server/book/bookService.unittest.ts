@@ -4,6 +4,7 @@ import {AssertThat} from "../../../assertThat";
 import * as Q from 'q';
 import * as sinon from 'sinon';
 import * as chai from "chai";
+import {LoggerFactory} from "../../../../main/common/loggerFactory";
 
 const assert = chai.assert;
 const stub = sinon.stub;
@@ -18,8 +19,8 @@ const REMOTE_SOURCE = 'remoteApi';
 describe('BookService', function () {
 
   var cacheService, config, httpClient,
-    bookService: BookService,
-    bookDao, bibleDao, remoteApiInfoService, bible, returnedValue;
+    bookService:BookService,
+    bookDao, bibleDao, remoteApiInfoService, bible, returnedValue, loggerFactory;
   var aBook, anotherBook, bookList, bookIdList;
   var mockRemoteResourceClassConstructorArgs, mockRemoteResource;
   var MockRemoteResourceClass;
@@ -29,8 +30,7 @@ describe('BookService', function () {
   }
 
   beforeEach(()=> {
-    console.log("########## testt");
-    MockRemoteResourceClass = function() {
+    MockRemoteResourceClass = function () {
       mockRemoteResourceClassConstructorArgs = Array.prototype.slice.call(arguments);
       mockRemoteResource = this;
     };
@@ -46,7 +46,8 @@ describe('BookService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), saveToCache: stub()};
+    cacheService = {get: stub(), set: stub()};
+    loggerFactory = new LoggerFactory();
 
     bibleDao = {find: stub(), findOne: stub()};
 
@@ -56,7 +57,8 @@ describe('BookService', function () {
     bookDao.find.withArgs({_id: {$in: bookIdList}}).returns(Q.when(bookList));
 
     remoteApiInfoService = {resolveFromName: stub()};
-    bookService = new BookService(config, httpClient, cacheService, bookDao, bibleDao, remoteApiInfoService);
+    bookService = new BookService(config, httpClient, cacheService, bookDao, bibleDao,
+      remoteApiInfoService, loggerFactory);
   });
 
   describe('#getBooks()', function () {
@@ -220,11 +222,11 @@ describe('BookService', function () {
   }
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.saveToCache.callCount, 0);
+    return assert.equal(cacheService.set.callCount, 0);
   }
 
   function theBooksAreStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`books_${BIBLE_ID}`, bookList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`books_${BIBLE_ID}`, bookList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theBooksAreStoredInTheDatabase() {
@@ -234,7 +236,7 @@ describe('BookService', function () {
   }
 
   function theBookIsStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`book_${aBook._id}`, aBook, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`book_${aBook._id}`, aBook, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeBooks() {
@@ -254,24 +256,24 @@ describe('BookService', function () {
   }
 
   function cacheContainsSomeBooks() {
-    cacheService.getFromCache.withArgs(`books_${BIBLE_ID}`).returns(Q.when(bookList));
+    cacheService.get.withArgs(`books_${BIBLE_ID}`).returns(Q.when(bookList));
   }
 
   function cacheContainsTheDesiredBook() {
-    cacheService.getFromCache.withArgs(`book_${aBook._id}`).returns(Q.when(aBook));
+    cacheService.get.withArgs(`book_${aBook._id}`).returns(Q.when(aBook));
   }
 
   function cacheDoesNotContainTheDesiredBook() {
-    cacheService.getFromCache.withArgs(`book_${aBook._id}`).returns(Q.when(null));
+    cacheService.get.withArgs(`book_${aBook._id}`).returns(Q.when(null));
   }
 
   function cacheContainsNoBooks() {
-    cacheService.getFromCache.withArgs(`books_${BIBLE_ID}`).returns(Q.when(null));
+    cacheService.get.withArgs(`books_${BIBLE_ID}`).returns(Q.when(null));
   }
 
   function callingGetBooks() {
     return bookService.getBooks(BIBLE_ID)
-      // resolve the promise value so it can be use in the next steps
+    // resolve the promise value so it can be use in the next steps
       .then(resultBooks => {
         returnedValue = resultBooks;
       });
@@ -279,7 +281,7 @@ describe('BookService', function () {
 
   function callingGetBook() {
     return bookService.getBook(aBook._id)
-      // resolve the promise value so it can be use in the next steps
+    // resolve the promise value so it can be use in the next steps
       .then(resultBook => {
         returnedValue = resultBook;
       });

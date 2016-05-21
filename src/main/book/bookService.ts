@@ -9,17 +9,21 @@ import {Book} from "./book";
 import {Bible} from "../bible/bible";
 import * as Q from "q";
 import * as assert from "assert";
+import {LoggerFactory, Logger} from "../common/loggerFactory";
 
 @Inject
 export class BookService {
+
+  private logger:Logger;
 
   constructor(private config,
               private httpClient,
               private cacheService:CacheService,
               private bookDao:BookDao,
               private bibleDao:BibleDao,
-              private remoteApiInfoService:RemoteApiInfoService) {
-
+              private remoteApiInfoService:RemoteApiInfoService,
+              private loggerFactory:LoggerFactory) {
+    this.logger = loggerFactory.getLogger(BookService);
   }
 
   public getBooks(bibleId:string):Promise<Book[]> {
@@ -37,7 +41,7 @@ export class BookService {
 
   private fetchBooksRemotely(bibleId:string, bible:Bible) {
     if (!bible.remoteSource) {
-      console.log(`No book found for bible '${bibleId}'.`);
+      this.logger.warn(`No book found for bible '${bibleId}'.`);
       return [];
     }
     let remoteApiInfo = this.remoteApiInfoService.resolveFromName(bible.remoteSource);

@@ -27,13 +27,18 @@ describe('BibleOrgService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), saveToCache: stub()};
+    cacheService = {get: stub(), set: stub()};
     dependencyInjector = {get: stub()};
 
     bibleDao = {find: stub(), findOne: stub()};
     remoteApiInfoService = stub();
 
-    bibleService = new BibleService(config, httpClient, dependencyInjector, cacheService, bibleDao, remoteApiInfoService);
+    bibleService = new BibleService(config,
+      httpClient,
+      dependencyInjector,
+      cacheService,
+      bibleDao,
+      remoteApiInfoService);
   });
 
   describe('#getBibles()', function () {
@@ -123,15 +128,15 @@ describe('BibleOrgService', function () {
   });
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.saveToCache.callCount, 0);
+    return assert.equal(cacheService.set.callCount, 0);
   }
 
   function theBiblesAreStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`bibles`, bibleList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`bibles`, bibleList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theBibleIsStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`bible_${aBible._id}`, aBible, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`bible_${aBible._id}`, aBible, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeBibles() {
@@ -151,19 +156,19 @@ describe('BibleOrgService', function () {
   }
 
   function cacheContainsSomeBibles() {
-    cacheService.getFromCache.withArgs(`bibles`).returns(Q.when(bibleList));
+    cacheService.get.withArgs(`bibles`).returns(Q.when(bibleList));
   }
 
   function cacheContainsTheDesiredBible() {
-    cacheService.getFromCache.withArgs(`bible_${aBible._id}`).returns(Q.when(aBible));
+    cacheService.get.withArgs(`bible_${aBible._id}`).returns(Q.when(aBible));
   }
 
   function cacheContainsNoBibles() {
-    cacheService.getFromCache.withArgs(`bibles`).returns(Q.when(null));
+    cacheService.get.withArgs(`bibles`).returns(Q.when(null));
   }
 
   function cacheDoesNotContainsDesiredBible() {
-    cacheService.getFromCache.withArgs(`bible_${aBible._id}`).returns(Q.when(null));
+    cacheService.get.withArgs(`bible_${aBible._id}`).returns(Q.when(null));
   }
 
   function callingGetBibles() {

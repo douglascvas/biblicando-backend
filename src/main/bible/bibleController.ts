@@ -28,7 +28,7 @@ export class BibleController {
 
   @RequestMapping('/bibles/sync', RequestType.POST)
   public syncBibles(request, response) {
-    this.bibleService.synchronizeRemoteBibles();
-    this.restResponseService.respond(request, response);
+    var result = this.bibleService.synchronizeRemoteBibles();
+    this.restResponseService.respond(request, response, result);
   }
 }

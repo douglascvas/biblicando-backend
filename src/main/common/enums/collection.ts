@@ -6,4 +6,4 @@ export const Collection = {
   USER: 'user',
   MARK: 'mark',
   SESSION: 'session'
-}
+};

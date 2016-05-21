@@ -13,7 +13,7 @@ const Configurator = require('configurator-js');
 const CONFIG_PATH = path.resolve(__dirname, '../config/config.yml');
 const config = new Configurator(CONFIG_PATH, 'biblicando');
 
-describe.only('BibleDao', function () {
+describe('BibleDao', function () {
   var bible:Bible;
   var bibleDao:BibleDao;
   var testTool:TestTool;
@@ -42,7 +42,7 @@ describe.only('BibleDao', function () {
 
       .when(() => bibleDao.findOneByName(bible.name))
 
-      .then(value => assert.equal(value, bible));
+      .then(value => assert.deepEqual(value, bible));
   });
 
   function getBible() {

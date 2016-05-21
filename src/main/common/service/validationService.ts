@@ -22,7 +22,7 @@ export class ValidationService {
   }
 
   public getSchema(name:string):any {
-    return require(`../common/schema/mark${name}`);
+    return this.validator.getSchema(name);
   }
 
   public rejectRequest(response, error) {

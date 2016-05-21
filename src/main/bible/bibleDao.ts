@@ -19,7 +19,8 @@ export class BibleDao extends BaseDao<Bible> {
     var query = {
       name: name
     };
-    return this.findOne(query);
+    return this.findOne(query)
+      .then(value => value !== undefined ? value : null);
   }
 
   public updateRemoteBible(bible:Bible):Promise<UpdateWriteOpResult> {

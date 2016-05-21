@@ -1,5 +1,6 @@
 'use strict';
 
+require('source-map-support').install();
 import {MarkService} from "../../../../main/mark/markService";
 import {AssertThat} from "../../../assertThat";
 import * as sinon from 'sinon';
@@ -15,11 +16,11 @@ describe('MarkService', function () {
   var validationService, markService, aMark, anotherMark, markList, markDao, verseIds;
 
   beforeEach(()=> {
-    aMark = {_id: 'id1', verse: {id: 'verse1'}};
-    anotherMark = {_id: 'id2', verse: {id: 'verse2'}};
-    verseIds = new Set([aMark.verse.id, anotherMark.verse.id]);
+    aMark = {_id: 'id1', verse: {_id: 'verse1'}};
+    anotherMark = {_id: 'id2', verse: {_id: 'verse2'}};
+    verseIds = [aMark.verse._id, anotherMark.verse._id];
     markList = [aMark, anotherMark];
-    validationService = {validateAll: stub()};
+    validationService = {validateAll: stub(), getSchema: stub()};
     markDao = {insert: stub(), removeFromVerses: stub(), findFromVerses: stub()};
 
     markService = new MarkService(markDao, validationService);

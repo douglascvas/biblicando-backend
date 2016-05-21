@@ -1,13 +1,14 @@
 'use strict';
-import {Inject} from "../../decorators/inject";
-import {CacheService} from "../cacheService";
+import {Inject} from "../../common/decorators/inject";
+import {CacheService} from "../../common/service/cacheService";
 import * as URL from "url";
 import * as Q from "q";
-import {Book} from "../../../book/book";
-import {Bible} from "../../../bible/bible";
-import {Chapter} from "../../../chapter/chapter";
-import {Verse} from "../../../verse/verse";
-import {Promise} from "../../interface/promise";
+import {Book} from "../../book/book";
+import {Bible} from "../../bible/bible";
+import {Chapter} from "../../chapter/chapter";
+import {Verse} from "../../verse/verse";
+import {Promise} from "../../common/interface/promise";
+import {BiblesOrgBible} from "./biblesOrgBible";
 
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
@@ -62,7 +63,8 @@ export class BiblesOrgService {
 
   public getBibles():Promise<Bible[]> {
     const url = URL.resolve(this.baseUrl, `versions.js`);
-    return this.getResource(url, result => result.versions);
+    return this.getResource(url, result => result.versions)
+      .then((bibles:Array<BiblesOrgBible>) => bibles.map(BiblesOrgBible.toBible));
   }
 
   public getBible(bibleCode:string):Promise<Bible> {

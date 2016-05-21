@@ -43,7 +43,7 @@ describe('ChapterService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), saveToCache: stub()};
+    cacheService = {get: stub(), set: stub()};
 
     bookDao = {find: stub(), findOne: stub()};
 
@@ -217,11 +217,11 @@ describe('ChapterService', function () {
   }
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.saveToCache.callCount, 0);
+    return assert.equal(cacheService.set.callCount, 0);
   }
 
   function theChaptersAreStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`chapters_${BOOK_ID}`, chapterList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`chapters_${BOOK_ID}`, chapterList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theChaptersAreStoredInTheDatabase() {
@@ -231,7 +231,7 @@ describe('ChapterService', function () {
   }
 
   function theChapterIsStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`chapter_${aChapter._id}`, aChapter, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`chapter_${aChapter._id}`, aChapter, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeChapters() {
@@ -251,19 +251,19 @@ describe('ChapterService', function () {
   }
 
   function cacheContainsSomeChapters() {
-    cacheService.getFromCache.withArgs(`chapters_${BOOK_ID}`).returns(Q.when(chapterList));
+    cacheService.get.withArgs(`chapters_${BOOK_ID}`).returns(Q.when(chapterList));
   }
 
   function cacheContainsTheDesiredChapter() {
-    cacheService.getFromCache.withArgs(`chapter_${aChapter._id}`).returns(Q.when(aChapter));
+    cacheService.get.withArgs(`chapter_${aChapter._id}`).returns(Q.when(aChapter));
   }
 
   function cacheDoesNotContainTheDesiredChapter() {
-    cacheService.getFromCache.withArgs(`chapter_${aChapter._id}`).returns(Q.when(null));
+    cacheService.get.withArgs(`chapter_${aChapter._id}`).returns(Q.when(null));
   }
 
   function cacheContainsNoChapters() {
-    cacheService.getFromCache.withArgs(`chapters_${BOOK_ID}`).returns(Q.when(null));
+    cacheService.get.withArgs(`chapters_${BOOK_ID}`).returns(Q.when(null));
   }
 
   function callingGetChapters() {

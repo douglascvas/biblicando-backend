@@ -42,7 +42,7 @@ describe('VerseService', function () {
     config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
-    cacheService = {getFromCache: stub(), saveToCache: stub()};
+    cacheService = {get: stub(), set: stub()};
 
     chapterDao = {find: stub(), findOne: stub()};
 
@@ -214,11 +214,11 @@ describe('VerseService', function () {
   }
 
   function nothingIsStoredInCache() {
-    return assert.equal(cacheService.saveToCache.callCount, 0);
+    return assert.equal(cacheService.set.callCount, 0);
   }
 
   function theVersesAreStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`verses_${CHAPTER_ID}`, verseList, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`verses_${CHAPTER_ID}`, verseList, CACHE_TIMEOUT).calledOnce);
   }
 
   function theVersesAreStoredInTheDatabase() {
@@ -228,7 +228,7 @@ describe('VerseService', function () {
   }
 
   function theVerseIsStoredInCache() {
-    return assert.isTrue(cacheService.saveToCache.withArgs(`verse_${aVerse._id}`, aVerse, CACHE_TIMEOUT).calledOnce);
+    return assert.isTrue(cacheService.set.withArgs(`verse_${aVerse._id}`, aVerse, CACHE_TIMEOUT).calledOnce);
   }
 
   function databaseContainsSomeVerses() {
@@ -248,19 +248,19 @@ describe('VerseService', function () {
   }
 
   function cacheContainsSomeVerses() {
-    cacheService.getFromCache.withArgs(`verses_${CHAPTER_ID}`).returns(Q.when(verseList));
+    cacheService.get.withArgs(`verses_${CHAPTER_ID}`).returns(Q.when(verseList));
   }
 
   function cacheContainsTheDesiredVerse() {
-    cacheService.getFromCache.withArgs(`verse_${aVerse._id}`).returns(Q.when(aVerse));
+    cacheService.get.withArgs(`verse_${aVerse._id}`).returns(Q.when(aVerse));
   }
 
   function cacheDoesNotContainTheDesiredVerse() {
-    cacheService.getFromCache.withArgs(`verse_${aVerse._id}`).returns(Q.when(null));
+    cacheService.get.withArgs(`verse_${aVerse._id}`).returns(Q.when(null));
   }
 
   function cacheContainsNoVerses() {
-    cacheService.getFromCache.withArgs(`verses_${CHAPTER_ID}`).returns(Q.when(null));
+    cacheService.get.withArgs(`verses_${CHAPTER_ID}`).returns(Q.when(null));
   }
 
   function callingGetVerses() {

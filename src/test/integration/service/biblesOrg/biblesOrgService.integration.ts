@@ -1,7 +1,7 @@
 'use strict';
 import {TestTool} from "../testTool";
 import {AssertThat} from "../../../assertThat";
-import {BiblesOrgService} from "../../../../main/common/service/biblesOrg/bibleOrgService";
+import {BiblesOrgService} from "../../../../main/broker/biblesOrg/biblesOrgService";
 
 var path = require('path');
 var assert = require('assert');

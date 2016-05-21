@@ -3,7 +3,7 @@
 import * as sourceMapSupport from 'source-map-support';
 sourceMapSupport.install();
 
-import {BiblesOrgService} from "../../../../../main/common/service/biblesOrg/bibleOrgService";
+import {BiblesOrgService} from "../../../../../main/broker/biblesOrg/biblesOrgService";
 import {AssertThat} from "../../../../assertThat";
 import * as Q from 'q';
 import * as sinon from 'sinon';
@@ -12,7 +12,7 @@ import * as chai from "chai";
 const assert = chai.assert;
 const stub = sinon.stub;
 
-const assertThat = new AssertThat({debug: console.log});
+const assertThat = new AssertThat();
 
 describe('MarkService', function () {
   const BASE_URL = 'http://bibles.org';
@@ -48,9 +48,9 @@ describe('MarkService', function () {
 
     config = {get: stub()};
     httpClient = {get: stub()};
-    cacheService = {getFromCache: stub(), saveToCache: stub()};
+    cacheService = {get: stub(), set: stub()};
 
-    config.get.withArgs('remote.api.biblesOrg.url').returns(BASE_URL);
+    config.get.withArgs('api.biblesOrg.url').returns(BASE_URL);
 
     httpClient.get.withArgs(BIBLES_URL).returns(Q.when(biblesResponse));
     httpClient.get.withArgs(BIBLE_URL).returns(Q.when(bibleResponse));
@@ -432,35 +432,35 @@ describe('MarkService', function () {
   }
 
   function biblesAreSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(BIBLES_URL, bibleList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(BIBLES_URL, bibleList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function bibleIsSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(BIBLE_URL, aBible, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(BIBLE_URL, aBible, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function booksAreSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(BOOKS_URL, bookList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(BOOKS_URL, bookList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function bookIsSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(BOOK_URL, aBook, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(BOOK_URL, aBook, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function chaptersAreSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(CHAPTERS_URL, chapterList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(CHAPTERS_URL, chapterList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function chapterIsSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(CHAPTER_URL, aChapter, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(CHAPTER_URL, aChapter, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function versesAreSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(VERSES_URL, verseList, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(VERSES_URL, verseList, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function verseIsSavedInCache() {
-    assert.isTrue(cacheService.saveToCache.withArgs(VERSE_URL, aVerse, 5 * DAY_IN_MILLIS).calledOnce);
+    assert.isTrue(cacheService.set.withArgs(VERSE_URL, aVerse, 5 * DAY_IN_MILLIS).calledOnce);
   }
 
   function callingGetBibles() {
@@ -536,38 +536,38 @@ describe('MarkService', function () {
   }
 
   function cacheContainsTheBibles() {
-    cacheService.getFromCache.returns(Q.when(bibleList));
+    cacheService.get.returns(Q.when(bibleList));
   }
 
   function cacheDoesNotContainAnyResource() {
-    cacheService.getFromCache.returns(Q.when(null));
+    cacheService.get.returns(Q.when(null));
   }
 
   function cacheContainsTheBible() {
-    cacheService.getFromCache.returns(Q.when(aBible));
+    cacheService.get.returns(Q.when(aBible));
   }
 
   function cacheContainsTheBooks() {
-    cacheService.getFromCache.returns(Q.when(bookList));
+    cacheService.get.returns(Q.when(bookList));
   }
 
   function cacheContainsTheBook() {
-    cacheService.getFromCache.returns(Q.when(aBook));
+    cacheService.get.returns(Q.when(aBook));
   }
 
   function cacheContainsTheChapters() {
-    cacheService.getFromCache.returns(Q.when(chapterList));
+    cacheService.get.returns(Q.when(chapterList));
   }
 
   function cacheContainsTheChapter() {
-    cacheService.getFromCache.returns(Q.when(aChapter));
+    cacheService.get.returns(Q.when(aChapter));
   }
 
   function cacheContainsTheVerses() {
-    cacheService.getFromCache.returns(Q.when(verseList));
+    cacheService.get.returns(Q.when(verseList));
   }
 
   function cacheContainsTheVerse() {
-    cacheService.getFromCache.returns(Q.when(aVerse));
+    cacheService.get.returns(Q.when(aVerse));
   }
 });

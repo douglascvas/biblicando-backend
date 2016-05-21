@@ -31,7 +31,7 @@ export class VerseService {
   public getVerse(verseId:string):Promise<Verse> {
     return this.cacheService.get(`verse_${verseId}`)
       .then(verse => verse ? verse : this.verseDao.findOne(verseId))
-      .then(this.storeVerseInCache);
+      .then(verse => this.storeVerseInCache(verse));
   }
 
   private fetchVersesRemotely(chapterId:string, chapter:Chapter):Promise<Verse[]> {

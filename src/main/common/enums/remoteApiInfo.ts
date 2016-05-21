@@ -1,4 +1,5 @@
-import {BiblesOrgService} from "../service/biblesOrg/bibleOrgService";
+import {BiblesOrgService} from "../../broker/biblesOrg/biblesOrgService";
+import {Broker} from "./broker";
 
 export interface RemoteApiInfo {
   name:string;
@@ -8,8 +9,8 @@ export interface RemoteApiInfo {
 
 export const RemoteApiConfig = {
   BIBLES_ORG: <RemoteApiInfo>{
-    name: 'biblesOrg',
-    config: 'remote.api.biblesOrg',
+    name: Broker.BIBLES_ORG.value,
+    config: 'api.biblesOrg',
     serviceClass: BiblesOrgService
   }
 };
