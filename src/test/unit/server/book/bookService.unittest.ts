@@ -1,8 +1,8 @@
 'use strict';
 import {BookService} from "../../../../main/book/bookService";
 import {AssertThat} from "../../../assertThat";
-import * as Q from 'q';
-import * as sinon from 'sinon';
+import * as Q from "q";
+import * as sinon from "sinon";
 import * as chai from "chai";
 import {LoggerFactory} from "../../../../main/common/loggerFactory";
 

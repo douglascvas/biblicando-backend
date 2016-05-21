@@ -56,7 +56,7 @@ export class BibleService {
 
   private updateBiblesInDatabase(bibles:Bible[]):Promise<UpdateWriteOpResult[]> {
     var result:Promise<UpdateWriteOpResult>[] = bibles
-      .map(bible => result.push(this.bibleDao.updateRemoteBible(bible)));
+      .map(bible => this.bibleDao.updateRemoteBible(bible));
     return Q.all(result);
   }
 
