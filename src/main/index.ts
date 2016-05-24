@@ -5,8 +5,9 @@ import {ModuleScannerService} from "./common/service/moduleScannerService";
 
 const Configurator = require("configurator-js");
 const moduleInfo = require("../../package.json");
+const path = require("path");
 
-const CONFIG_PATH = process.env.CONFIG_PATH || __dirname + "/resources/config.yml";
+const CONFIG_PATH = path.resolve(process.env.CONFIG_PATH || __dirname + "/../resources/config.yml");
 
 function loadConfiguration() {
   console.log("Loading configuration from ", CONFIG_PATH);

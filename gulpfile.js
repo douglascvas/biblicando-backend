@@ -21,19 +21,19 @@ gulp.task('compile:main', compile('main'));
 gulp.task('compile:test', compile('test'));
 
 gulp.task('copy:main', ['clean:main'], function () {
-  return gulp.src(['src/main/**/*', '!src/main/**/*.ts'], {base: './src/'}).pipe(gulp.dest('build'))
+  return gulp.src(['src/main/**/*', '!src/main/**/*.ts'], {base: './src/'}).pipe(gulp.dest('build'));
 });
 gulp.task('copy:resource', ['clean:resource'], function () {
-  return gulp.src(['src/resource/**/*'], {base: './src/'}).pipe(gulp.dest('build'))
+  return gulp.src(['src/resources/**/*'], {base: './src/'}).pipe(gulp.dest('build'));
 });
 gulp.task('copy:test', ['clean:test'], function () {
-  return gulp.src(['src/test/**/*', '!src/test/**/*.ts'], {base: './src/'}).pipe(gulp.dest('build'))
+  return gulp.src(['src/test/**/*', '!src/test/**/*.ts'], {base: './src/'}).pipe(gulp.dest('build'));
 });
 
-gulp.task('build', ['build:resource', 'build:main', 'build:test']);
 gulp.task('build:main', ['copy:main', 'compile:main']);
 gulp.task('build:resource', ['copy:resource']);
 gulp.task('build:test', ['copy:test', 'compile:test']);
+gulp.task('build', ['build:main', 'build:resource', 'build:test']);
 
 gulp.task('watch', ['build'], function () {
   gulp.watch(['src/main/**/*'], ['build:main']);
@@ -48,10 +48,10 @@ function compile(source) {
     var tsResult = gulp.src(sourceTsFiles)
       .pipe(sourcemaps.init())
       .pipe(typescript(tsProject));
-    tsResult.dts.pipe(gulp.dest('build'));
+    tsResult.dts.pipe(gulp.dest('build/' + source));
     return tsResult.js
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest('build'));
+      .pipe(gulp.dest('build/' + source));
   }
 }
 
