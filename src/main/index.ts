@@ -1,26 +1,9 @@
-import {Server} from './server';
-import {DependencyInjector} from "./common/service/dependencyInjector";
-import {LoggerFactory} from "./common/loggerFactory";
-import {ModuleScannerService} from "./common/service/moduleScannerService";
+import {Server} from "./server";
 
-const Configurator = require("configurator-js");
-const moduleInfo = require("../../package.json");
-const path = require("path");
+var server = Server.build();
 
-const CONFIG_PATH = path.resolve(process.env.CONFIG_PATH || __dirname + "/../resources/config.yml");
-
-function loadConfiguration() {
-  console.log("Loading configuration from ", CONFIG_PATH);
-  return new Configurator(CONFIG_PATH, moduleInfo.name, moduleInfo.version);
-}
-
-var config = loadConfiguration();
-var moduleScannerService = new ModuleScannerService();
-var loggerFactory = new LoggerFactory(config);
-var logger = loggerFactory.getLogger('Biblicando');
-var dependencyInjector = new DependencyInjector(loggerFactory);
-var server = new Server(config, dependencyInjector, loggerFactory, moduleScannerService);
-server.initialize(true)
+server.initialize()
+  .then(()=>server.start())
   .catch(e => {
-    logger.error(e.stack);
+    server.logger.error(e.stack);
   });

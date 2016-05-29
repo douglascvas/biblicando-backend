@@ -35,6 +35,10 @@ gulp.task('build:resource', ['copy:resource']);
 gulp.task('build:test', ['copy:test', 'compile:test']);
 gulp.task('build', ['build:main', 'build:resource', 'build:test']);
 
+gulp.task('start-all', ['build'], function () {
+  require('build/main/index.js');
+});
+
 gulp.task('watch', ['build'], function () {
   gulp.watch(['src/main/**/*'], ['build:main']);
   gulp.watch(['src/resource/**/*'], ['build:resource']);
@@ -42,7 +46,7 @@ gulp.task('watch', ['build'], function () {
 });
 
 function compile(source) {
-  var sourceTsFiles = ['src/' + source + '/**/*.ts', 'typings/main/**/*.ts', 'typings/main.d.ts'];
+  var sourceTsFiles = ['src/' + source + '/**/*.ts', 'typings/**/*.ts'];
   var tsProject = typescript.createProject('tsconfig.json');
   return function () {
     var tsResult = gulp.src(sourceTsFiles)

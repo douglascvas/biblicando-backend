@@ -1,10 +1,12 @@
 {
-  "name": "biblicando",
+  "name": "biblicando-backend",
   "version": "0.0.1",
   "description": "Bible study tools",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "install": "typings install && npm run build",
+    "build": "gulp build"
   },
   "repository": {
     "type": "git",
