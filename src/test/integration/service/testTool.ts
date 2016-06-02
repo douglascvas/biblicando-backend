@@ -1,3 +1,4 @@
+import * as express from "express";
 import {Server} from "../../../main/server";
 import {ModuleScannerService} from "../../../main/common/service/moduleScannerService";
 import {LoggerFactory} from "../../../main/common/loggerFactory";
@@ -13,13 +14,15 @@ export class TestTool {
   private _loggerFactory:LoggerFactory;
   private _dependencyInjector:DependencyInjector;
   private _server:Server;
+  private _app;
 
   constructor() {
+    this._app = express();
     this._config = this.loadConfiguration();
     this._moduleScannerService = new ModuleScannerService();
     this._loggerFactory = new LoggerFactory(this._config);
     this._dependencyInjector = new DependencyInjector(this._loggerFactory);
-    this._server = new Server(this._config, this._dependencyInjector, this._loggerFactory, this._moduleScannerService);
+    this._server = new Server(this._app, this._config, this._dependencyInjector, this._loggerFactory, this._moduleScannerService);
   }
 
   private loadConfiguration() {
@@ -28,8 +31,8 @@ export class TestTool {
     return new Configurator(CONFIG_PATH, moduleInfo.name, moduleInfo.version);
   }
 
-  public initialize(startServer: boolean) {
-    return this._server.initialize(startServer);
+  public initialize(startServer:boolean) {
+    return this._server.initialize();
   }
 
   get config() {
