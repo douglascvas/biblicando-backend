@@ -1,4 +1,4 @@
-biblicando:
+biblicando-backend:
   '{0.0.1}':
     database:
       host: '[[DB_HOST]]'

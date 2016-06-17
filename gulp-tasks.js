@@ -1,7 +1,7 @@
 const del = require('del');
 const typescript = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
-const tslint = require('gulp-tslint');
+// const tslint = require('gulp-tslint');
 
 module.exports = function (gulp) {
 
@@ -53,10 +53,6 @@ module.exports = function (gulp) {
     return gulp.src(['src/test/**/*', '!src/test/**/*.ts'], {base: './src/'}).pipe(gulp.dest('build'));
   }
 
-  function start() {
-    require('build/main/index.js');
-  }
-
   function watch() {
     gulp.watch(['src/main/**/*'], ['build:main']);
     gulp.watch(['src/resource/**/*'], ['build:resource']);
@@ -87,6 +83,12 @@ module.exports = function (gulp) {
       });
       gulp.task(prefix + taskName, dependencies, description.handler);
     }
+  }
+
+  function start(cb) {
+    var server = require('gulp-express');
+    server.run([__dirname + '/build/main/index.js'], {}, 35725);
+    cb();
   }
 
   const taskMap = {

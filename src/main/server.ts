@@ -46,7 +46,7 @@ export class Server {
   }
 
   public get logger(){
-    return this.logger;
+    return this._logger;
   }
 
   private configureServer() {
