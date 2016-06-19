@@ -1,6 +1,8 @@
 const del = require('del');
+const paths = require('./paths');
 const typescript = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
+var net = require('net');
 // const tslint = require('gulp-tslint');
 
 module.exports = function (gulp) {
@@ -22,53 +24,56 @@ module.exports = function (gulp) {
   }
 
   function cleanMain() {
-    return del('build/main');
+    return del(paths.outputMain);
   }
 
   function cleanTest() {
-    return del('build/test');
+    return del(paths.outputTest);
   }
 
   function cleanResource() {
-    return del('build/resource');
+    return del(paths.outputResource);
   }
 
   function compileMain() {
-    return compile('main');
+    return compile(paths.source, paths.output);
   }
 
   function compileTest() {
-    return compile('test');
+    return compile(paths.test, paths.output);
   }
 
   function copyMain() {
-    return gulp.src(['src/main/**/*', '!src/main/**/*.ts'], {base: './src/'}).pipe(gulp.dest('build'));
+    return gulp.src([`${paths.baseMain}/**/*`, `!${paths.baseMain}/**/*.ts`], {base: `${paths.root}/`})
+      .pipe(gulp.dest(paths.output));
   }
 
   function copyResource() {
-    return gulp.src(['src/resources/**/*'], {base: './src/'}).pipe(gulp.dest('build'));
+    return gulp.src([`${paths.baseResource}/**/*`], {base: `${paths.root}/`})
+      .pipe(gulp.dest(paths.output));
   }
 
   function copyTest() {
-    return gulp.src(['src/test/**/*', '!src/test/**/*.ts'], {base: './src/'}).pipe(gulp.dest('build'));
+    return gulp.src([`${paths.baseTest}/**/*`, `!${paths.baseTest}/**/*.ts`], {base: `${paths.root}/`})
+      .pipe(gulp.dest(paths.output));
   }
 
   function watch() {
-    gulp.watch(['src/main/**/*'], ['build:main']);
-    gulp.watch(['src/resource/**/*'], ['build:resource']);
-    gulp.watch(['src/test/**/*'], ['build:test']);
+    gulp.watch([`${paths.baseMain}/**/*`], ['build:main']);
+    gulp.watch([`${paths.baseResource}/**/*`], ['build:resource']);
+    gulp.watch([`${paths.baseTest}/**/*`], ['build:test']);
   }
 
-  function compile(source) {
-    var sourceTsFiles = ['src/' + source + '/**/*.ts', 'typings/**/*.ts'];
-    var tsProject = typescript.createProject(__dirname + '/tsconfig.json');
+  function compile(source, output) {
+    var sourceTsFiles = [source, `${paths.typings}/**/*.ts`];
+    var tsProject = typescript.createProject(paths.tsConfig);
     var tsResult = gulp.src(sourceTsFiles)
       .pipe(sourcemaps.init())
       .pipe(typescript(tsProject));
-    tsResult.dts.pipe(gulp.dest('build/' + source));
+    tsResult.dts.pipe(gulp.dest(output));
     return tsResult.js
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest('build/' + source));
+      .pipe(gulp.dest(output));
   }
 
   function registerTasks(gulp, prefix, tasks) {
@@ -85,10 +90,38 @@ module.exports = function (gulp) {
     }
   }
 
+  var portInUse = function (port, callback) {
+    var server = net.createServer(function (socket) {
+      socket.write('Echo server\r\n');
+      socket.pipe(socket);
+    });
+
+    server.listen(port, '127.0.0.1');
+    server.on('error', function (e) {
+      callback(true);
+    });
+    server.on('listening', function (e) {
+      server.close();
+      callback(false);
+    });
+  };
+
+  function waitForApplication(port, callback) {
+    const interval = setInterval(()=> {
+      portInUse(port, used => {
+        console.log("### Port used:", used);
+        if (used) {
+          clearInterval(interval);
+          return callback();
+        }
+      })
+    }, 500);
+  }
+
   function start(cb) {
     var server = require('gulp-express');
-    server.run([__dirname + '/build/main/index.js'], {}, 35725);
-    cb();
+    server.run([`${paths.outputMain}/index.js`], {}, 35725);
+    waitForApplication(3005, cb);
   }
 
   const taskMap = {
@@ -105,7 +138,8 @@ module.exports = function (gulp) {
     'build:test': task('copy:test', 'compile:test'),
     'build': task('build:main', 'build:resource', 'build:test'),
     'start': task('build', start),
-    'watch': task('build', watch)
+    'watch': task('build', watch),
+    'dev': task('start', watch)
   };
 
   registerTasks(gulp, 'be-', taskMap);

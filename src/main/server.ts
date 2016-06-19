@@ -11,8 +11,12 @@ import {ObjectUtils} from "./common/service/objectUtils";
 import {Mongo} from "./common/database/mongo/mongo";
 import * as request from "request-promise";
 import * as bodyParser from "body-parser";
+import * as Q from "q";
 
 import * as express from "express";
+import nextTick = Q.nextTick;
+import Deferred = Q.Deferred;
+import Promise = Q.Promise;
 
 const Configurator = require("configurator-js");
 const moduleInfo = require("../../package.json");
@@ -29,15 +33,15 @@ export class Server {
     this._logger = loggerFactory.getLogger(Server);
   }
 
-  static build() {
-    const CONFIG_PATH = path.resolve(process.env.CONFIG_PATH || __dirname + "/../resources/config.yml");
+  static build(app?) {
+    const CONFIG_PATH = path.resolve(process.env.CONFIG_PATH || __dirname + "/../resource/config.yml");
 
     function loadConfiguration() {
       console.log("Loading configuration from ", CONFIG_PATH);
       return new Configurator(CONFIG_PATH, moduleInfo.name, moduleInfo.version);
     }
 
-    var app = express();
+    app = app || express();
     var config = loadConfiguration();
     var moduleScannerService = new ModuleScannerService();
     var loggerFactory = new LoggerFactory(config);
@@ -45,7 +49,7 @@ export class Server {
     return new Server(app, config, dependencyInjector, loggerFactory, moduleScannerService);
   }
 
-  public get logger(){
+  public get logger() {
     return this._logger;
   }
 
@@ -54,13 +58,23 @@ export class Server {
     this.app.use(bodyParser.urlencoded({extended: true}));
   }
 
-  public start():any {
-    const self = this;
+  private listen(callback) {
+    var self = this;
     const serverConfig = self.config.get('server');
-    self.registerApis();
-    return self.app.listen(serverConfig.port, function () {
+    self.app.listen(serverConfig.port, function () {
       self.logger.info(`Listening on port ${serverConfig.port}`);
+      callback();
     });
+  }
+
+  public start():Promise<any> {
+    const deferred:Deferred<any> = Q.defer();
+    const self = this;
+    self.registerApis();
+    nextTick(()=> {
+      this.listen(()=>deferred.resolve(self.app));
+    });
+    return deferred.promise;
   }
 
   private registerServices(dependencyInjector) {
@@ -82,9 +96,12 @@ export class Server {
   }
 
   private registerDependencies(connection:any) {
+    var router = express.Router();
+    // router.use('/api', user);
+    this.app.use('/api/v1', router);
     this.dependencyInjector.rename('redisClient', 'cacheClient');
     this.dependencyInjector.value('config', this.config);
-    this.dependencyInjector.value('router', this.app);
+    this.dependencyInjector.value('router', router);
     this.dependencyInjector.value('httpClient', request);
     this.dependencyInjector.value('database', connection);
     this.dependencyInjector.value('dependencyInjector', this.dependencyInjector);

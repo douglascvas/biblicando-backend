@@ -44,28 +44,17 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "del": "^2.2.0",
-    "eslint": "^2.7.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-tslint": "^5.0.0",
-    "gulp-typescript": "^2.13.3",
-    "gulp-typescript-schema": "^0.1.0",
+    "gulp-typescript": "^2.13.6",
     "gulp-watch": "^4.3.5",
     "karma": "^0.13.22",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^1.0.1",
-    "karma-cli": "^1.0.0",
-    "karma-coverage": "^1.0.0",
-    "karma-firefox-launcher": "^1.0.0",
-    "karma-mocha": "^1.0.1",
-    "karma-phantomjs-launcher": "^1.0.0",
-    "karma-typescript-preprocessor2": "^1.1.1",
     "mocha": "^2.4.5",
     "node-uuid": "^1.4.7",
     "phantomjs-prebuilt": "^2.1.7",
     "sinon": "^1.17.3",
     "tsconfig-glob": "^0.4.3",
-    "tslint": "^3.9.0",
-    "typescript": "^1.8.10"
+    "typescript": ">=1.9.0-dev || ^2.0.0",
+    "typings": "^1.0.4"
   }
 }

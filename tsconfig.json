@@ -1,27 +1,23 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "build",
+    "sourceMap": true,
     "target": "es2015",
-    "moduleResolution": "node",
-    "outDir": "build/main",
-    "listFiles": true,
-    "watch": false,
-    "noLib": false,
-    "noResolve": false,
+    "module": "commonjs",
+    "declaration": false,
+    "noImplicitAny": false,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "sourceMap": true,
-    "noImplicitAny": false,
-    "declaration": false
+    "moduleResolution": "node"
   },
   "filesGlob": [
-    "**/*.ts",
-    "**/*.tsx",
-    "!node_modules/**"
+    "./src/**/*.ts",
+    "./typings/index.d.ts"
   ],
-  "files": [
-    "src/main/server.ts",
-    "typings/index.d.ts"
+  "exclude": [
+    "node_modules"
   ]
-
 }
