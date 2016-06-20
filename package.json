@@ -44,7 +44,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "del": "^2.2.0",
-    "gulp": "^3.9.1",
+    "gulp": "gulpjs/gulp#4.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.6",
     "gulp-watch": "^4.3.5",

@@ -7,7 +7,6 @@ import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
 import {Promise} from "../common/interface/promise";
 import {Book} from "./book";
 import {Bible} from "../bible/bible";
-import * as Q from "q";
 import * as assert from "assert";
 import {LoggerFactory, Logger} from "../common/loggerFactory";
 
@@ -30,7 +29,7 @@ export class BookService {
     return this.cacheService.get(`books_${bibleId}`)
       .then(books=> books ? books : this.bookDao.findByBible(bibleId))
       .then(books=>this.storeBooksInCache(bibleId, books))
-      .then(books=> books ? books : this.fetchBooksRemotelyAndSave(bibleId));
+      .then(books=> books.length ? books : this.fetchBooksRemotelyAndSave(bibleId));
   }
 
   public getBook(bookId:string):Promise<Book> {
@@ -40,7 +39,7 @@ export class BookService {
   }
 
   private fetchBooksRemotely(bibleId:string, bible:Bible) {
-    if (!bible.remoteSource) {
+    if (!bible || !bible.remoteSource) {
       this.logger.warn(`No book found for bible '${bibleId}'.`);
       return [];
     }
@@ -76,9 +75,9 @@ export class BookService {
       book.bible = <Bible>{_id: bibleId.toString()};
       return this.bookDao.upsertOne(book);
     });
-    return Q.all(updatedResources)
+    return Promise.all(updatedResources)
       .then(dbResults=> {
-        var ids = dbResults.map(result => result.upsertedId);
+        var ids = dbResults.map(result => result.insertedId);
         return this.bookDao.find({_id: {$in: ids}}, {});
       });
   }

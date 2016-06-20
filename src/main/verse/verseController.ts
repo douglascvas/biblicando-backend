@@ -13,14 +13,14 @@ export class VerseController {
               private restResponseService:RestResponseService) {
   }
 
-  @RequestMapping('chapter/{chapterId}/verses', RequestType.GET)
+  @RequestMapping('/chapter/:chapterId/verses', RequestType.GET)
   public getVerses(request, response) {
     const chapterId = request.params.chapterId;
     let result = this.verseService.getVerse(chapterId);
     this.restResponseService.respond(request, response, result);
   }
 
-  @RequestMapping('verse/{verseId}', RequestType.GET)
+  @RequestMapping('/verse/:verseId', RequestType.GET)
   public getVerse(request, response) {
     const verseId = request.params.verseId;
     let result = this.verseService.getVerse(verseId);

@@ -26,6 +26,12 @@ export class Book {
   description:string;
 
   @Type(SchemaType.STRING)
+  testament:string;
+
+  @Type(SchemaType.STRING)
+  copyright:string;
+
+  @Type(SchemaType.STRING)
   author:string;
 
   @Type(SchemaType.STRING)
@@ -33,6 +39,9 @@ export class Book {
 
   @Type(SchemaType.INTEGER)
   numberOfChapters:number;
+
+  @Type(SchemaType.DATE)
+  updatedAt:Date;
 
   @Type(SchemaType.OBJECT, Bible)
   bible:Bible;

@@ -6,7 +6,6 @@ import {Bible} from "./bible";
 import {RemoteApiInfo} from "../common/enums/remoteApiInfo";
 import {UpdateWriteOpResult} from "mongodb";
 import {Promise} from "../common/interface/promise";
-import * as Q from "q";
 import {DependencyInjector} from "../common/service/dependencyInjector";
 
 @Inject
@@ -57,7 +56,7 @@ export class BibleService {
   private updateBiblesInDatabase(bibles:Bible[]):Promise<UpdateWriteOpResult[]> {
     var result:Promise<UpdateWriteOpResult>[] = bibles
       .map(bible => this.bibleDao.updateRemoteBible(bible));
-    return Q.all(result);
+    return Promise.all(result);
   }
 
   private fetchFromRemoteApiAndStoreInDatabase(info:RemoteApiInfo):Promise<Bible[]> {
@@ -70,6 +69,6 @@ export class BibleService {
     var remoteApiInfo:RemoteApiInfo[] = this.remoteApiInfoService.listAll();
     var biblesPromise = remoteApiInfo.map((info:RemoteApiInfo) => this.fetchFromRemoteApiAndStoreInDatabase(info))
       .reduce((result, bibles) => [].concat(result, bibles), []);
-    return Q.all(biblesPromise);
+    return Promise.all(biblesPromise);
   }
 }

@@ -25,7 +25,7 @@ export class VerseService {
     return this.cacheService.get(`verses_${chapterId}`)
       .then(verses => verses ? verses : this.verseDao.findByChapter(chapterId))
       .then(verses => this.storeVersesInCache(chapterId, verses))
-      .then(verses => verses ? verses : this.fetchVersesRemotelyAndSaveInCache(chapterId));
+      .then(verses => verses.length ? verses : this.fetchVersesRemotelyAndSaveInCache(chapterId));
   }
 
   public getVerse(verseId:string):Promise<Verse> {
@@ -37,7 +37,7 @@ export class VerseService {
   private fetchVersesRemotely(chapterId:string, chapter:Chapter):Promise<Verse[]> {
     if (!chapter.remoteSource) {
       console.log(`No verse found for chapter '${chapterId}'.`);
-      return Q.when([]);
+      return Promise.resolve([]);
     }
     let remoteApiInfo = this.remoteApiInfoService.resolveFromName(chapter.remoteSource);
     assert(remoteApiInfo, `No service found for fetching chapter ${chapterId}.`);

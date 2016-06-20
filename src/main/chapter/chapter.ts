@@ -17,6 +17,9 @@ export class Chapter {
   @Type(SchemaType.STRING)
   remoteSource:string;
 
+  @Type(SchemaType.STRING)
+  copyright:string;
+
   @Type(SchemaType.INTEGER)
   number:number;
 

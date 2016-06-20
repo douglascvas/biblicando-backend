@@ -25,7 +25,7 @@ export class ChapterService {
     return this.cacheService.get(`chapters_${bookId}`)
       .then(chapters=> chapters ? chapters : this.chapterDao.findByBook(bookId))
       .then(chapters=>this.storeChaptersInCache(bookId, chapters))
-      .then(chapters=> chapters ? chapters : this.fetchChaptersRemotelyAndSave(bookId));
+      .then(chapters=> chapters.length ? chapters : this.fetchChaptersRemotelyAndSave(bookId));
   }
 
   public getChapter(chapterId:string):Promise<Chapter> {
@@ -35,9 +35,9 @@ export class ChapterService {
   }
 
   private fetchChaptersRemotely(bookId, book):Promise<Chapter[]> {
-    if (!book.remoteSource) {
+    if (!book || !book.remoteSource) {
       console.log(`No chapter found for book '${bookId}'.`);
-      return Q.when([]);
+      return Promise.resolve([]);
     }
     let remoteApiInfo = this.remoteApiInfoService.resolveFromName(book.remoteSource);
     assert(remoteApiInfo, `No service found for fetching book ${bookId}.`);
@@ -71,9 +71,9 @@ export class ChapterService {
       chapter.book = <Book>{_id: bookId.toString()};
       return self.chapterDao.upsertOne(chapter);
     });
-    return Q.all(updatedResources)
+    return Promise.all(updatedResources)
       .then(dbResults=> {
-        var ids = dbResults.map(result => result.upsertedId);
+        var ids = dbResults.map(result => result.insertedId);
         return self.chapterDao.find({_id: {$in: ids}}, {});
       });
   }

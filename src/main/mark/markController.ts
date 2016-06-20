@@ -15,7 +15,7 @@ export class MarkController {
               private restResponseService:RestResponseService) {
   }
 
-  @RequestMapping('marks', RequestType.GET)
+  @RequestMapping('/marks', RequestType.GET)
   public getMarks(request, response) {
     const userId = request.user.id;
     const verseIds = (request.query.verses || '').split(',');
@@ -24,7 +24,7 @@ export class MarkController {
     this.restResponseService.respond(request, response, result);
   }
 
-  @RequestMapping('marks', RequestType.PUT)
+  @RequestMapping('/marks', RequestType.PUT)
   public saveMarks(request, response) {
     const userId = request.user.id;
     const marks = request.body;

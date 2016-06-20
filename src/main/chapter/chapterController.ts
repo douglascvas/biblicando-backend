@@ -11,14 +11,14 @@ export class ChapterController {
               private restResponseService) {
   }
 
-  @RequestMapping('book/{bookId}/chapters', RequestType.GET)
+  @RequestMapping('/book/:bookId/chapters', RequestType.GET)
   public getChapters(request, response) {
     const bookId = request.params.bookId;
     let result = this.chapterService.getChapters(bookId);
     this.restResponseService.respond(request, response, result);
   }
 
-  @RequestMapping('chapter/{chapterId}', RequestType.GET)
+  @RequestMapping('/chapter/:chapterId', RequestType.GET)
   public getChapter(request, response) {
     const chapterId = request.params.chapterId;
     let result = this.chapterService.getChapter(chapterId);

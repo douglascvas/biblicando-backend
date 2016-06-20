@@ -19,7 +19,7 @@ export class BibleController {
     this.restResponseService.respond(request, response, result);
   }
 
-  @RequestMapping('/bible/{bibleId}', RequestType.GET)
+  @RequestMapping('/bible/:bibleId', RequestType.GET)
   public getBible(request, response) {
     const bibleId = request.params.bibleId;
     let result = this.bibleService.getBible(bibleId);

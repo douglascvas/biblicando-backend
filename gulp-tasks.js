@@ -3,26 +3,8 @@ const paths = require('./paths');
 const typescript = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 var net = require('net');
-// const tslint = require('gulp-tslint');
 
 module.exports = function (gulp) {
-
-  function task() {
-    var dependencies = Array.prototype.slice.call(arguments);
-    var handler = null;
-    if (!dependencies.length) {
-      return;
-    }
-    if (typeof dependencies[dependencies.length - 1] === 'function') {
-      handler = dependencies[dependencies.length - 1];
-      dependencies.splice(dependencies.length - 1, 1);
-    }
-    return {
-      dependencies: dependencies,
-      handler: handler
-    };
-  }
-
   function cleanMain() {
     return del(paths.outputMain);
   }
@@ -59,9 +41,11 @@ module.exports = function (gulp) {
   }
 
   function watch() {
-    gulp.watch([`${paths.baseMain}/**/*`], ['build:main']);
-    gulp.watch([`${paths.baseResource}/**/*`], ['build:resource']);
-    gulp.watch([`${paths.baseTest}/**/*`], ['build:test']);
+    return Promise.all([
+      gulp.watch([`${paths.baseMain}/**/*`], gulp.parallel('be-build:main')),
+      gulp.watch([`${paths.baseResource}/**/*`], gulp.parallel('be-build:resource')),
+      gulp.watch([`${paths.baseTest}/**/*`], gulp.parallel('be-build:test'))
+    ]);
   }
 
   function compile(source, output) {
@@ -74,20 +58,6 @@ module.exports = function (gulp) {
     return tsResult.js
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(output));
-  }
-
-  function registerTasks(gulp, prefix, tasks) {
-    const taskNames = Reflect.ownKeys(tasks);
-    for (let taskName of taskNames) {
-      let description = tasks[taskName];
-      let dependencies = description.dependencies.map(dep=> {
-        if (taskNames.indexOf(dep) >= 0) {
-          return prefix + dep;
-        }
-        return dep;
-      });
-      gulp.task(prefix + taskName, dependencies, description.handler);
-    }
   }
 
   var portInUse = function (port, callback) {
@@ -109,8 +79,9 @@ module.exports = function (gulp) {
   function waitForApplication(port, callback) {
     const interval = setInterval(()=> {
       portInUse(port, used => {
-        console.log("### Port used:", used);
+        console.log("# Starting backend server...");
         if (used) {
+          console.log("# Backend server started.");
           clearInterval(interval);
           return callback();
         }
@@ -124,23 +95,20 @@ module.exports = function (gulp) {
     waitForApplication(3005, cb);
   }
 
-  const taskMap = {
-    'clean:main': task(cleanMain),
-    'clean:test': task(cleanTest),
-    'clean:resource': task(cleanResource),
-    'compile:main': task(compileMain),
-    'compile:test': task(compileTest),
-    'copy:main': task('clean:main', copyMain),
-    'copy:resource': task('clean:resource', copyResource),
-    'copy:test': task('clean:test', copyTest),
-    'build:main': task('copy:main', 'compile:main'),
-    'build:resource': task('copy:resource'),
-    'build:test': task('copy:test', 'compile:test'),
-    'build': task('build:main', 'build:resource', 'build:test'),
-    'start': task('build', start),
-    'watch': task('build', watch),
-    'dev': task('start', watch)
-  };
+  gulp.task('be-clean:main', cleanMain);
+  gulp.task('be-clean:test', cleanTest);
+  gulp.task('be-clean:resource', cleanResource);
+  gulp.task('be-compile:main', compileMain);
+  gulp.task('be-compile:test', compileTest);
+  gulp.task('be-copy:main', gulp.series('be-clean:main', copyMain));
+  gulp.task('be-copy:resource', gulp.series('be-clean:resource', copyResource));
+  gulp.task('be-copy:test', gulp.series('be-clean:test', copyTest));
+  gulp.task('be-build:main', gulp.series('be-copy:main', 'be-compile:main'));
+  gulp.task('be-build:resource', gulp.series('be-copy:resource'));
+  gulp.task('be-build:test', gulp.series('be-copy:test', 'be-compile:test'));
+  gulp.task('be-build', gulp.parallel('be-build:main', 'be-build:resource', 'be-build:test'));
+  gulp.task('be-start', gulp.series('be-build', start));
+  gulp.task('be-watch', gulp.series('be-build', watch));
+  gulp.task('be-dev', gulp.series('be-start', watch));
 
-  registerTasks(gulp, 'be-', taskMap);
 };

@@ -12,14 +12,14 @@ export class BookController {
               private restResponseService:RestResponseService) {
   }
 
-  @RequestMapping('bible/{bibleId}/books', RequestType.GET)
+  @RequestMapping('/bible/:bibleId/books', RequestType.GET)
   public getBooks(request, response) {
     const bibleId = request.params.bibleId;
     let result = this.bookService.getBooks(bibleId);
     this.restResponseService.respond(request, response, result);
   }
 
-  @RequestMapping('book/{bookId}', RequestType.GET)
+  @RequestMapping('/book/:bookId', RequestType.GET)
   public getBook(request, response) {
     const bookId = request.params.bookId;
     let result = this.bookService.getBook(bookId);
