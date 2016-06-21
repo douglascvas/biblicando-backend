@@ -5,6 +5,7 @@ import {VerseService} from "./verseService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 import {Verse} from "./verse";
+import {Promise} from "../common/interface/promise";
 
 @Inject
 @Controller
