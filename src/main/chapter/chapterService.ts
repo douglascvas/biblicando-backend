@@ -7,8 +7,9 @@ import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
 import {Promise} from "../common/interface/promise";
 import {Chapter} from "./chapter";
 import {Book} from "../book/book";
-import * as Q from "q";
 import * as assert from "assert";
+import * as Q from "q";
+import {InsertOneWriteOpResult, UpdateWriteOpResult} from "mongodb";
 
 @Inject
 export class ChapterService {
@@ -67,15 +68,16 @@ export class ChapterService {
 
   private insertChaptersInDatabase(chapters:Chapter[], bookId:string):Promise<Chapter[]> {
     const self = this;
-    var updatedResources:Promise<any>[] = chapters.map((chapter:Chapter) => {
+    var updatedResources:Promise<UpdateWriteOpResult|InsertOneWriteOpResult>[] = chapters.map((chapter:Chapter) => {
       chapter.book = <Book>{_id: bookId.toString()};
       return self.chapterDao.upsertOne(chapter);
     });
-    return Promise.all(updatedResources)
+    var result = Q.all(updatedResources)
       .then(dbResults=> {
-        var ids = dbResults.map(result => result.insertedId);
+        var ids = dbResults.map((result:any) => result.insertedId || result.upsertedId._id);
         return self.chapterDao.find({_id: {$in: ids}}, {});
       });
+    return <Promise<Chapter[]>>result;
   }
 
   private  fetchChaptersRemotelyAndSave(bookId:string):Promise<Chapter[]> {

@@ -53,7 +53,7 @@ export class BibleService {
     return this.bibleDao.find({}, {}).then(bibles => this.storeBiblesInCache(bibles));
   }
 
-  private updateBiblesInDatabase(bibles:Bible[]):Promise<UpdateWriteOpResult[]> {
+  private updateBiblesInDatabase(bibles:Bible[]):Promise<Promise<UpdateWriteOpResult>[]> {
     var result:Promise<UpdateWriteOpResult>[] = bibles
       .map(bible => this.bibleDao.updateRemoteBible(bible));
     return Promise.all(result);

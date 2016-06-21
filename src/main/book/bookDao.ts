@@ -1,7 +1,7 @@
 'use strict';
 import {Inject} from "../common/decorators/inject";
 import {BaseDao} from "../common/dao/baseDao";
-import {ObjectID} from "mongodb";
+import {ObjectID, InsertOneWriteOpResult, UpdateWriteOpResult} from "mongodb";
 import {Collection} from "../common/enums/collection";
 import {Book} from "./book";
 import {Promise} from "../common/interface/promise";
@@ -13,7 +13,7 @@ export class BookDao extends BaseDao<Book> {
     super(database, Collection.BOOK);
   }
 
-  public upsertOne(book:Book):Promise<any> {
+  public upsertOne(book:Book):Promise<UpdateWriteOpResult|InsertOneWriteOpResult> {
     let queries = [];
     if (book._id) {
       queries.push({_id: ObjectID.createFromHexString(book._id)});

@@ -1,4 +1,4 @@
 import IPromise = Q.IPromise;
 
-export interface Promise<E> extends IPromise<E> {
+export interface Promise<T> extends PromiseLike<T> {
 }
