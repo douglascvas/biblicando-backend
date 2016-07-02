@@ -2,7 +2,6 @@
 
 import {VerseService} from "../../../../main/verse/verseService";
 import {AssertThat} from "../../../assertThat";
-import * as Q from 'q';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 
@@ -47,9 +46,9 @@ describe('VerseService', function () {
     chapterDao = {find: stub(), findOne: stub()};
 
     verseDao = {findByChapter: stub(), findOne: stub(), insert: stub(), find: stub(), upsertOne: stub()};
-    verseDao.upsertOne.withArgs(verseList[0]).returns(Q.when({upsertedId: verseList[0]._id}));
-    verseDao.upsertOne.withArgs(verseList[1]).returns(Q.when({upsertedId: verseList[1]._id}));
-    verseDao.find.withArgs({_id: {$in: verseIdList}}).returns(Q.when(verseList));
+    verseDao.upsertOne.withArgs(verseList[0]).returns(Promise.resolve({upsertedId: verseList[0]._id}));
+    verseDao.upsertOne.withArgs(verseList[1]).returns(Promise.resolve({upsertedId: verseList[1]._id}));
+    verseDao.find.withArgs({_id: {$in: verseIdList}}).returns(Promise.resolve(verseList));
 
     remoteApiInfoService = {resolveFromName: stub()};
     verseService = new VerseService(config, httpClient, cacheService, verseDao, chapterDao, remoteApiInfoService);
@@ -192,11 +191,11 @@ describe('VerseService', function () {
   }
 
   function remoteSourceHasNoVersesForGivenChapter() {
-    MockRemoteResourceClass.prototype.getVerses.withArgs(verse.remoteId).returns(Q.when([]));
+    MockRemoteResourceClass.prototype.getVerses.withArgs(verse.remoteId).returns(Promise.resolve([]));
   }
 
   function remoteSourceHasVersesForGivenChapter() {
-    MockRemoteResourceClass.prototype.getVerses.withArgs(verse.remoteId).returns(Q.when(verseList));
+    MockRemoteResourceClass.prototype.getVerses.withArgs(verse.remoteId).returns(Promise.resolve(verseList));
   }
 
   function remoteApiInfoServiceResolvesRemoteSourceInfo() {
@@ -205,12 +204,12 @@ describe('VerseService', function () {
 
   function databaseContainsChapterWithoutRemoteSource() {
     verse = {_id: CHAPTER_ID, remoteId: REMOTE_CHAPTER_ID};
-    chapterDao.findOne.withArgs(CHAPTER_ID).returns(Q.when(verse));
+    chapterDao.findOne.withArgs(CHAPTER_ID).returns(Promise.resolve(verse));
   }
 
   function databaseContainsChapterWithRemoteSource() {
     verse = {_id: CHAPTER_ID, remoteId: REMOTE_CHAPTER_ID, remoteSource: REMOTE_SOURCE};
-    chapterDao.findOne.withArgs(CHAPTER_ID).returns(Q.when(verse));
+    chapterDao.findOne.withArgs(CHAPTER_ID).returns(Promise.resolve(verse));
   }
 
   function nothingIsStoredInCache() {
@@ -232,35 +231,35 @@ describe('VerseService', function () {
   }
 
   function databaseContainsSomeVerses() {
-    verseDao.findByChapter.withArgs().returns(Q.when(verseList));
+    verseDao.findByChapter.withArgs().returns(Promise.resolve(verseList));
   }
 
   function databaseContainsTheDesiredVerse() {
-    verseDao.findOne.withArgs(aVerse._id).returns(Q.when(aVerse));
+    verseDao.findOne.withArgs(aVerse._id).returns(Promise.resolve(aVerse));
   }
 
   function databaseDoesNotContainTheDesiredVerse() {
-    verseDao.findOne.withArgs(aVerse._id).returns(Q.when(null));
+    verseDao.findOne.withArgs(aVerse._id).returns(Promise.resolve(null));
   }
 
   function databaseDoesNotContainVerses() {
-    verseDao.findByChapter.withArgs().returns(Q.when(null));
+    verseDao.findByChapter.withArgs().returns(Promise.resolve(null));
   }
 
   function cacheContainsSomeVerses() {
-    cacheService.get.withArgs(`verses_${CHAPTER_ID}`).returns(Q.when(verseList));
+    cacheService.get.withArgs(`verses_${CHAPTER_ID}`).returns(Promise.resolve(verseList));
   }
 
   function cacheContainsTheDesiredVerse() {
-    cacheService.get.withArgs(`verse_${aVerse._id}`).returns(Q.when(aVerse));
+    cacheService.get.withArgs(`verse_${aVerse._id}`).returns(Promise.resolve(aVerse));
   }
 
   function cacheDoesNotContainTheDesiredVerse() {
-    cacheService.get.withArgs(`verse_${aVerse._id}`).returns(Q.when(null));
+    cacheService.get.withArgs(`verse_${aVerse._id}`).returns(Promise.resolve(null));
   }
 
   function cacheContainsNoVerses() {
-    cacheService.get.withArgs(`verses_${CHAPTER_ID}`).returns(Q.when(null));
+    cacheService.get.withArgs(`verses_${CHAPTER_ID}`).returns(Promise.resolve(null));
   }
 
   function callingGetVerses() {

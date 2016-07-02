@@ -1,7 +1,6 @@
 'use strict';
 import {Inject} from "../decorators/inject";
 import {ErrorHandlerService} from "./errorHandlerService";
-import * as Q from "q";
 
 
 @Inject
@@ -10,7 +9,7 @@ export class RestResponseService {
   }
 
   public respond(request, response, value?) {
-    return Q.when(value)
+    return Promise.resolve(value)
       .then(value => response.send(value))
       .catch(error => this.errorHandlerService.toRestResponse(request, response, error));
   }

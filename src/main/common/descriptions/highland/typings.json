@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/1dc239e241cf7f3ceba0c83ded52c11f9d792b32/highland/highland.d.ts",
+    "raw": "registry:dt/highland#1.14.0+20160425144847",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/1dc239e241cf7f3ceba0c83ded52c11f9d792b32/highland/highland.d.ts"
+  }
+}

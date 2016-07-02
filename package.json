@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "biblicando-api": "git+ssh://git@github.com/douglascvas/biblicando-api.git#v0.0.13",
+    "bluebird": "^3.4.1",
     "body-parser": "^1.15.0",
     "configurator-js": "0.0.5",
     "express": "4.12.3",
@@ -35,7 +36,6 @@
     "jsonutils": "^0.1.0",
     "log4js": "^0.6.33",
     "mongodb": "^2.1.7",
-    "q": "^1.4.1",
     "reflect-metadata": "^0.1.3",
     "request": "^2.69.0",
     "request-promise": "^2.0.1",

@@ -3,7 +3,6 @@
 require('source-map-support').install();
 import {BibleService} from "../../../../main/bible/bibleService";
 import {AssertThat} from "../../../assertThat";
-import * as Q from 'q';
 import * as sinon from 'sinon';
 import * as chai from "chai";
 
@@ -140,35 +139,35 @@ describe('BibleOrgService', function () {
   }
 
   function databaseContainsSomeBibles() {
-    bibleDao.find.withArgs().returns(Q.when(bibleList));
+    bibleDao.find.withArgs().returns(Promise.resolve(bibleList));
   }
 
   function databaseContainsTheDesiredBible() {
-    bibleDao.findOne.withArgs(aBible._id).returns(Q.when(aBible));
+    bibleDao.findOne.withArgs(aBible._id).returns(Promise.resolve(aBible));
   }
 
   function databaseDoesNotContainTheDesiredBible() {
-    bibleDao.findOne.withArgs(aBible._id).returns(Q.when(null));
+    bibleDao.findOne.withArgs(aBible._id).returns(Promise.resolve(null));
   }
 
   function databaseDoesNotContainBibles() {
-    bibleDao.find.withArgs().returns(Q.when(null));
+    bibleDao.find.withArgs().returns(Promise.resolve(null));
   }
 
   function cacheContainsSomeBibles() {
-    cacheService.get.withArgs(`bibles`).returns(Q.when(bibleList));
+    cacheService.get.withArgs(`bibles`).returns(Promise.resolve(bibleList));
   }
 
   function cacheContainsTheDesiredBible() {
-    cacheService.get.withArgs(`bible_${aBible._id}`).returns(Q.when(aBible));
+    cacheService.get.withArgs(`bible_${aBible._id}`).returns(Promise.resolve(aBible));
   }
 
   function cacheContainsNoBibles() {
-    cacheService.get.withArgs(`bibles`).returns(Q.when(null));
+    cacheService.get.withArgs(`bibles`).returns(Promise.resolve(null));
   }
 
   function cacheDoesNotContainsDesiredBible() {
-    cacheService.get.withArgs(`bible_${aBible._id}`).returns(Q.when(null));
+    cacheService.get.withArgs(`bible_${aBible._id}`).returns(Promise.resolve(null));
   }
 
   function callingGetBibles() {

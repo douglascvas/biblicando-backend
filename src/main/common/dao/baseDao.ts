@@ -14,7 +14,11 @@ export class BaseDao<T> {
       };
     }
     let collection = this.db.collection(this.collectionName);
-    return collection.find(query).limit(1).toArray().then(result=>result[0]);
+    return <any>collection
+      .find(query)
+      .limit(1)
+      .toArray()
+      .then(result=>result[0]);
   }
 
   public find(query, options?):Promise<T[]> {
@@ -28,12 +32,12 @@ export class BaseDao<T> {
     if (options.skip) {
       result = result.skip(options.skip)
     }
-    return result.toArray();
+    return <any>result.toArray();
   }
 
   public insertOne(resource:T):Promise<InsertOneWriteOpResult> {
     let collection = this.db.collection(this.collectionName);
-    return collection.insertOne(resource);
+    return <any>collection.insertOne(resource);
   }
 
   public insert(resources:T[]) {

@@ -1,8 +1,6 @@
 'use strict';
 // Maps the stack trace to the right typescript sources
-import * as sourceMapSupport from 'source-map-support';
-sourceMapSupport.install();
-
+import * as sourceMapSupport from "source-map-support";
 import {ModuleScannerService} from "./common/service/moduleScannerService";
 import {ValidationService} from "./common/service/validationService";
 import {DependencyInjector} from "./common/service/dependencyInjector";
@@ -11,16 +9,16 @@ import {ObjectUtils} from "./common/service/objectUtils";
 import {Mongo} from "./common/database/mongo/mongo";
 import * as request from "request-promise";
 import * as bodyParser from "body-parser";
-import * as Q from "q";
-
 import * as express from "express";
-import nextTick = Q.nextTick;
-import Deferred = Q.Deferred;
-import Promise = Q.Promise;
+import {Promise} from "./common/interface/promise";
+sourceMapSupport.install();
+
+import Process = NodeJS.Process;
 
 const Configurator = require("configurator-js");
 const moduleInfo = require("../../package.json");
 const path = require("path");
+const ignoreList = ['Promise'];
 
 export class Server {
   private _logger;
@@ -68,19 +66,21 @@ export class Server {
   }
 
   public start():Promise<any> {
-    const deferred:Deferred<any> = Q.defer();
-    const self = this;
-    self.registerApis();
-    nextTick(()=> {
-      this.listen(()=>deferred.resolve(self.app));
+    return new Promise((resolve, reject)=> {
+      const self = this;
+      self.registerApis();
+      process.nextTick(()=> {
+        this.listen(()=>resolve(self.app));
+      });
     });
-    return deferred.promise;
   }
 
   private registerServices(dependencyInjector) {
     var serviceEntries = this.moduleScannerService.getServices();
     for (let entry of serviceEntries) {
-      dependencyInjector.service(entry.value);
+      if (ignoreList.indexOf(entry.name) < 0) {
+        dependencyInjector.service(entry.value);
+      }
     }
   }
 

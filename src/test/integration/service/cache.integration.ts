@@ -5,7 +5,6 @@ import * as assert from "assert";
 import {CacheService} from "../../../main/common/service/cacheService";
 import {AssertThat} from "../../assertThat";
 import {TestTool} from "./testTool";
-import * as Q from "q";
 
 const Configurator = require('configurator-js');
 const CONFIG_PATH = path.resolve(__dirname, '../config/config.yml');
@@ -72,9 +71,9 @@ describe('CacheService', function () {
 
   function wait(timeout) {
     return function () {
-      var deferred = Q.defer();
-      setTimeout(()=> deferred.resolve(), timeout);
-      return deferred.promise;
+      return new Promise((resolve, reject)=> {
+        setTimeout(()=> resolve(), timeout);
+      });
     }
   }
 

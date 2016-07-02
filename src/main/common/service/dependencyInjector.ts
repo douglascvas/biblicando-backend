@@ -269,11 +269,12 @@ export class DependencyInjector {
   }
 
   private defaultFactory(classz, dependencies) {
+    this.logger.debug("Registering default: ", this.getFunctionName(classz));
     return new (Function.prototype.bind.apply(classz, dependencies));
   }
 
   private getFactory(className) {
-    return this.factories.get(className) || this.defaultFactory;
+    return this.factories.get(className) || this.defaultFactory.bind(this);
   }
 
   private buildValue(entryName, entryValue) {

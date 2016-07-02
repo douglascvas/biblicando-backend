@@ -3,11 +3,12 @@
 import * as Redis from "ioredis";
 import {Inject} from "../decorators/inject";
 import {LoggerFactory} from "../loggerFactory";
-import * as Q from 'q';
+import {CacheClient} from "./cacheClient";
+import {Promise} from "../interface/promise";
 
 @Inject
-export class RedisClient {
-  private client;
+export class RedisClient implements CacheClient {
+  private client:any;
   private logger;
 
   constructor(private config, private loggerFactory:LoggerFactory) {
@@ -19,18 +20,18 @@ export class RedisClient {
     this.client = new Redis(port, host, redisConfig);
   }
 
-  private getClient() {
-    return Q.when(this.client);
+  private getClient():Promise<any> {
+    return <Promise<any>>Promise.resolve(this.client);
   }
 
-  public get(key:string):any {
+  public get(key:string):Promise<any> {
     return this.getClient()
       .then(client => {
         return client.get(key);
       });
   }
 
-  public set(key:string, value:any, timeoutInMillis:number) {
+  public set(key:string, value:any, timeoutInMillis:number):Promise<void> {
     if (timeoutInMillis) {
       return this.getClient()
         .then(client => client.psetex(key, timeoutInMillis, value));
@@ -39,12 +40,12 @@ export class RedisClient {
       .then(client => client.set(key, value));
   }
 
-  public refresh(key, timeoutInMillis) {
+  public refresh(key, timeoutInMillis):Promise<void> {
     return this.getClient()
       .then(client => client.pexpire(key, timeoutInMillis));
   }
 
-  public remove(key) {
+  public remove(key):Promise<void> {
     return this.getClient()
       .then(client => client.del(key));
   }

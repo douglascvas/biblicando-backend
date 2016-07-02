@@ -53,10 +53,10 @@ export class BibleService {
     return this.bibleDao.find({}, {}).then(bibles => this.storeBiblesInCache(bibles));
   }
 
-  private updateBiblesInDatabase(bibles:Bible[]):Promise<Promise<UpdateWriteOpResult>[]> {
+  private updateBiblesInDatabase(bibles:Bible[]):Promise<UpdateWriteOpResult[]> {
     var result:Promise<UpdateWriteOpResult>[] = bibles
       .map(bible => this.bibleDao.updateRemoteBible(bible));
-    return Promise.all(result);
+    return Promise.all<UpdateWriteOpResult>(result);
   }
 
   private fetchFromRemoteApiAndStoreInDatabase(info:RemoteApiInfo):Promise<Bible[]> {
@@ -69,6 +69,6 @@ export class BibleService {
     var remoteApiInfo:RemoteApiInfo[] = this.remoteApiInfoService.listAll();
     var biblesPromise = remoteApiInfo.map((info:RemoteApiInfo) => this.fetchFromRemoteApiAndStoreInDatabase(info))
       .reduce((result, bibles) => [].concat(result, bibles), []);
-    return Promise.all(biblesPromise);
+    return Promise.all<Bible>(biblesPromise);
   }
 }

@@ -1,4 +1,1 @@
-import IPromise = Q.IPromise;
-
-export interface Promise<T> extends PromiseLike<T> {
-}
+export import Promise = require("bluebird");

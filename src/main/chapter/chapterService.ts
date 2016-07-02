@@ -8,8 +8,9 @@ import {Promise} from "../common/interface/promise";
 import {Chapter} from "./chapter";
 import {Book} from "../book/book";
 import * as assert from "assert";
-import * as Q from "q";
 import {InsertOneWriteOpResult, UpdateWriteOpResult} from "mongodb";
+import {VerseService} from "../verse/verseService";
+import {Verse} from "../verse/verse";
 
 @Inject
 export class ChapterService {
@@ -18,8 +19,32 @@ export class ChapterService {
               private cacheService:CacheService,
               private chapterDao:ChapterDao,
               private bookDao:BookDao,
+              private verseService:VerseService,
               private remoteApiInfoService:RemoteApiInfoService) {
 
+  }
+
+  /**
+   * Load the chapters, filling up the first one of the list with it's verses.
+   *
+   * @method loadFromBook
+   *
+   * @param bookId
+   * @returns {Promise<Book>}
+   */
+  public loadFromBook(bookId:string):Promise<Chapter[]> {
+    var self:ChapterService = this;
+    return self.getChapters(bookId)
+      .then(chapters=>chapters || [])
+      .then((chapters:Chapter[])=>chapters.sort((a:Chapter, b:Chapter)=>a.number - b.number))
+      .then((chapters:Chapter[])=> {
+        return chapters.length ? [chapters, self.verseService.getVerses(chapters[0]._id)] : [chapters, []];
+      })
+      .spread((chapters:Chapter[], verses:Verse[]) => {
+        chapters[0].verses = verses;
+        return chapters;
+      })
+      .then((chapters:Chapter[])=>chapters);
   }
 
   public getChapters(bookId:string):Promise<Chapter[]> {
@@ -72,7 +97,7 @@ export class ChapterService {
       chapter.book = <Book>{_id: bookId.toString()};
       return self.chapterDao.upsertOne(chapter);
     });
-    var result = Q.all(updatedResources)
+    var result = Promise.all(updatedResources)
       .then(dbResults=> {
         var ids = dbResults.map((result:any) => result.insertedId || result.upsertedId._id);
         return self.chapterDao.find({_id: {$in: ids}}, {});

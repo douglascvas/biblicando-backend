@@ -7,10 +7,11 @@ import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
 import {Promise} from "../common/interface/promise";
 import {Book} from "./book";
 import {Bible} from "../bible/bible";
-import * as Q from "q";
 import * as assert from "assert";
 import {LoggerFactory, Logger} from "../common/loggerFactory";
 import {ObjectID, UpdateWriteOpResult, InsertOneWriteOpResult} from "mongodb";
+import {ChapterService} from "../chapter/chapterService";
+import {Chapter} from "../chapter/chapter";
 
 @Inject
 export class BookService {
@@ -22,6 +23,7 @@ export class BookService {
               private cacheService:CacheService,
               private bookDao:BookDao,
               private bibleDao:BibleDao,
+              private chapterService:ChapterService,
               private remoteApiInfoService:RemoteApiInfoService,
               private loggerFactory:LoggerFactory) {
     this.logger = loggerFactory.getLogger(BookService);
@@ -38,6 +40,29 @@ export class BookService {
     return this.cacheService.get(`book_${bookId}`)
       .then(book=> book ? book : this.bookDao.findOne(bookId))
       .then(book => this.storeBookInCache(book));
+  }
+
+  /**
+   * Initialize the book, filling it up with it's chapters.
+   *
+   * @method loadFromBible
+   *
+   * @param bibleId
+   * @returns {Promise<Book[]>}
+   */
+  public loadFromBible(bibleId:string):Promise<Book[]> {
+    var self:BookService = this;
+    return self.getBooks(bibleId)
+      .then(books=>books || [])
+      .then((books:Book[])=>books.sort((a:Book, b:Book)=>a.number - b.number))
+      .then((books:Book[])=> {
+        return books.length ? [books, self.chapterService.loadFromBook(books[0]._id)] : [books, []];
+      })
+      .spread((books:Book[], chapters:Chapter[]) => {
+        books[0].chapters = chapters;
+        return books;
+      })
+      .then((books:Book[])=>books);
   }
 
   private fetchBooksRemotely(bibleId:string, bible:Bible) {
@@ -77,7 +102,7 @@ export class BookService {
       book.bible = <Bible>{_id: bibleId.toString()};
       return this.bookDao.upsertOne(book);
     });
-    var result = Q.all(updatedResources)
+    var result = Promise.all(updatedResources)
       .then(dbResults => {
         var ids:ObjectID[] = dbResults.map((result:any) => result.insertedId || result.upsertedId._id);
         return this.bookDao.find({_id: {$in: ids}}, {});

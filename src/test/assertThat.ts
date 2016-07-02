@@ -1,5 +1,3 @@
-import * as Q from "q";
-
 export class AssertThat {
   constructor(private lastPromise?:any) {
     this.given = this.wrapValueInPromise.bind(this);
@@ -16,7 +14,7 @@ export class AssertThat {
   }
 
   private wrapValueInPromise(value?:any, extraArg?:any):AssertThat {
-    var promise = Q.when(this.lastPromise).then(this.isFunction(value) ? value : ()=>value, extraArg);
+    var promise = Promise.resolve(this.lastPromise).then(this.isFunction(value) ? value : ()=>value, extraArg);
     return new AssertThat(promise);
   }
 }

@@ -2,6 +2,7 @@
   "name": "biblicando-backend",
   "version": false,
   "dependencies": {
+    "bluebird": "registry:npm/bluebird#3.3.4+20160622205516",
     "node-uuid": "registry:npm/node-uuid#1.4.7+20160503013124"
   },
   "globalDependencies": {
@@ -17,7 +18,6 @@
     "mocha": "registry:dt/mocha#2.2.5+20160317120654",
     "mongodb": "registry:dt/mongodb#2.1.0+20160425144419",
     "node": "registry:dt/node#4.0.0+20160423143914",
-    "q": "registry:dt/q#0.0.0+20160417152954",
     "request": "registry:dt/request#0.0.0+20160316155526",
     "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
     "serve-static": "registry:dt/serve-static#0.0.0+20160501131543",

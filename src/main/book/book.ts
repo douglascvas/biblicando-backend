@@ -3,10 +3,11 @@ import {Bible} from "../bible/bible";
 import {Resource} from "../common/decorators/resource";
 import {SchemaType} from "../common/enums/schemaType";
 import {Type} from "../common/decorators/type";
+import {Chapter} from "../chapter/chapter";
 
 @Resource
 export class Book {
-  
+
   @Type(SchemaType.STRING)
   _id:string;
 
@@ -45,4 +46,7 @@ export class Book {
 
   @Type(SchemaType.OBJECT, Bible)
   bible:Bible;
+
+  @Type(SchemaType.ARRAY, Chapter)
+  chapters:Chapter[];
 }

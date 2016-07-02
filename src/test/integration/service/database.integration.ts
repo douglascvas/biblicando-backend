@@ -4,8 +4,8 @@ import * as path from "path";
 import * as assert from "assert";
 import {AssertThat} from "../../assertThat";
 import {TestTool} from "./testTool";
-import * as Q from "q";
 import {BibleDao} from "../../../main/bible/bibleDao";
+import {Promise} from "../../../main/common/interface/promise";
 import * as uuid from "node-uuid";
 import {Bible} from "../../../main/bible/bible";
 
@@ -64,9 +64,9 @@ describe('BibleDao', function () {
 
   function wait(timeout) {
     return function () {
-      var deferred = Q.defer();
-      setTimeout(()=> deferred.resolve(), timeout);
-      return deferred.promise;
+      return new Promise((resolve, reject)=> {
+        setTimeout(()=> resolve(), timeout);
+      });
     }
   }
 

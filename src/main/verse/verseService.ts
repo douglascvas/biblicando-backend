@@ -6,7 +6,6 @@ import {ChapterDao} from "../chapter/chapterDao";
 import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
 import {Verse} from "./verse";
 import {Chapter} from "../chapter/chapter";
-import * as Q from "q";
 import * as assert from "assert";
 import {Promise} from "../common/interface/promise";
 
@@ -37,7 +36,7 @@ export class VerseService {
   private fetchVersesRemotely(chapterId:string, chapter:Chapter):Promise<Verse[]> {
     if (!chapter.remoteSource) {
       console.log(`No verse found for chapter '${chapterId}'.`);
-      return Promise.resolve([]);
+      return Promise.resolve(<Verse[]>[]);
     }
     let remoteApiInfo = this.remoteApiInfoService.resolveFromName(chapter.remoteSource);
     assert(remoteApiInfo, `No service found for fetching chapter ${chapterId}.`);

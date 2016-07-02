@@ -5,7 +5,6 @@ sourceMapSupport.install();
 
 import {BiblesOrgService} from "../../../../../main/broker/biblesOrg/biblesOrgService";
 import {AssertThat} from "../../../../assertThat";
-import * as Q from 'q';
 import * as sinon from 'sinon';
 import * as chai from "chai";
 
@@ -52,17 +51,17 @@ describe('MarkService', function () {
 
     config.get.withArgs('api.biblesOrg.url').returns(BASE_URL);
 
-    httpClient.get.withArgs(BIBLES_URL).returns(Q.when(biblesResponse));
-    httpClient.get.withArgs(BIBLE_URL).returns(Q.when(bibleResponse));
+    httpClient.get.withArgs(BIBLES_URL).returns(Promise.resolve(biblesResponse));
+    httpClient.get.withArgs(BIBLE_URL).returns(Promise.resolve(bibleResponse));
 
-    httpClient.get.withArgs(BOOKS_URL).returns(Q.when(booksResponse));
-    httpClient.get.withArgs(BOOK_URL).returns(Q.when(bookResponse));
+    httpClient.get.withArgs(BOOKS_URL).returns(Promise.resolve(booksResponse));
+    httpClient.get.withArgs(BOOK_URL).returns(Promise.resolve(bookResponse));
 
-    httpClient.get.withArgs(CHAPTERS_URL).returns(Q.when(chaptersResponse));
-    httpClient.get.withArgs(CHAPTER_URL).returns(Q.when(chapterResponse));
+    httpClient.get.withArgs(CHAPTERS_URL).returns(Promise.resolve(chaptersResponse));
+    httpClient.get.withArgs(CHAPTER_URL).returns(Promise.resolve(chapterResponse));
 
-    httpClient.get.withArgs(VERSES_URL).returns(Q.when(versesResponse));
-    httpClient.get.withArgs(VERSE_URL).returns(Q.when(verseResponse));
+    httpClient.get.withArgs(VERSES_URL).returns(Promise.resolve(versesResponse));
+    httpClient.get.withArgs(VERSE_URL).returns(Promise.resolve(verseResponse));
 
     biblesOrgService = new BiblesOrgService(config, httpClient, cacheService);
   });
@@ -536,38 +535,38 @@ describe('MarkService', function () {
   }
 
   function cacheContainsTheBibles() {
-    cacheService.get.returns(Q.when(bibleList));
+    cacheService.get.returns(Promise.resolve(bibleList));
   }
 
   function cacheDoesNotContainAnyResource() {
-    cacheService.get.returns(Q.when(null));
+    cacheService.get.returns(Promise.resolve(null));
   }
 
   function cacheContainsTheBible() {
-    cacheService.get.returns(Q.when(aBible));
+    cacheService.get.returns(Promise.resolve(aBible));
   }
 
   function cacheContainsTheBooks() {
-    cacheService.get.returns(Q.when(bookList));
+    cacheService.get.returns(Promise.resolve(bookList));
   }
 
   function cacheContainsTheBook() {
-    cacheService.get.returns(Q.when(aBook));
+    cacheService.get.returns(Promise.resolve(aBook));
   }
 
   function cacheContainsTheChapters() {
-    cacheService.get.returns(Q.when(chapterList));
+    cacheService.get.returns(Promise.resolve(chapterList));
   }
 
   function cacheContainsTheChapter() {
-    cacheService.get.returns(Q.when(aChapter));
+    cacheService.get.returns(Promise.resolve(aChapter));
   }
 
   function cacheContainsTheVerses() {
-    cacheService.get.returns(Q.when(verseList));
+    cacheService.get.returns(Promise.resolve(verseList));
   }
 
   function cacheContainsTheVerse() {
-    cacheService.get.returns(Q.when(aVerse));
+    cacheService.get.returns(Promise.resolve(aVerse));
   }
 });

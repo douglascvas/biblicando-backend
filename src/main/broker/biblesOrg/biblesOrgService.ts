@@ -29,7 +29,7 @@ export class BiblesOrgService {
     if (this.cacheService) {
       result = this.cacheService.get(url);
     } else {
-      result = Q(null);
+      result = Promise.resolve(null);
     }
     return result.then(value => {
       if (typeof value === 'string') {

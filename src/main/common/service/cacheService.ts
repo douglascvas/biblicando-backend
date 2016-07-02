@@ -1,7 +1,6 @@
 'use strict';
 
 import {Inject} from "../decorators/inject";
-import * as Q from "q";
 import {Promise} from "../interface/promise";
 
 @Inject
@@ -10,7 +9,7 @@ export class CacheService {
   constructor(private cacheClient) {
   }
 
-  public get(url:string):any {
+  public get(url:string):Promise<any> {
     return this.cacheClient.get(url)
       .then(value => {
         if (typeof value === 'string') {
@@ -20,7 +19,7 @@ export class CacheService {
       });
   }
 
-  public set(url:string, resource:any, timeout?:number):Promise<any> {
+  public set(url:string, resource:any, timeout?:number):Promise<void> {
     if (!resource) {
       return;
     }
@@ -30,7 +29,7 @@ export class CacheService {
     if (resource) {
       return this.cacheClient.set(url, resource, timeout);
     }
-    return Q.when();
+    return <Promise<void>>Promise.resolve();
   }
 
   public remove(url:string):Promise<any> {

@@ -1,10 +1,10 @@
 'use strict';
 import {BookService} from "../../../../main/book/bookService";
 import {AssertThat} from "../../../assertThat";
-import * as Q from "q";
 import * as sinon from "sinon";
 import * as chai from "chai";
 import {LoggerFactory} from "../../../../main/common/loggerFactory";
+import {Promise} from "../../../../main/common/interface/promise";
 
 const assert = chai.assert;
 const stub = sinon.stub;
@@ -19,7 +19,7 @@ const REMOTE_SOURCE = 'remoteApi';
 describe('BookService', function () {
 
   var cacheService, config, httpClient,
-    bookService:BookService,
+    bookService:BookService, chapterService,
     bookDao, bibleDao, remoteApiInfoService, bible, returnedValue, loggerFactory;
   var aBook, anotherBook, bookList, bookIdList;
   var mockRemoteResourceClassConstructorArgs, mockRemoteResource;
@@ -47,17 +47,18 @@ describe('BookService', function () {
 
     httpClient = stub();
     cacheService = {get: stub(), set: stub()};
+    chapterService = {getChapters: stub()};
     loggerFactory = new LoggerFactory();
 
     bibleDao = {find: stub(), findOne: stub()};
 
     bookDao = {findByBible: stub(), findOne: stub(), insert: stub(), find: stub(), upsertOne: stub()};
-    bookDao.upsertOne.withArgs(bookList[0]).returns(Q.when({upsertedId: bookList[0]._id}));
-    bookDao.upsertOne.withArgs(bookList[1]).returns(Q.when({upsertedId: bookList[1]._id}));
-    bookDao.find.withArgs({_id: {$in: bookIdList}}).returns(Q.when(bookList));
+    bookDao.upsertOne.withArgs(bookList[0]).returns(Promise.resolve({upsertedId: bookList[0]._id}));
+    bookDao.upsertOne.withArgs(bookList[1]).returns(Promise.resolve({upsertedId: bookList[1]._id}));
+    bookDao.find.withArgs({_id: {$in: bookIdList}}).returns(Promise.resolve(bookList));
 
     remoteApiInfoService = {resolveFromName: stub()};
-    bookService = new BookService(config, httpClient, cacheService, bookDao, bibleDao,
+    bookService = new BookService(config, httpClient, cacheService, bookDao, bibleDao, chapterService,
       remoteApiInfoService, loggerFactory);
   });
 
@@ -200,11 +201,11 @@ describe('BookService', function () {
   }
 
   function remoteSourceHasNoBooksForGivenBible() {
-    MockRemoteResourceClass.prototype.getBooks.withArgs(bible.remoteId).returns(Q.when([]));
+    MockRemoteResourceClass.prototype.getBooks.withArgs(bible.remoteId).returns(Promise.resolve([]));
   }
 
   function remoteSourceHasBooksForGivenBible() {
-    MockRemoteResourceClass.prototype.getBooks.withArgs(bible.remoteId).returns(Q.when(bookList));
+    MockRemoteResourceClass.prototype.getBooks.withArgs(bible.remoteId).returns(Promise.resolve(bookList));
   }
 
   function remoteApiInfoServiceResolvesRemoteSourceInfo() {
@@ -213,12 +214,12 @@ describe('BookService', function () {
 
   function databaseContainsBibleWithoutRemoteSource() {
     bible = {_id: BIBLE_ID, remoteId: REMOTE_BIBLE_ID};
-    bibleDao.findOne.withArgs(BIBLE_ID).returns(Q.when(bible));
+    bibleDao.findOne.withArgs(BIBLE_ID).returns(Promise.resolve(bible));
   }
 
   function databaseContainsBibleWithRemoteSource() {
     bible = {_id: BIBLE_ID, remoteId: REMOTE_BIBLE_ID, remoteSource: REMOTE_SOURCE};
-    bibleDao.findOne.withArgs(BIBLE_ID).returns(Q.when(bible));
+    bibleDao.findOne.withArgs(BIBLE_ID).returns(Promise.resolve(bible));
   }
 
   function nothingIsStoredInCache() {
@@ -240,35 +241,35 @@ describe('BookService', function () {
   }
 
   function databaseContainsSomeBooks() {
-    bookDao.findByBible.withArgs().returns(Q.when(bookList));
+    bookDao.findByBible.withArgs().returns(Promise.resolve(bookList));
   }
 
   function databaseContainsTheDesiredBook() {
-    bookDao.findOne.withArgs(aBook._id).returns(Q.when(aBook));
+    bookDao.findOne.withArgs(aBook._id).returns(Promise.resolve(aBook));
   }
 
   function databaseDoesNotContainTheDesiredBook() {
-    bookDao.findOne.withArgs(aBook._id).returns(Q.when(null));
+    bookDao.findOne.withArgs(aBook._id).returns(Promise.resolve(null));
   }
 
   function databaseDoesNotContainBooks() {
-    bookDao.findByBible.withArgs().returns(Q.when(null));
+    bookDao.findByBible.withArgs().returns(Promise.resolve(null));
   }
 
   function cacheContainsSomeBooks() {
-    cacheService.get.withArgs(`books_${BIBLE_ID}`).returns(Q.when(bookList));
+    cacheService.get.withArgs(`books_${BIBLE_ID}`).returns(Promise.resolve(bookList));
   }
 
   function cacheContainsTheDesiredBook() {
-    cacheService.get.withArgs(`book_${aBook._id}`).returns(Q.when(aBook));
+    cacheService.get.withArgs(`book_${aBook._id}`).returns(Promise.resolve(aBook));
   }
 
   function cacheDoesNotContainTheDesiredBook() {
-    cacheService.get.withArgs(`book_${aBook._id}`).returns(Q.when(null));
+    cacheService.get.withArgs(`book_${aBook._id}`).returns(Promise.resolve(null));
   }
 
   function cacheContainsNoBooks() {
-    cacheService.get.withArgs(`books_${BIBLE_ID}`).returns(Q.when(null));
+    cacheService.get.withArgs(`books_${BIBLE_ID}`).returns(Promise.resolve(null));
   }
 
   function callingGetBooks() {
