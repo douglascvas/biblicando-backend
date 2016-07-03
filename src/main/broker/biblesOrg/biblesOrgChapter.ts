@@ -17,6 +17,9 @@ export class BiblesOrgChapter {
     chapter.copyright = biblesOrgChapter.copyright;
     chapter.remoteId = biblesOrgChapter.id;
     chapter.remoteSource = Broker.BIBLES_ORG.value;
+    if(isNaN(chapter.number)){
+      return null;
+    }
     return chapter;
   }
 }

@@ -27,6 +27,9 @@ export class BiblesOrgBook {
     book.remoteId = biblesOrgBook.id;
     book.remoteSource = Broker.BIBLES_ORG.value;
     book.testament = biblesOrgBook.testament;
+    if(isNaN(book.number)){
+      return null;
+    }
     return book;
   }
 }

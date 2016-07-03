@@ -41,7 +41,9 @@ export class ChapterService {
         return chapters.length ? [chapters, self.verseService.getVerses(chapters[0]._id)] : [chapters, []];
       })
       .spread((chapters:Chapter[], verses:Verse[]) => {
-        chapters[0].verses = verses;
+        if (chapters.length) {
+          chapters[0].verses = verses;
+        }
         return chapters;
       })
       .then((chapters:Chapter[])=>chapters);
@@ -99,7 +101,12 @@ export class ChapterService {
     });
     var result = Promise.all(updatedResources)
       .then(dbResults=> {
-        var ids = dbResults.map((result:any) => result.insertedId || result.upsertedId._id);
+        var ids = dbResults
+          .map((result:any) => result.insertedId || (result.upsertedId || {})._id)
+          .filter(id=>!!id);
+        if (!ids.length) {
+          return <Chapter[]>[]
+        }
         return self.chapterDao.find({_id: {$in: ids}}, {});
       });
     return <Promise<Chapter[]>>result;

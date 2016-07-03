@@ -59,7 +59,9 @@ export class BookService {
         return books.length ? [books, self.chapterService.loadFromBook(books[0]._id)] : [books, []];
       })
       .spread((books:Book[], chapters:Chapter[]) => {
-        books[0].chapters = chapters;
+        if (books.length) {
+          books[0].chapters = chapters;
+        }
         return books;
       })
       .then((books:Book[])=>books);

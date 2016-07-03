@@ -22,6 +22,9 @@ export class BiblesOrgVerse {
     verse.copyright = biblesOrgVerse.copyright;
     verse.remoteId = biblesOrgVerse.id;
     verse.remoteSource = Broker.BIBLES_ORG.value;
+    if(isNaN(verse.number)){
+      return null;
+    }
     return verse;
   }
 }

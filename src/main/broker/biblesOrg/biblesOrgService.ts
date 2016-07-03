@@ -78,7 +78,8 @@ export class BiblesOrgService {
   public getBooks(bibleCode:string):Promise<Book[]> {
     const url = URL.resolve(this.baseUrl, `versions/${bibleCode}/books.js`);
     return this.getResource(url, result => result.books)
-      .then((books:Array<BiblesOrgBook>) => books.map(BiblesOrgBook.toBook));
+      .then((books:BiblesOrgBook[]) => <Book[]>books.map(BiblesOrgBook.toBook))
+      .then((books:Book[])=>books.filter(book=>!!book));
   }
 
   public getBook(bookCode:string):Promise<Book> {
@@ -90,7 +91,8 @@ export class BiblesOrgService {
   public getChapters(bookCode:string):Promise<Chapter[]> {
     const url = URL.resolve(this.baseUrl, `books/${bookCode}/chapters.js`);
     return this.getResource(url, result => result.chapters)
-      .then((chapters:Array<BiblesOrgChapter>) => chapters.map(BiblesOrgChapter.toChapter));
+      .then((chapters:Array<BiblesOrgChapter>) => chapters.map(BiblesOrgChapter.toChapter))
+      .then(chapters=>chapters.filter(chapter=>!!chapter));
   }
 
   public getChapter(chapterCode:string):Promise<Chapter> {
@@ -102,7 +104,8 @@ export class BiblesOrgService {
   public getVerses(chapterCode:string):Promise<Verse[]> {
     const url = URL.resolve(this.baseUrl, `chapters/${chapterCode}/verses.js`);
     return this.getResource(url, result => result.verses)
-      .then((verses:Array<BiblesOrgVerse>) => verses.map(BiblesOrgVerse.toVerse));
+      .then((verses:Array<BiblesOrgVerse>) => verses.map(BiblesOrgVerse.toVerse))
+      .then(verses=>verses.filter(verse=>!!verse));
   }
 
   public getVerse(verseCode:string):Promise<Verse> {
