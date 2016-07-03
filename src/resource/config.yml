@@ -1,5 +1,7 @@
 biblicando-backend:
   '{0.0.1}':
+    bible:
+      filter: {languageCode: {$regex: '^por|^en'}}
     database:
       host: '[[DB_HOST]]'
       port: '27017'

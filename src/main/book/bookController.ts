@@ -7,19 +7,23 @@ import {Controller} from "../common/decorators/controller";
 import {ChapterService} from "../chapter/chapterService";
 import {VerseService} from "../verse/verseService";
 import {Book} from "./book";
+import {LoggerFactory} from "../common/loggerFactory";
 
 @Inject
 @Controller
 export class BookController {
-  constructor(private bookService:BookService,
-              private chapterService:ChapterService,
-              private verseService:VerseService,
+  private log;
+
+  constructor(loggerFactory:LoggerFactory,
+              private bookService:BookService,
               private restResponseService:RestResponseService) {
+    this.log = loggerFactory.getLogger(BookController);
   }
 
   @RequestMapping('/bible/:bibleId/books', RequestType.GET)
   public getBooks(request, response) {
     const bibleId = request.params.bibleId;
+    this.log.debug(`Loading books for ${bibleId}`);
     let result = this.bookService.loadFromBible(bibleId);
 
     this.restResponseService.respond(request, response, result);

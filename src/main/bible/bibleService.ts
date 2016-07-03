@@ -50,7 +50,8 @@ export class BibleService {
   }
 
   private getBiblesFromDatabaseAndUpdateCache():Promise<Bible[]> {
-    return this.bibleDao.find({}, {}).then(bibles => this.storeBiblesInCache(bibles));
+    var filter = this.config.get("bible.filter") || {};
+    return this.bibleDao.find(filter, {}).then(bibles => this.storeBiblesInCache(bibles));
   }
 
   private updateBiblesInDatabase(bibles:Bible[]):Promise<UpdateWriteOpResult[]> {

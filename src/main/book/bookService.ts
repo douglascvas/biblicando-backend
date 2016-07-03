@@ -30,6 +30,9 @@ export class BookService {
   }
 
   public getBooks(bibleId:string):Promise<Book[]> {
+    if(!bibleId){
+      return Promise.resolve([]);
+    }
     return this.cacheService.get(`books_${bibleId}`)
       .then(books=> books ? books : this.bookDao.findByBible(bibleId))
       .then(books=>this.storeBooksInCache(bibleId, books))
@@ -100,13 +103,13 @@ export class BookService {
 
   private  insertBooksInDatabase(books:Book[], bibleId:string):Promise<Book[]> {
     const self = this;
-    var updatedResources:Promise<UpdateWriteOpResult|InsertOneWriteOpResult>[] = books.map((book:Book) => {
+    var updatedResources:Promise<Book>[] = books.map((book:Book) => {
       book.bible = <Bible>{_id: bibleId.toString()};
       return this.bookDao.upsertOne(book);
     });
     var result = Promise.all(updatedResources)
       .then(dbResults => {
-        var ids:ObjectID[] = dbResults.map((result:any) => result.insertedId || result.upsertedId._id);
+        var ids:any[] = dbResults.map((result:Book) => result._id);
         return this.bookDao.find({_id: {$in: ids}}, {});
       });
     return <Promise<Book[]>>result;

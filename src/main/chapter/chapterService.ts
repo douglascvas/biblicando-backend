@@ -50,6 +50,9 @@ export class ChapterService {
   }
 
   public getChapters(bookId:string):Promise<Chapter[]> {
+    if (!bookId) {
+      return Promise.resolve([]);
+    }
     return this.cacheService.get(`chapters_${bookId}`)
       .then(chapters=> chapters ? chapters : this.chapterDao.findByBook(bookId))
       .then(chapters=>this.storeChaptersInCache(bookId, chapters))
@@ -95,14 +98,14 @@ export class ChapterService {
 
   private insertChaptersInDatabase(chapters:Chapter[], bookId:string):Promise<Chapter[]> {
     const self = this;
-    var updatedResources:Promise<UpdateWriteOpResult|InsertOneWriteOpResult>[] = chapters.map((chapter:Chapter) => {
+    var updatedResources:Promise<Chapter>[] = chapters.map((chapter:Chapter) => {
       chapter.book = <Book>{_id: bookId.toString()};
       return self.chapterDao.upsertOne(chapter);
     });
     var result = Promise.all(updatedResources)
       .then(dbResults=> {
         var ids = dbResults
-          .map((result:any) => result.insertedId || (result.upsertedId || {})._id)
+          .map((result:Chapter) => result._id)
           .filter(id=>!!id);
         if (!ids.length) {
           return <Chapter[]>[]
@@ -115,6 +118,7 @@ export class ChapterService {
   private  fetchChaptersRemotelyAndSave(bookId:string):Promise<Chapter[]> {
     return this.bookDao.findOne(bookId)
       .then(book=> this.fetchChaptersRemotely(bookId, book))
-      .then(chapters=> chapters.length ? this.insertChaptersInDatabase(chapters, bookId) : chapters);
+      .then(chapters=> chapters.length ? this.insertChaptersInDatabase(chapters, bookId) : chapters)
+      .then(chapters=>this.storeChaptersInCache(bookId, chapters));
   }
 }

@@ -14,7 +14,7 @@ export class VerseDao extends BaseDao<Verse> {
 
   public findOneByNumber(chapterId:string, number:number):Promise<Verse> {
     var query = {
-      "chapter.id": chapterId,
+      "chapter._id": chapterId,
       "number": number
     };
     return this.findOne(query);
@@ -22,7 +22,7 @@ export class VerseDao extends BaseDao<Verse> {
 
   public findByChapter(chapterId:string, options?:any):Promise<Verse[]> {
     var query = {
-      "chapter.id": chapterId
+      "chapter._id": chapterId
     };
     return this.find(query, options);
   }

@@ -5,6 +5,7 @@ import {Collection} from "../common/enums/collection";
 import {BaseDao} from "../common/dao/baseDao";
 import {Chapter} from "./chapter";
 import {ObjectID, Db} from "mongodb";
+import {InsertOneWriteOpResult} from "mongodb";
 
 @Inject
 export class ChapterDao extends BaseDao<Chapter> {
@@ -20,7 +21,8 @@ export class ChapterDao extends BaseDao<Chapter> {
     return this.find(query, {});
   }
 
-  public upsertOne(chapter:Chapter):Promise<any> {
+  public upsertOne(chapter:Chapter):Promise<Chapter> {
+    var self = this;
     let queries = [];
     if (chapter._id) {
       queries.push({_id: ObjectID.createFromHexString(chapter._id)});
@@ -29,10 +31,14 @@ export class ChapterDao extends BaseDao<Chapter> {
       queries.push({remoteId: chapter.remoteId});
     }
     let query = (queries.length > 1 ? {$or: queries} : queries[0]);
+    var result;
     if (query) {
-      return this.updateOne(query, chapter, {upsert: true});
+      result = self.updateOne(query, chapter, {upsert: true})
+        .then(()=>self.findOne(query));
     } else {
-      return this.insertOne(chapter);
+      result = self.insertOne(chapter)
+        .then((inserted:InsertOneWriteOpResult)=>self.findOne({_id: inserted.insertedId}));
     }
+    return result;
   }
 }

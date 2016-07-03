@@ -5,17 +5,27 @@ import {Controller} from "../common/decorators/controller";
 import {BibleService} from "./bibleService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
+import {LoggerFactory} from "../common/loggerFactory";
 
 @Inject
 @Controller
 export class BibleController {
-  constructor(private bibleService:BibleService,
+  private log;
+
+  constructor(loggerFactory:LoggerFactory,
+              private bibleService:BibleService,
               private restResponseService:RestResponseService) {
+    this.log = loggerFactory.getLogger(BibleController);
   }
 
   @RequestMapping('/bibles', RequestType.GET)
   public getBibles(request, response) {
-    var result = this.bibleService.getBibles();
+    var self = this;
+    var result = this.bibleService.getBibles()
+      .then(bibles=> {
+        self.log.debug(bibles.length, 'bibles queried', bibles.map(bible=>bible._id + ' - ' + bible.name));
+        return bibles;
+      });
     this.restResponseService.respond(request, response, result);
   }
 
