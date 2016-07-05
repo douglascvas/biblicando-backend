@@ -27,7 +27,9 @@ export class BiblesOrgVerse {
     }
     if (verse.text) {
       verse.text = verse.text.replace(/(<sup .*<\/sup>)|(<h[0-9] .*<\/h[0-9]>)|(<[^>]*>)/g, '');
+      console.log(verse.text);
     }
+
     return verse;
   }
 }
