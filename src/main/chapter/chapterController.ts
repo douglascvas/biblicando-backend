@@ -2,19 +2,21 @@
 import {Controller} from "../common/decorators/controller";
 import {Inject} from "../common/decorators/inject";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
+import {RestResponseService} from "../common/service/restResponseService";
+import {ChapterService} from "./chapterService";
 
 @Inject
 @Controller
 export class ChapterController {
 
-  constructor(private chapterService,
-              private restResponseService) {
+  constructor(private chapterService: ChapterService,
+              private restResponseService: RestResponseService) {
   }
 
   @RequestMapping('/book/:bookId/chapters', RequestType.GET)
   public getChapters(request, response) {
     const bookId = request.params.bookId;
-    let result = this.chapterService.getChapters(bookId);
+    let result = this.chapterService.loadFromBook(bookId);
     this.restResponseService.respond(request, response, result);
   }
 
