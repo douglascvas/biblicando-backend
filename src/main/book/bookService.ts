@@ -9,17 +9,18 @@ import {Book} from "./book";
 import {Bible} from "../bible/bible";
 import * as assert from "assert";
 import {LoggerFactory, Logger} from "../common/loggerFactory";
-import {ObjectID, UpdateWriteOpResult, InsertOneWriteOpResult} from "mongodb";
 import {ChapterService} from "../chapter/chapterService";
 import {Chapter} from "../chapter/chapter";
+import {Config} from "../common/config";
+import {HttpClient} from "../common/httpClient";
 
 @Inject
 export class BookService {
 
   private logger:Logger;
 
-  constructor(private config,
-              private httpClient,
+  constructor(private config:Config,
+              private httpClient:HttpClient,
               private cacheService:CacheService,
               private bookDao:BookDao,
               private bibleDao:BibleDao,
@@ -30,7 +31,7 @@ export class BookService {
   }
 
   public getBooks(bibleId:string):Promise<Book[]> {
-    if(!bibleId){
+    if (!bibleId) {
       return Promise.resolve([]);
     }
     return this.cacheService.get(`books_${bibleId}`)
@@ -75,10 +76,8 @@ export class BookService {
       this.logger.warn(`No book found for bible '${bibleId}'.`);
       return [];
     }
-    let remoteApiInfo = this.remoteApiInfoService.resolveFromName(bible.remoteSource);
-    assert(remoteApiInfo, `No service found for fetching bible ${bibleId}.`);
-    let RemoteService:any = remoteApiInfo.serviceClass;
-    let remoteService = new RemoteService(this.config, this.httpClient, this.cacheService);
+    let remoteService = this.remoteApiInfoService.getService(bible.remoteSource);
+    assert(remoteService, `No service found for fetching bible ${bibleId}.`);
     return remoteService.getBooks(bible.remoteId)
       .then(books=> this.storeBooksInCache(bibleId, books));
   }
@@ -87,7 +86,7 @@ export class BookService {
     if (!books || !books.length) {
       return books;
     }
-    let timeout = this.config.get('cache.expirationInMillis');
+    let timeout = this.config.find('cache.expirationInMillis');
     this.cacheService.set(`books_${bibleId}`, books, timeout);
     return books;
   }
@@ -96,7 +95,7 @@ export class BookService {
     if (!book || !book._id) {
       return book;
     }
-    let timeout = this.config.get('cache.expirationInMillis');
+    let timeout = this.config.find('cache.expirationInMillis');
     this.cacheService.set(`book_${book._id.toString()}`, book, timeout);
     return book;
   }

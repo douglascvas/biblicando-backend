@@ -5,15 +5,16 @@ import {Inject} from "../decorators/inject";
 import {LoggerFactory} from "../loggerFactory";
 import {CacheClient} from "./cacheClient";
 import {Promise} from "../interface/promise";
+import {Config} from "../config";
 
 @Inject
 export class RedisClient implements CacheClient {
   private client:any;
   private logger;
 
-  constructor(private config, private loggerFactory:LoggerFactory) {
+  constructor(private config:Config, private loggerFactory:LoggerFactory) {
     this.logger = loggerFactory.getLogger('RedisClient');
-    const redisConfig = config.get('cache');
+    const redisConfig = config.find('cache');
     const host = redisConfig.host || 'localhost';
     const port = redisConfig.port || 6379;
     this.logger.debug(`Connecting to redis on ${host}:${port}`);

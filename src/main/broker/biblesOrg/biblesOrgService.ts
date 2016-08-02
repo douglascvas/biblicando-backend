@@ -11,17 +11,23 @@ import {BiblesOrgBible} from "./biblesOrgBible";
 import {BiblesOrgBook} from "./biblesOrgBook";
 import {BiblesOrgChapter} from "./biblesOrgChapter";
 import {BiblesOrgVerse} from "./biblesOrgVerse";
+import {LoggerFactory, Logger} from "../../common/loggerFactory";
+import {Config} from "../../common/config";
+import {HttpClient} from "../../common/httpClient";
 
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
 @Inject
 export class BiblesOrgService {
   private baseUrl;
+  private logger:Logger;
 
-  constructor(private config,
-              private httpClient,
-              private cacheService:CacheService) {
-    this.baseUrl = config.get('api.biblesOrg.url');
+  constructor(private config:Config,
+              private httpClient:HttpClient,
+              private cacheService:CacheService,
+              private loggerFactory:LoggerFactory) {
+    this.logger = loggerFactory.getLogger('BiblesOrgService');
+    this.baseUrl = config.find('api.biblesOrg.url');
   }
 
   private getResourceFromCache(url:string):any {
@@ -46,8 +52,9 @@ export class BiblesOrgService {
     return Promise.resolve();
   }
 
-  private getResourceFromInternet(url:string, filter:Function):Promise<any> {
+  private getResourceFromInternet(url:string, filter:(any)=>any):Promise<any> {
     var self = this;
+    this.logger.debug('Fetching resource from:', url);
     return self.httpClient.get(url)
       .then(JSON.parse)
       .then(result => result.response)
@@ -58,7 +65,7 @@ export class BiblesOrgService {
       })
   }
 
-  private getResource(url:string, requestFilter:Function):Promise<any> {
+  private getResource(url:string, requestFilter:(any)=>any):Promise<any> {
     return this.getResourceFromCache(url)
       .then(value => value ? value : this.getResourceFromInternet(url, requestFilter));
   }

@@ -8,12 +8,12 @@ import {Verse} from "./verse";
 import {Chapter} from "../chapter/chapter";
 import * as assert from "assert";
 import {Promise} from "../common/interface/promise";
+import {Config} from "../common/config";
 
 @Inject
 export class VerseService {
 
-  constructor(private config,
-              private httpClient,
+  constructor(private config:Config,
               private cacheService:CacheService,
               private verseDao:VerseDao,
               private chapterDao:ChapterDao,
@@ -38,10 +38,8 @@ export class VerseService {
       console.log(`No verse found for chapter '${chapterId}'.`);
       return Promise.resolve(<Verse[]>[]);
     }
-    let remoteApiInfo = this.remoteApiInfoService.resolveFromName(chapter.remoteSource);
-    assert(remoteApiInfo, `No service found for fetching chapter ${chapterId}.`);
-    let RemoteService:any = remoteApiInfo.serviceClass;
-    let remoteService = new RemoteService(this.config, this.httpClient, this.cacheService);
+    let remoteService = this.remoteApiInfoService.getService(chapter.remoteSource);
+    assert(remoteService, `No service found for fetching chapter ${chapterId}.`);
     return remoteService.getVerses(chapter.remoteId)
       .then(verses=>this.storeVersesInCache(chapterId, verses));
   }
@@ -50,7 +48,7 @@ export class VerseService {
     if (!verses || !verses.length) {
       return verses;
     }
-    let timeout = this.config.get('cache.expirationInMillis');
+    let timeout = this.config.find('cache.expirationInMillis');
     this.cacheService.set(`verses_${chapterId}`, verses, timeout);
     return verses;
   }
@@ -59,7 +57,7 @@ export class VerseService {
     if (!verse || !verse._id) {
       return verse;
     }
-    let timeout = this.config.get('cache.expirationInMillis');
+    let timeout = this.config.find('cache.expirationInMillis');
     this.cacheService.set(`verse_${verse._id.toString()}`, verse, timeout);
     return verse;
   }

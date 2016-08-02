@@ -8,14 +8,15 @@ import {Promise} from "../common/interface/promise";
 import {Chapter} from "./chapter";
 import {Book} from "../book/book";
 import * as assert from "assert";
-import {InsertOneWriteOpResult, UpdateWriteOpResult} from "mongodb";
 import {VerseService} from "../verse/verseService";
 import {Verse} from "../verse/verse";
+import {Config} from "../common/config";
+import {HttpClient} from "../common/httpClient";
+import {DependencyInjector} from "../common/service/dependencyInjector";
 
 @Inject
 export class ChapterService {
-  constructor(private config,
-              private httpClient,
+  constructor(private config:Config,
               private cacheService:CacheService,
               private chapterDao:ChapterDao,
               private bookDao:BookDao,
@@ -70,10 +71,8 @@ export class ChapterService {
       console.log(`No chapter found for book '${bookId}'.`);
       return Promise.resolve([]);
     }
-    let remoteApiInfo = this.remoteApiInfoService.resolveFromName(book.remoteSource);
-    assert(remoteApiInfo, `No service found for fetching book ${bookId}.`);
-    let RemoteService:any = remoteApiInfo.serviceClass;
-    let remoteService = new RemoteService(this.config, this.httpClient, this.cacheService);
+    let remoteService = this.remoteApiInfoService.getService(book.remoteSource);
+    assert(remoteService, `No service found for fetching book ${bookId}.`);
     return remoteService.getChapters(book.remoteId)
       .then(chapters=> this.storeChaptersInCache(bookId, chapters));
   }
@@ -82,7 +81,7 @@ export class ChapterService {
     if (!chapters || !chapters.length) {
       return chapters;
     }
-    let timeout = this.config.get('cache.expirationInMillis');
+    let timeout = this.config.find('cache.expirationInMillis');
     this.cacheService.set(`chapters_${bookId}`, chapters, timeout);
     return chapters;
   }
@@ -91,7 +90,7 @@ export class ChapterService {
     if (!chapter || !chapter._id) {
       return chapter;
     }
-    let timeout = this.config.get('cache.expirationInMillis');
+    let timeout = this.config.find('cache.expirationInMillis');
     this.cacheService.set(`chapter_${chapter._id.toString()}`, chapter, timeout);
     return chapter;
   }

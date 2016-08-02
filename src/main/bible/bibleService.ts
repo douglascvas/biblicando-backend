@@ -6,15 +6,13 @@ import {Bible} from "./bible";
 import {RemoteApiInfo} from "../common/enums/remoteApiInfo";
 import {UpdateWriteOpResult} from "mongodb";
 import {Promise} from "../common/interface/promise";
-import {DependencyInjector} from "../common/service/dependencyInjector";
+import {Config} from "../common/config";
 
 @Inject
 export class BibleService {
-  private CACHE_TIMEOUT = this.config.get('cache.expirationInMillis');
+  private CACHE_TIMEOUT = this.config.find('cache.expirationInMillis');
 
-  constructor(private config,
-              private httpClient,
-              private dependencyInjector:DependencyInjector,
+  constructor(private config: Config,
               private cacheService:CacheService,
               private bibleDao:BibleDao,
               private remoteApiInfoService:RemoteApiInfoService) {
@@ -50,7 +48,7 @@ export class BibleService {
   }
 
   private getBiblesFromDatabaseAndUpdateCache():Promise<Bible[]> {
-    var filter = this.config.get("bible.filter") || {};
+    var filter = this.config.find("bible.filter") || {};
     return this.bibleDao.find(filter, {}).then(bibles => this.storeBiblesInCache(bibles));
   }
 
@@ -61,7 +59,7 @@ export class BibleService {
   }
 
   private fetchFromRemoteApiAndStoreInDatabase(info:RemoteApiInfo):Promise<Bible[]> {
-    var remoteService = this.dependencyInjector.get(info.serviceClass);
+    var remoteService = this.remoteApiInfoService.getService(info.name);
     return remoteService.getBibles()
       .then(bibles=>this.updateBiblesInDatabase(bibles));
   }

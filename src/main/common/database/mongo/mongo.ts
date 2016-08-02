@@ -1,6 +1,7 @@
 'use strict';
 import {Inject} from "../../decorators/inject";
 import {MongoClient} from "mongodb";
+import {Config} from "../../config";
 
 const jsonutils = require("jsonutils");
 
@@ -8,7 +9,7 @@ const jsonutils = require("jsonutils");
 export class Mongo {
   private connection;
 
-  constructor(private config) {
+  constructor(private config:Config) {
   }
 
   private setOption(obj, path, value) {
@@ -44,7 +45,7 @@ export class Mongo {
       return self.connection;
     }
 
-    const databaseConfig = self.config.get('database');
+    const databaseConfig = self.config.find('database');
 
     options = options || {};
     self.setOption(options, 'server.pool', 10);

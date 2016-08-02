@@ -4,50 +4,33 @@ import * as sourceMapSupport from "source-map-support";
 import {ModuleScannerService} from "./common/service/moduleScannerService";
 import {ValidationService} from "./common/service/validationService";
 import {DependencyInjector} from "./common/service/dependencyInjector";
-import {LoggerFactory} from "./common/loggerFactory";
+import {LoggerFactory, Logger} from "./common/loggerFactory";
 import {ObjectUtils} from "./common/service/objectUtils";
 import {Mongo} from "./common/database/mongo/mongo";
-import * as request from "request-promise";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import {Promise} from "./common/interface/promise";
+import {Config} from "./common/config";
+import {HttpClient} from "./common/httpClient";
 sourceMapSupport.install();
 
 import Process = NodeJS.Process;
 
-const Configurator = require("configurator-js");
-const moduleInfo = require("../../package.json");
 const path = require("path");
 const ignoreList = ['Promise'];
 
 export class Server {
-  private _logger;
+  private _logger:Logger;
 
   constructor(private app,
-              private config,
+              private config:Config,
               private dependencyInjector:DependencyInjector,
               private loggerFactory:LoggerFactory,
               private moduleScannerService:ModuleScannerService) {
     this._logger = loggerFactory.getLogger(Server);
   }
 
-  static build(app?) {
-    const CONFIG_PATH = path.resolve(process.env.CONFIG_PATH || __dirname + "/../resource/config.yml");
-
-    function loadConfiguration() {
-      console.log("Loading configuration from ", CONFIG_PATH);
-      return new Configurator(CONFIG_PATH, moduleInfo.name, moduleInfo.version);
-    }
-
-    app = app || express();
-    var config = loadConfiguration();
-    var moduleScannerService = new ModuleScannerService();
-    var loggerFactory = new LoggerFactory(config);
-    var dependencyInjector = new DependencyInjector(loggerFactory);
-    return new Server(app, config, dependencyInjector, loggerFactory, moduleScannerService);
-  }
-
-  public get logger() {
+  public get logger():Logger {
     return this._logger;
   }
 
@@ -58,7 +41,7 @@ export class Server {
 
   private listen(callback) {
     var self = this;
-    const serverConfig = self.config.get('server');
+    const serverConfig = self.config.find('server');
     self.app.listen(serverConfig.port, function () {
       self.logger.info(`Listening on port ${serverConfig.port}`);
       callback();
@@ -102,7 +85,6 @@ export class Server {
     this.dependencyInjector.rename('redisClient', 'cacheClient');
     this.dependencyInjector.value('config', this.config);
     this.dependencyInjector.value('router', router);
-    this.dependencyInjector.value('httpClient', request);
     this.dependencyInjector.value('database', connection);
     this.dependencyInjector.value('dependencyInjector', this.dependencyInjector);
     this.registerServices(this.dependencyInjector);

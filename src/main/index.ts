@@ -1,6 +1,6 @@
-import {Server} from "./server";
+import {ServerFactory} from "./common/serverFactory";
 
-var server = Server.build();
+var server = new ServerFactory().createServer();
 
 server.initialize()
   .then(()=>server.start())
