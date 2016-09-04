@@ -21,7 +21,7 @@ describe('MarkService', function () {
     aBible, aBook, aChapter, aVerse, anotherBible, anotherBook, anotherChapter, anotherVerse, returnedValue,
     BIBLES_URL, BIBLE_URL, BOOKS_URL, BOOK_URL, CHAPTERS_URL, CHAPTER_URL, VERSES_URL, VERSE_URL,
     biblesResponse, bibleResponse, booksResponse, bookResponse, chaptersResponse, chapterResponse,
-    versesResponse, verseResponse;
+    versesResponse, verseResponse, loggerFactory;
 
   beforeEach(()=> {
     aBible = aBook = aChapter = aVerse = {id: 'rid1'};
@@ -48,6 +48,7 @@ describe('MarkService', function () {
     config = {get: stub()};
     httpClient = {get: stub()};
     cacheService = {get: stub(), set: stub()};
+    loggerFactory = {getLogger: stub()};
 
     config.get.withArgs('api.biblesOrg.url').returns(BASE_URL);
 
@@ -63,7 +64,7 @@ describe('MarkService', function () {
     httpClient.get.withArgs(VERSES_URL).returns(Promise.resolve(versesResponse));
     httpClient.get.withArgs(VERSE_URL).returns(Promise.resolve(verseResponse));
 
-    biblesOrgService = new BiblesOrgService(config, httpClient, cacheService);
+    biblesOrgService = new BiblesOrgService(config, httpClient, cacheService, loggerFactory);
   });
 
   function toRestResponse(value, label) {

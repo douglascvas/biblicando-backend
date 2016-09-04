@@ -11,8 +11,6 @@ import * as assert from "assert";
 import {VerseService} from "../verse/verseService";
 import {Verse} from "../verse/verse";
 import {Config} from "../common/config";
-import {HttpClient} from "../common/httpClient";
-import {DependencyInjector} from "../common/service/dependencyInjector";
 
 @Inject
 export class ChapterService {

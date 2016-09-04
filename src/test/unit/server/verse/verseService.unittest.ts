@@ -51,7 +51,7 @@ describe('VerseService', function () {
     verseDao.find.withArgs({_id: {$in: verseIdList}}).returns(Promise.resolve(verseList));
 
     remoteApiInfoService = {resolveFromName: stub()};
-    verseService = new VerseService(config, httpClient, cacheService, verseDao, chapterDao, remoteApiInfoService);
+    verseService = new VerseService(config, cacheService, verseDao, chapterDao, remoteApiInfoService);
   });
 
   describe('#getVerses()', function () {

@@ -33,8 +33,6 @@ describe('BibleOrgService', function () {
     remoteApiInfoService = stub();
 
     bibleService = new BibleService(config,
-      httpClient,
-      dependencyInjector,
       cacheService,
       bibleDao,
       remoteApiInfoService);

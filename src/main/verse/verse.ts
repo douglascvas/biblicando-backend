@@ -20,7 +20,7 @@ export class Verse {
   copyright:string;
 
   @Type(SchemaType.INTEGER)
-  number:number;
+  numbers:number[];
 
   @Type(SchemaType.OBJECT, Chapter)
   chapter:Chapter;

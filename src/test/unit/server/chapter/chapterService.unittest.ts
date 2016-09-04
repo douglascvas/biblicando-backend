@@ -53,7 +53,7 @@ describe('ChapterService', function () {
     chapterDao.find.withArgs({_id: {$in: chapterIdList}}).returns(Promise.resolve(chapterList));
 
     remoteApiInfoService = {resolveFromName: stub()};
-    chapterService = new ChapterService(config, httpClient, cacheService, chapterDao, bookDao, verseService, remoteApiInfoService);
+    chapterService = new ChapterService(config, cacheService, chapterDao, bookDao, verseService, remoteApiInfoService);
   });
 
   describe('#getChapters()', function () {
