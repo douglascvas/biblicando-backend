@@ -109,6 +109,6 @@ module.exports = function (gulp) {
   gulp.task('be-build', gulp.parallel('be-build:main', 'be-build:resource', 'be-build:test'));
   gulp.task('be-start', gulp.series('be-build', start));
   gulp.task('be-watch', gulp.series('be-build', watch));
-  gulp.task('be-dev', gulp.series('be-start', watch));
+  gulp.task('be-dev', gulp.series('be-watch'));
 
 };
