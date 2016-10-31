@@ -38,8 +38,8 @@ describe('ChapterService', function () {
     chapterList = [aChapter, anotherChapter];
     chapterIdList = [aChapter._id, anotherChapter._id];
 
-    config = {get: stub()};
-    config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
+    config = {find: stub()};
+    config.find.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
     cacheService = {get: stub(), set: stub()};

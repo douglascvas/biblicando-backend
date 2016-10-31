@@ -37,7 +37,7 @@ export class BookService {
     return this.cacheService.get(`books_${bibleId}`)
       .then(books=> books ? books : this.bookDao.findByBible(bibleId))
       .then(books=>this.storeBooksInCache(bibleId, books))
-      .then(books=> books.length ? books : this.fetchBooksRemotelyAndSave(bibleId));
+      .then(books=> books && books.length ? books : this.fetchBooksRemotelyAndSave(bibleId));
   }
 
   public getBook(bookId:string):Promise<Book> {

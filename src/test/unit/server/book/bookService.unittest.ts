@@ -42,8 +42,8 @@ describe('BookService', function () {
     bookList = [aBook, anotherBook];
     bookIdList = [aBook._id, anotherBook._id];
 
-    config = {get: stub()};
-    config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
+    config = {find: stub()};
+    config.find.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
     cacheService = {get: stub(), set: stub()};
@@ -57,7 +57,7 @@ describe('BookService', function () {
     bookDao.upsertOne.withArgs(bookList[1]).returns(Promise.resolve({upsertedId: bookList[1]._id}));
     bookDao.find.withArgs({_id: {$in: bookIdList}}).returns(Promise.resolve(bookList));
 
-    remoteApiInfoService = {resolveFromName: stub()};
+    remoteApiInfoService = {getService: stub()};
     bookService = new BookService(config, httpClient, cacheService, bookDao, bibleDao, chapterService,
       remoteApiInfoService, loggerFactory);
   });
@@ -209,7 +209,7 @@ describe('BookService', function () {
   }
 
   function remoteApiInfoServiceResolvesRemoteSourceInfo() {
-    remoteApiInfoService.resolveFromName.withArgs(bible.remoteSource).returns({serviceClass: MockRemoteResourceClass});
+    remoteApiInfoService.getService.withArgs(bible.remoteSource).returns(new MockRemoteResourceClass());
   }
 
   function databaseContainsBibleWithoutRemoteSource() {

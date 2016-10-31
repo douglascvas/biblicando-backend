@@ -22,8 +22,8 @@ describe('BibleOrgService', function () {
     anotherBible = {_id: 'id2'};
     bibleList = [aBible, anotherBible];
 
-    config = {get: stub()};
-    config.get.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
+    config = {find: stub()};
+    config.find.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
 
     httpClient = stub();
     cacheService = {get: stub(), set: stub()};

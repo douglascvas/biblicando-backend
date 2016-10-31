@@ -9,14 +9,14 @@ export class RemoteApiInfoService {
   constructor(private dependencyInjector:DependencyInjector) {
   }
 
-  public getService(name:String):any {
+  public getService(name: string):any {
     let remoteApiInfo = this.resolveFromName(name);
     assert(remoteApiInfo, `No service found for ${name}.`);
     let RemoteService:any = remoteApiInfo.serviceClass;
     return this.dependencyInjector.get(RemoteService);
   }
 
-  public resolveFromName(name):RemoteApiInfo {
+  public resolveFromName(name: string):RemoteApiInfo {
     let keys = Reflect.ownKeys(RemoteApiConfig);
     for (let key of keys) {
       if (RemoteApiConfig[key].name === name) {

@@ -10,26 +10,26 @@ import {Config} from "../common/config";
 
 @Inject
 export class BibleService {
-  private CACHE_TIMEOUT = this.config.find('cache.expirationInMillis');
+  private CACHE_TIMEOUT;
 
   constructor(private config: Config,
-              private cacheService:CacheService,
-              private bibleDao:BibleDao,
-              private remoteApiInfoService:RemoteApiInfoService) {
-
+              private cacheService: CacheService,
+              private bibleDao: BibleDao,
+              private remoteApiInfoService: RemoteApiInfoService) {
+    this.CACHE_TIMEOUT = config.find('cache.expirationInMillis')
   }
 
-  public getBibles():Promise<Bible[]> {
+  public getBibles(): Promise<Bible[]> {
     return this.cacheService.get(`bibles`)
       .then(bibles=> bibles ? bibles : this.getBiblesFromDatabaseAndUpdateCache());
   }
 
-  public getBible(bibleId:string):Promise<Bible> {
+  public getBible(bibleId: string): Promise<Bible> {
     return this.cacheService.get(`bible_${bibleId}`)
       .then(bible=> bible ? bible : this.getBibleFromDatabaseAndUpdateCache(bibleId));
   }
 
-  private getBibleFromDatabaseAndUpdateCache(bibleId:string):Promise<Bible> {
+  private getBibleFromDatabaseAndUpdateCache(bibleId: string): Promise<Bible> {
     return this.bibleDao.findOne(bibleId)
       .then(bible=> {
         if (bible) {
@@ -39,7 +39,7 @@ export class BibleService {
       });
   }
 
-  private storeBiblesInCache(bibles:Bible[]):Bible[] {
+  private storeBiblesInCache(bibles: Bible[]): Bible[] {
     if (!bibles || !bibles.length) {
       return [];
     }
@@ -47,26 +47,26 @@ export class BibleService {
     return bibles;
   }
 
-  private getBiblesFromDatabaseAndUpdateCache():Promise<Bible[]> {
+  private getBiblesFromDatabaseAndUpdateCache(): Promise<Bible[]> {
     var filter = this.config.find("bible.filter") || {};
     return this.bibleDao.find(filter, {}).then(bibles => this.storeBiblesInCache(bibles));
   }
 
-  private updateBiblesInDatabase(bibles:Bible[]):Promise<UpdateWriteOpResult[]> {
-    var result:Promise<UpdateWriteOpResult>[] = bibles
+  private updateBiblesInDatabase(bibles: Bible[]): Promise<UpdateWriteOpResult[]> {
+    var result: Promise<UpdateWriteOpResult>[] = bibles
       .map(bible => this.bibleDao.updateRemoteBible(bible));
     return Promise.all<UpdateWriteOpResult>(result);
   }
 
-  private fetchFromRemoteApiAndStoreInDatabase(info:RemoteApiInfo):Promise<Bible[]> {
+  private fetchFromRemoteApiAndStoreInDatabase(info: RemoteApiInfo): Promise<Bible[]> {
     var remoteService = this.remoteApiInfoService.getService(info.name);
     return remoteService.getBibles()
       .then(bibles=>this.updateBiblesInDatabase(bibles));
   }
 
-  public synchronizeRemoteBibles():Promise<Bible[]> {
-    var remoteApiInfo:RemoteApiInfo[] = this.remoteApiInfoService.listAll();
-    var biblesPromise = remoteApiInfo.map((info:RemoteApiInfo) => this.fetchFromRemoteApiAndStoreInDatabase(info))
+  public synchronizeRemoteBibles(): Promise<Bible[]> {
+    var remoteApiInfo: RemoteApiInfo[] = this.remoteApiInfoService.listAll();
+    var biblesPromise = remoteApiInfo.map((info: RemoteApiInfo) => this.fetchFromRemoteApiAndStoreInDatabase(info))
       .reduce((result, bibles) => [].concat(result, bibles), []);
     return Promise.all<Bible>(biblesPromise);
   }
