@@ -6,7 +6,6 @@ import {Book} from "../../book/book";
 import {Bible} from "../../bible/bible";
 import {Chapter} from "../../chapter/chapter";
 import {Verse} from "../../verse/verse";
-import {Promise} from "../../common/interface/promise";
 import {BiblesOrgBible} from "./biblesOrgBible";
 import {BiblesOrgBook} from "./biblesOrgBook";
 import {BiblesOrgChapter} from "./biblesOrgChapter";
@@ -14,114 +13,111 @@ import {BiblesOrgVerse} from "./biblesOrgVerse";
 import {LoggerFactory, Logger} from "../../common/loggerFactory";
 import {Config} from "../../common/config";
 import {HttpClient} from "../../common/httpClient";
+import {RemoteService} from "../../common/interface/remoteService";
+import {Optional} from "../../common/optional";
 
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
 @Inject
-export class BiblesOrgService {
+export class BiblesOrgService implements RemoteService {
   private baseUrl;
-  private logger:Logger;
+  private logger: Logger;
 
-  constructor(private config:Config,
-              private httpClient:HttpClient,
-              private cacheService:CacheService,
-              private loggerFactory:LoggerFactory) {
+  constructor(private config: Config,
+              private httpClient: HttpClient,
+              private cacheService: CacheService,
+              private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.getLogger('BiblesOrgService');
     this.baseUrl = config.find('api.biblesOrg.url');
   }
 
-  private getResourceFromCache(url:string):any {
-    var result;
-    if (this.cacheService) {
-      result = this.cacheService.get(url);
-    } else {
-      result = Promise.resolve(null);
+  private getResourceFromCache<T>(url: string): Promise<Optional<T>> {
+    if (!this.cacheService) {
+      return Promise.resolve(Optional.empty());
     }
-    return result.then(value => {
-      if (typeof value === 'string') {
-        return JSON.parse(value);
-      }
-      return value;
-    })
+    return this.cacheService.get(url)
+      .then((value: Optional<T>) => {
+        if (!value.isPresent()) {
+          return value;
+        }
+        if (typeof value.get() === 'string') {
+          return Optional.of(<T>JSON.parse(<any>value.get()));
+        }
+        return value;
+      });
   }
 
-  private saveToCache(url:string, resource:any):Promise<any> {
+  private saveToCache(url: string, resource: any): Promise<any> {
     if (resource) {
       return this.cacheService.set(url, resource, 5 * DAY_IN_MILLIS);
     }
     return Promise.resolve();
   }
 
-  private getResourceFromInternet(url:string, filter:(any)=>any):Promise<any> {
-    var self = this;
+  private async getResourceFromInternet<T>(url: string, filter: (any)=>any): Promise<Optional<T>> {
+    const self = this;
     this.logger.debug('Fetching resource from:', url);
-    return self.httpClient.get(url)
-      .then(JSON.parse)
-      .then(result => result.response)
-      .then(filter)
-      .then(resource => {
-        self.saveToCache(url, resource);
-        return resource;
-      })
+    const remoteDataStr: string = await self.httpClient.get(url);
+    const remoteData = JSON.parse(remoteDataStr || '{}');
+    const result = filter(remoteData.response)
+    self.saveToCache(url, result);
+    return result;
   }
 
-  private getResource(url:string, requestFilter:(any)=>any):Promise<any> {
-    return this.getResourceFromCache(url)
-      .then(value => value ? value : this.getResourceFromInternet(url, requestFilter));
+  private async getResource<T>(url: string, requestFilter: (any)=>any): Promise<Optional<T>> {
+    const remoteResource: any = await this.getResourceFromCache(url);
+    return remoteResource ? Optional.of(remoteResource) : this.getResourceFromInternet(url, requestFilter);
   }
 
-  public getBibles():Promise<Bible[]> {
+  public async getBibles(): Promise<Bible[]> {
     const url = URL.resolve(this.baseUrl, `versions.js`);
-    return this.getResource(url, result => result.versions)
-      .then((bibles:Array<BiblesOrgBible>) => bibles.map(BiblesOrgBible.toBible));
+    const bibles: Optional<BiblesOrgBible[]> = <Optional<BiblesOrgBible[]>>await this.getResource(url, result => result.versions);
+    return bibles.isPresent() ? bibles.get().map(BiblesOrgBible.toBible) : [];
   }
 
-  public getBible(bibleCode:string):Promise<Bible> {
+  public async getBible(bibleCode: string): Promise<Optional<Bible>> {
     const url = URL.resolve(this.baseUrl, `versions/${bibleCode}.js`);
-    return this.getResource(url, result => result.versions[0])
-      .then(BiblesOrgBible.toBible);
+    const remoteResource = await this.getResource(url, result => result.versions[0]);
+    return remoteResource.isPresent() ? Optional.of(BiblesOrgBible.toBible(remoteResource.get())) : Optional.empty();
   }
 
-  public getBooks(bibleCode:string):Promise<Book[]> {
+  public async getBooks(bibleCode: string): Promise<Book[]> {
     const url = URL.resolve(this.baseUrl, `versions/${bibleCode}/books.js`);
-    return this.getResource(url, result => result.books)
-      .then((books:BiblesOrgBook[]) => <Book[]>books.map(BiblesOrgBook.toBook))
-      .then((books:Book[])=>books.filter(book=>!!book));
+    const books: Optional<BiblesOrgBook[]> = <Optional<BiblesOrgBook[]>>await this.getResource(url, result => result.books);
+    return books.isPresent() ? books.get().map(BiblesOrgBook.toBook) : [];
   }
 
-  public getBook(bookCode:string):Promise<Book> {
+  public async getBook(bookCode: string): Promise<Optional<Book>> {
     const url = URL.resolve(this.baseUrl, `books/${bookCode}.js`);
-    return this.getResource(url, result => result.books[0])
-      .then(BiblesOrgBook.toBook);
+    const remoteResource: Optional<BiblesOrgBook> = <Optional<BiblesOrgBook>>await this.getResource(url, result => result.books[0]);
+    return remoteResource.isPresent() ? Optional.of(BiblesOrgBook.toBook(remoteResource.get())) : Optional.empty();
   }
 
-  public getChapters(bookCode:string):Promise<Chapter[]> {
+  public async getChapters(bookCode: string): Promise<Chapter[]> {
     const url = URL.resolve(this.baseUrl, `books/${bookCode}/chapters.js`);
-    return this.getResource(url, result => result.chapters)
-      .then((chapters:Array<BiblesOrgChapter>) => chapters.map(BiblesOrgChapter.toChapter))
-      .then(chapters=>chapters.filter(chapter=>!!chapter));
+    const chapters: Optional<BiblesOrgChapter[]> = <Optional<BiblesOrgChapter[]>>await this.getResource(url, result => result.chapters);
+    return chapters.isPresent() ? chapters.get().map(BiblesOrgChapter.toChapter).filter(c => !!c) : [];
   }
 
-  public getChapter(chapterCode:string):Promise<Chapter> {
+  public async getChapter(chapterCode: string): Promise<Optional<Chapter>> {
     const url = URL.resolve(this.baseUrl, `chapters/${chapterCode}.js`);
-    return this.getResource(url, result => result.chapters[0])
-      .then(BiblesOrgChapter.toChapter);
+    const remoteResource: Optional<BiblesOrgChapter> = <Optional<BiblesOrgChapter>>await this.getResource(url, result => result.chapters[0]);
+    return remoteResource.isPresent() ? Optional.of(BiblesOrgChapter.toChapter(remoteResource.get())) : Optional.empty();
   }
 
-  public getVerses(chapterCode:string):Promise<Verse[]> {
+  public async getVerses(chapterCode: string): Promise<Verse[]> {
     const url = URL.resolve(this.baseUrl, `chapters/${chapterCode}/verses.js`);
-    return this.getResource(url, result => result.verses)
-      .then((verses:Array<BiblesOrgVerse>) => verses.map(BiblesOrgVerse.toVerse))
-      .then(verses=>verses.filter(verse=>!!verse));
+    const verses: Optional<BiblesOrgVerse[]> = <Optional<BiblesOrgVerse[]>>await this.getResource(url, result => result.verses);
+    return verses.isPresent() ? verses.get().map(BiblesOrgVerse.toVerse).filter(c => !!c) : [];
   }
 
-  public getVerse(verseCode:string):Promise<Verse> {
+  public async getVerse(verseCode: string): Promise<Optional<Verse>> {
     const url = URL.resolve(this.baseUrl, `verses/${verseCode}.js`);
-    return this.getResource(url, result => result.verses[0])
-      .then(BiblesOrgVerse.toVerse);
+    const remoteResource: Optional<BiblesOrgVerse> = <Optional<BiblesOrgVerse>>await this.getResource(url, result => result.verses[0]);
+    return remoteResource.isPresent() ? Optional.of(BiblesOrgVerse.toVerse(remoteResource.get())) : Optional.empty();
   }
 
-  private getChapterCode(bibleCode:string, bookCode:string, chapterNumber:number):string {
+  private getChapterCode(bibleCode: string, bookCode: string, chapterNumber: number): string {
     return bibleCode + ':' + bookCode + '.' + chapterNumber;
   }
 

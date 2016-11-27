@@ -25,20 +25,19 @@
   },
   "dependencies": {
     "biblicando-api": "git+ssh://git@github.com/douglascvas/biblicando-api.git#v0.0.13",
-    "bluebird": "^3.4.1",
     "body-parser": "^1.15.0",
     "configurator-js": "0.0.5",
-    "express": "4.12.3",
+    "express": "4.14.0",
     "glob": "^7.0.3",
     "gulp-express": "^0.3.5",
-    "ioredis": "^1.15.1",
+    "ioredis": "^2.4.0",
     "jsonschema": "^1.1.0",
     "jsonutils": "^0.1.0",
-    "log4js": "^0.6.33",
+    "log4js": "^1.0.1",
     "mongodb": "^2.1.7",
     "reflect-metadata": "^0.1.3",
     "request": "^2.69.0",
-    "request-promise": "^2.0.1",
+    "request-promise": "^4.1.1",
     "source-map-support": "^0.4.0"
   },
   "devDependencies": {
@@ -46,15 +45,17 @@
     "del": "^2.2.0",
     "gulp": "gulpjs/gulp#4.0",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-typescript": "^2.13.6",
+    "gulp-typescript": "^3.1.3",
     "gulp-watch": "^4.3.5",
-    "karma": "^0.13.22",
-    "mocha": "^2.4.5",
+    "karma": "^1.3.0",
+    "mocha": "^3.2.0",
     "node-uuid": "^1.4.7",
     "phantomjs-prebuilt": "^2.1.7",
     "sinon": "^1.17.3",
+    "ts-node": "^1.7.0",
     "tsconfig-glob": "^0.4.3",
-    "typescript": ">=1.9.0-dev || ^2.0.0",
-    "typings": "^1.0.4"
+    "tslint": "^4.0.2",
+    "typescript": "^2.0.10",
+    "typings": "^2.0.0"
   }
 }

@@ -5,27 +5,24 @@ import {VerseService} from "./verseService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 import {Verse} from "./verse";
-import {Promise} from "../common/interface/promise";
 
 @Inject
 @Controller
 export class VerseController {
-
-  constructor(private verseService:VerseService,
-              private restResponseService:RestResponseService) {
+  constructor(private verseService: VerseService,
+              private restResponseService: RestResponseService) {
   }
 
   @RequestMapping('/chapter/:chapterId/verses', RequestType.GET)
-  public getVerses(request, response) {
+  public async getVerses(request, response): Promise<Verse[]> {
     const chapterId = request.params.chapterId;
-    let result:Promise<Verse[]> = this.verseService.getVerses(chapterId);
-    this.restResponseService.respond(request, response, result);
+    return this.verseService.getVerses(chapterId);
   }
 
   @RequestMapping('/verse/:verseId', RequestType.GET)
-  public getVerse(request, response) {
+  public async getVerse(request, response): Promise<Verse> {
     const verseId = request.params.verseId;
-    let result:Promise<Verse> = this.verseService.getVerse(verseId);
-    this.restResponseService.respond(request, response, result);
+    const verse = await this.verseService.getVerse(verseId);
+    return verse.isPresent() ? verse.get() : null;
   }
 }

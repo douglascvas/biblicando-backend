@@ -1,13 +1,38 @@
 'use strict';
 
-import {Db, ObjectID, InsertOneWriteOpResult, UpdateWriteOpResult} from "mongodb";
-import {Promise} from "../interface/promise";
+import {Db, ObjectID} from "mongodb";
+import {Optional} from "../optional";
+import {RemoteResource} from "../interface/remoteResource";
 
-export class BaseDao<T> {
-  constructor(private db:Db, private collectionName:string) {
+export class BaseDao<E> {
+  constructor(private db: Db, private collectionName: string) {
   }
 
-  public findOne(query):Promise<T> {
+  public async updateRemoteResource<T extends RemoteResource>(resource: RemoteResource, options?: any): Promise<T> {
+    const self = this;
+    options = options || {};
+    let queries = [];
+    if (resource._id) {
+      queries.push({_id: ObjectID.createFromHexString(resource._id)});
+    }
+    if (resource.remoteId) {
+      queries.push({
+        remoteId: resource.remoteId,
+        remoteSource: resource.remoteSource
+      });
+    }
+    let query = (queries.length > 1 ? {$or: queries} : queries[0]);
+
+    resource.updatedAt = new Date();
+    let collection = <any>this.db.collection(this.collectionName);
+    if (query) {
+      return collection.findOneAndUpdate(query, resource, options);
+    } else {
+      return collection.findOneAndReplace(resource, resource, options);
+    }
+  }
+
+  public async findOne(query): Promise<Optional<E>> {
     if (typeof query === 'string') {
       query = {
         _id: ObjectID.createFromHexString(query)
@@ -18,14 +43,14 @@ export class BaseDao<T> {
       .find(query)
       .limit(1)
       .toArray()
-      .then(result=>result[0]);
+      .then(result => Optional.of(result[0]));
   }
 
-  public find(query, options?):Promise<T[]> {
+  public async find(query, options?): Promise<E[]> {
     options = options || {};
     query = query || {};
     let collection = this.db.collection(this.collectionName);
-    var result = collection.find(query);
+    let result = collection.find(query);
     if (options.limit) {
       result = result.limit(options.limit)
     }
@@ -35,17 +60,17 @@ export class BaseDao<T> {
     return <any>result.toArray();
   }
 
-  public insertOne(resource:T):Promise<InsertOneWriteOpResult> {
+  public async insertOne(resource: E): Promise<E> {
     let collection = this.db.collection(this.collectionName);
-    return <any>collection.insertOne(resource);
+    return <any>collection.findOneAndReplace(resource, resource);
   }
 
-  public insert(resources:T[]) {
+  public async insert(resources: E[]) {
     let collection = this.db.collection(this.collectionName);
     return collection.insertMany(resources);
   }
 
-  public updateOne(query:any, resource:any, options:any):Promise<UpdateWriteOpResult> {
+  public async updateOne(query: any, resource: any, options?: any): Promise<E> {
     options = options || {};
     if (typeof query === 'string') {
       query = {
@@ -53,16 +78,27 @@ export class BaseDao<T> {
       };
     }
     let collection = <any>this.db.collection(this.collectionName);
-    return collection.updateOne(query, resource, options);
+    return collection.findOneAndUpdate(query, resource, options);
   }
 
-  public remove(query:any):Promise<any> {
+  public async patchOne(query: any, resource: any, options?: any): Promise<E> {
+    options = options || {};
+    if (typeof query === 'string') {
+      query = {
+        _id: ObjectID.createFromHexString(query)
+      };
+    }
+    let collection = <any>this.db.collection(this.collectionName);
+    return collection.findOneAndUpdate(query, {$set: resource}, options);
+  }
+
+  public async remove(query: any): Promise<any> {
     let collection = <any>this.db.collection(this.collectionName);
     return collection.removeMany(query);
   }
 
-  public removeOne(resourceId:string):Promise<any> {
-    var query = {
+  public async removeOne(resourceId: string): Promise<any> {
+    const query = {
       _id: ObjectID.createFromHexString(resourceId)
     };
     let collection = <any>this.db.collection(this.collectionName);

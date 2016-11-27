@@ -3,28 +3,32 @@ import {Chapter} from "../chapter/chapter";
 import {Resource} from "../common/decorators/resource";
 import {Type} from "../common/decorators/type";
 import {SchemaType} from "../common/enums/schemaType";
+import {RemoteResource} from "../common/interface/remoteResource";
 
 @Resource
-export class Verse {
+export class Verse implements RemoteResource {
 
   @Type(SchemaType.STRING)
-  _id:string;
+  _id: string;
 
   @Type(SchemaType.STRING)
-  remoteId:string;
+  remoteId: string;
 
   @Type(SchemaType.STRING)
-  remoteSource:string;
+  remoteSource: string;
 
   @Type(SchemaType.STRING)
-  copyright:string;
+  copyright: string;
 
   @Type(SchemaType.INTEGER)
-  numbers:number[];
+  numbers: number[];
 
   @Type(SchemaType.OBJECT, Chapter)
-  chapter:Chapter;
+  chapter: Chapter;
 
   @Type(SchemaType.STRING)
-  text:string;
+  text: string;
+
+  @Type(SchemaType.DATE)
+  updatedAt: Date;
 }

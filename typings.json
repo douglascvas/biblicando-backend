@@ -2,26 +2,26 @@
   "name": "biblicando-backend",
   "version": false,
   "dependencies": {
-    "bluebird": "registry:npm/bluebird#3.3.4+20160622205516",
-    "node-uuid": "registry:npm/node-uuid#1.4.7+20160503013124"
+    "bluebird": "registry:npm/bluebird#3.4.1+20160909132857",
+    "node-uuid": "registry:npm/node-uuid#1.4.7+20160723033700"
   },
   "globalDependencies": {
-    "body-parser": "registry:dt/body-parser#0.0.0+20160317120654",
-    "chai": "registry:dt/chai#3.4.0+20160317120654",
-    "express": "registry:dt/express#4.0.0+20160317120654",
-    "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
-    "form-data": "registry:dt/form-data#0.0.0+20160316155526",
+    "body-parser": "registry:dt/body-parser#0.0.0+20160619023215",
+    "chai": "registry:dt/chai#3.4.0+20160601211834",
+    "express": "registry:dt/express#4.0.0+20160708185218",
+    "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20161012061536",
+    "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
-    "ioredis": "registry:dt/ioredis#0.0.0+20160412133314",
+    "ioredis": "registry:dt/ioredis#0.0.0+20161012141933",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
-    "mocha": "registry:dt/mocha#2.2.5+20160317120654",
-    "mongodb": "registry:dt/mongodb#2.1.0+20160425144419",
-    "node": "registry:dt/node#4.0.0+20160423143914",
-    "request": "registry:dt/request#0.0.0+20160316155526",
-    "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
-    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543",
-    "sinon": "registry:dt/sinon#1.16.0+20160317120654",
+    "mocha": "registry:dt/mocha#2.2.5+20161028141524",
+    "mongodb": "registry:dt/mongodb#2.1.0+20161110150902",
+    "node": "registry:dt/node#6.0.0+20161110151007",
+    "request": "registry:dt/request#0.0.0+20161116202412",
+    "request-promise": "registry:dt/request-promise#4.1.0+20161013074249",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160606155157",
+    "sinon": "registry:dt/sinon#1.16.0+20160924120326",
     "source-map-support": "registry:dt/source-map-support#0.2.10+20160316155526"
   }
 }

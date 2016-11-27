@@ -9,9 +9,7 @@ import {ObjectUtils} from "./common/service/objectUtils";
 import {Mongo} from "./common/database/mongo/mongo";
 import * as bodyParser from "body-parser";
 import * as express from "express";
-import {Promise} from "./common/interface/promise";
 import {Config} from "./common/config";
-import {HttpClient} from "./common/httpClient";
 sourceMapSupport.install();
 
 import Process = NodeJS.Process;
@@ -20,17 +18,17 @@ const path = require("path");
 const ignoreList = ['Promise'];
 
 export class Server {
-  private _logger:Logger;
+  private _logger: Logger;
 
   constructor(private app,
-              private config:Config,
-              private dependencyInjector:DependencyInjector,
-              private loggerFactory:LoggerFactory,
-              private moduleScannerService:ModuleScannerService) {
+              private config: Config,
+              private dependencyInjector: DependencyInjector,
+              private loggerFactory: LoggerFactory,
+              private moduleScannerService: ModuleScannerService) {
     this._logger = loggerFactory.getLogger(Server);
   }
 
-  public get logger():Logger {
+  public get logger(): Logger {
     return this._logger;
   }
 
@@ -40,7 +38,7 @@ export class Server {
   }
 
   private listen(callback) {
-    var self = this;
+    const self = this;
     const serverConfig = self.config.find('server');
     self.app.listen(serverConfig.port, function () {
       self.logger.info(`Listening on port ${serverConfig.port}`);
@@ -48,18 +46,18 @@ export class Server {
     });
   }
 
-  public start():Promise<any> {
-    return new Promise((resolve, reject)=> {
+  public start(): Promise<any> {
+    return new Promise((resolve, reject) => {
       const self = this;
       self.registerApis();
-      process.nextTick(()=> {
-        this.listen(()=>resolve(self.app));
+      process.nextTick(() => {
+        this.listen(() => resolve(self.app));
       });
     });
   }
 
   private registerServices(dependencyInjector) {
-    var serviceEntries = this.moduleScannerService.getServices();
+    const serviceEntries = this.moduleScannerService.getServices();
     for (let entry of serviceEntries) {
       if (ignoreList.indexOf(entry.name) < 0) {
         dependencyInjector.service(entry.value);
@@ -67,19 +65,17 @@ export class Server {
     }
   }
 
-  public initialize():Promise<any> {
-    var self = this;
-    const mongoDb:Mongo = new Mongo(self.config);
-    return mongoDb.connect()
-      .then(connection => {
-        self.configureServer();
-        self.registerDependencies(connection);
-        self.registerSchemas();
-      });
+  public async initialize(): Promise<any> {
+    const self = this;
+    const mongoDb: Mongo = new Mongo(self.config);
+    const connection = await mongoDb.connect();
+    self.configureServer();
+    self.registerDependencies(connection);
+    self.registerSchemas();
   }
 
-  private registerDependencies(connection:any) {
-    var router = express.Router();
+  private registerDependencies(connection: any) {
+    const router = express.Router();
     // router.use('/api', user);
     this.app.use('/api/v1', router);
     this.dependencyInjector.rename('redisClient', 'cacheClient');
@@ -96,8 +92,8 @@ export class Server {
    * Activate the APIs registered by the controllers.
    */
   private registerApis() {
-    var dependencies = ObjectUtils.toIterable(this.dependencyInjector.getAll());
-    var app = this.dependencyInjector.get('router');
+    const dependencies = ObjectUtils.toIterable(this.dependencyInjector.getAll());
+    const app = this.dependencyInjector.get('router');
     for (let instance of dependencies) {
       if (!instance.value.$controller) {
         continue;
@@ -113,8 +109,8 @@ export class Server {
    * Register the generated schemas in the validator.
    */
   private registerSchemas() {
-    var dependencies = ObjectUtils.toIterable(this.dependencyInjector.getAll());
-    var validationService:ValidationService = this.dependencyInjector.get('validationService');
+    const dependencies = ObjectUtils.toIterable(this.dependencyInjector.getAll());
+    const validationService: ValidationService = this.dependencyInjector.get('validationService');
     for (let instance of dependencies) {
       if (instance.value.__$resource) {
         validationService.addSchema(instance.value.__$resource);

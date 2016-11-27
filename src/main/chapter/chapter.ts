@@ -4,28 +4,32 @@ import {Book} from "../book/book";
 import {Resource} from "../common/decorators/resource";
 import {Type} from "../common/decorators/type";
 import {SchemaType} from "../common/enums/schemaType";
+import {RemoteResource} from "../common/interface/remoteResource";
 
 @Resource
-export class Chapter {
-  
-  @Type(SchemaType.STRING)
-  _id:string;
+export class Chapter implements RemoteResource {
 
   @Type(SchemaType.STRING)
-  remoteId:string;
+  _id: string;
 
   @Type(SchemaType.STRING)
-  remoteSource:string;
+  remoteId: string;
 
   @Type(SchemaType.STRING)
-  copyright:string;
+  remoteSource: string;
+
+  @Type(SchemaType.STRING)
+  copyright: string;
 
   @Type(SchemaType.INTEGER)
-  number:number;
+  number: number;
 
   @Type(SchemaType.OBJECT, Book)
-  book:Book;
+  book: Book;
 
   @Type(SchemaType.ARRAY, Verse)
-  verses:Verse[];
+  verses: Verse[];
+
+  @Type(SchemaType.DATE)
+  updatedAt: Date;
 }

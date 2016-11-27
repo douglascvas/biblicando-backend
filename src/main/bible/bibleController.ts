@@ -12,9 +12,9 @@ import {LoggerFactory} from "../common/loggerFactory";
 export class BibleController {
   private log;
 
-  constructor(loggerFactory:LoggerFactory,
-              private bibleService:BibleService,
-              private restResponseService:RestResponseService) {
+  constructor(loggerFactory: LoggerFactory,
+              private bibleService: BibleService,
+              private restResponseService: RestResponseService) {
     this.log = loggerFactory.getLogger(BibleController);
   }
 
@@ -22,8 +22,8 @@ export class BibleController {
   public getBibles(request, response) {
     var self = this;
     var result = this.bibleService.getBibles()
-      .then(bibles=> {
-        self.log.debug(bibles.length, 'bibles queried', bibles.map(bible=>bible._id + ' - ' + bible.name));
+      .then(bibles => {
+        self.log.debug(bibles.length, 'bibles queried', bibles.map(bible => bible._id + ' - ' + bible.name));
         return bibles;
       });
     this.restResponseService.respond(request, response, result);
@@ -36,9 +36,9 @@ export class BibleController {
     this.restResponseService.respond(request, response, result);
   }
 
-  @RequestMapping('/bibles/sync', RequestType.POST)
-  public syncBibles(request, response) {
-    var result = this.bibleService.synchronizeRemoteBibles();
-    this.restResponseService.respond(request, response, result);
-  }
+  // @RequestMapping('/bibles/sync', RequestType.POST)
+  // public syncBibles(request, response) {
+  //   var result = this.bibleService.loadBiblesFromRemote();
+  //   this.restResponseService.respond(request, response, result);
+  // }
 }

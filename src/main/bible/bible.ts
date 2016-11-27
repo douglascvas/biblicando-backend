@@ -2,45 +2,46 @@
 import {Resource} from "../common/decorators/resource";
 import {SchemaType} from "../common/enums/schemaType";
 import {Type} from "../common/decorators/type";
+import {RemoteResource} from "../common/interface/remoteResource";
 
 @Resource
-export class Bible extends Object {
+export class Bible extends Object implements RemoteResource {
   @Type(SchemaType.STRING)
-  _id:string;
+  _id: string;
 
   @Type(SchemaType.STRING)
-  remoteId:string;
+  remoteId: string;
 
   @Type(SchemaType.STRING)
-  remoteSource:string;
+  remoteSource: string;
 
   @Type(SchemaType.STRING)
-  name:string;
+  name: string;
 
   @Type(SchemaType.STRING)
-  publisher:string;
+  publisher: string;
 
   @Type(SchemaType.STRING)
-  description:string;
+  description: string;
 
   @Type(SchemaType.STRING)
-  languageCode:string;
+  languageCode: string;
 
   @Type(SchemaType.STRING)
-  languageCodeType:string;
+  languageCodeType: string;
 
   @Type(SchemaType.STRING)
-  contactUrl:string;
+  contactUrl: string;
 
   @Type(SchemaType.STRING)
-  abbreviation:string;
+  abbreviation: string;
 
   @Type(SchemaType.INTEGER)
-  numberOfBooks:number;
+  numberOfBooks: number;
 
   @Type(SchemaType.DATE)
-  updatedAt:Date;
+  updatedAt: Date;
 
   @Type(SchemaType.STRING)
-  copyright:string;
+  copyright: string;
 }

@@ -5,30 +5,45 @@ import {Inject} from "../common/decorators/inject";
 import {Collection} from "../common/enums/collection";
 import {Bible} from "./bible";
 import {Db} from "mongodb";
-import {UpdateWriteOpResult} from "mongodb";
-import {Promise} from "../common/interface/promise";
+import {Optional} from "../common/optional";
 
 @Inject
 export class BibleDao extends BaseDao<Bible> {
 
-  constructor(private database:Db) {
+  constructor(private database: Db) {
     super(database, Collection.BIBLE);
   }
 
-  public findOneByName(name:string):Promise<Bible> {
-    var query = {
+  public findOneByName(name: string): Promise<Optional<Bible>> {
+    const query = {
       name: name
     };
     return this.findOne(query)
       .then(value => value !== undefined ? value : null);
   }
 
-  public updateRemoteBible(bible:Bible):Promise<UpdateWriteOpResult> {
-    var query = {
+  public insertBible(bible: Bible): Promise<Bible> {
+    bible.updatedAt = new Date();
+
+    return this.insertOne(bible);
+  }
+
+  public updateRemoteBible(bible: Bible): Promise<Bible> {
+    const query = {
+      remoteSource: bible.remoteSource,
+      remoteId: bible.remoteId
+    };
+    bible.updatedAt = new Date();
+
+    return this.updateOne(query, {$set: bible}, {upsert: true});
+  }
+
+  public async findRemoteBible(bible: Bible): Promise<Optional<Bible>> {
+    const query = {
       remoteSource: bible.remoteSource,
       remoteId: bible.remoteId
     };
 
-    return this.updateOne(query, bible, {upsert: true});
+    return this.findOne(query);
   }
 }

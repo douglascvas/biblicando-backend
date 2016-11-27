@@ -2,7 +2,8 @@ const del = require('del');
 const paths = require('./paths');
 const typescript = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
-var net = require('net');
+const mocha = require('gulp-mocha');
+const net = require('net');
 
 module.exports = function (gulp) {
   function cleanMain() {
@@ -23,6 +24,31 @@ module.exports = function (gulp) {
 
   function compileTest() {
     return compile(paths.test, paths.output);
+  }
+
+  function unitTest(cb) {
+    gulp.src('build/test/**/*.unittest.js', {read: false})
+      .pipe(mocha())
+      // .once('error', () => {
+      //   console.log("TEST Failed!!!");
+      //   process.exit(1);
+      // })
+      .once('end', () => {
+        cb();
+      })
+    ;
+  }
+
+  function integrationTest(cb) {
+    gulp.src('build/test/**/*.integration.js', {read: false})
+      .pipe(mocha())
+      // .once('error', () => {
+      //   console.log("TEST Failed!!!");
+      //   process.exit(1);
+      // })
+      .once('end', () => {
+        cb();
+      });
   }
 
   function copyMain() {
@@ -49,19 +75,20 @@ module.exports = function (gulp) {
   }
 
   function compile(source, output) {
-    var sourceTsFiles = [source, `${paths.typings}/**/*.ts`];
-    var tsProject = typescript.createProject(paths.tsConfig);
-    var tsResult = gulp.src(sourceTsFiles)
+    const sourceTsFiles = [source, `${paths.typings}/**/*.ts`];
+    const tsProject = typescript.createProject(paths.tsConfig);
+    const tsResult = gulp.src(sourceTsFiles)
       .pipe(sourcemaps.init())
-      .pipe(typescript(tsProject));
+      .pipe(tsProject());
+    // .pipe(typescript(typescript.longReporter));
     tsResult.dts.pipe(gulp.dest(output));
     return tsResult.js
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(output));
   }
 
-  var portInUse = function (port, callback) {
-    var server = net.createServer(function (socket) {
+  const portInUse = function (port, callback) {
+    const server = net.createServer(function (socket) {
       socket.write('Echo server\r\n');
       socket.pipe(socket);
     });
@@ -77,7 +104,7 @@ module.exports = function (gulp) {
   };
 
   function waitForApplication(port, callback) {
-    const interval = setInterval(()=> {
+    const interval = setInterval(() => {
       portInUse(port, used => {
         console.log("# Starting backend server...");
         if (used) {
@@ -90,7 +117,7 @@ module.exports = function (gulp) {
   }
 
   function start(cb) {
-    var server = require('gulp-express');
+    const server = require('gulp-express');
     server.run([`${paths.outputMain}/index.js`], {}, 35725);
     waitForApplication(3005, cb);
   }
@@ -107,6 +134,9 @@ module.exports = function (gulp) {
   gulp.task('be-build:resource', gulp.series('be-copy:resource'));
   gulp.task('be-build:test', gulp.series('be-copy:test', 'be-compile:test'));
   gulp.task('be-build', gulp.parallel('be-build:main', 'be-build:resource', 'be-build:test'));
+  gulp.task('be-test:unit', gulp.series('be-build', unitTest));
+  gulp.task('be-test:integration', gulp.series('be-build', integrationTest));
+  gulp.task('be-test', gulp.series('be-build', 'be-test:unit', 'be-test:integration'));
   gulp.task('be-start', gulp.series('be-build', start));
   gulp.task('be-watch', gulp.series('be-build', watch));
   gulp.task('be-dev', gulp.series('be-watch'));

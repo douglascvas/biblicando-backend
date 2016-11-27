@@ -1,7 +1,7 @@
 'use strict';
 
 import {Inject} from "../decorators/inject";
-import {Promise} from "../interface/promise";
+import {Optional} from "../optional";
 
 @Inject
 export class CacheService {
@@ -9,17 +9,17 @@ export class CacheService {
   constructor(private cacheClient) {
   }
 
-  public get(url:string):Promise<any> {
+  public get<T>(url: string): Promise<Optional<T>> {
     return this.cacheClient.get(url)
       .then(value => {
         if (typeof value === 'string') {
-          return JSON.parse(value);
+          value = <T>JSON.parse(value);
         }
-        return value;
+        return <Optional<T>>((value === null || value === undefined) ? Optional.empty() : Optional.of(value));
       });
   }
 
-  public set(url:string, resource:any, timeout?:number):Promise<void> {
+  public set(url: string, resource: any, timeout?: number): Promise<void> {
     if (!resource) {
       return;
     }
@@ -32,7 +32,7 @@ export class CacheService {
     return <Promise<void>>Promise.resolve();
   }
 
-  public remove(url:string):Promise<any> {
+  public remove(url: string): Promise<any> {
     return this.cacheClient.remove(url);
   }
 }

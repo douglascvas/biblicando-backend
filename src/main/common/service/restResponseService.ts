@@ -2,10 +2,9 @@
 import {Inject} from "../decorators/inject";
 import {ErrorHandlerService} from "./errorHandlerService";
 
-
 @Inject
 export class RestResponseService {
-  constructor(private errorHandlerService:ErrorHandlerService) {
+  constructor(private errorHandlerService: ErrorHandlerService) {
   }
 
   public respond(request, response, value?) {

@@ -35,7 +35,7 @@ export class DependencyInjector {
    * Builds all the registered classes/values.
    */
   public build() {
-    var entries = Array.from(this.values.entries());
+    let entries = Array.from(this.values.entries());
     // Calculate the order to mount the dependency tree
     this.calculateAndSetDependenciesOrder(entries);
     // Sort the values in the order they will be resolved (all the dependencies of the each value before itself)
@@ -51,7 +51,7 @@ export class DependencyInjector {
     }
     name = ObjectUtils.toInstanceName(name);
     name = this.translateName(name);
-    var item = this.values.get(name);
+    const item = this.values.get(name);
     if (item) {
       return item.value;
     } else {
@@ -93,7 +93,7 @@ export class DependencyInjector {
    * - dependencyValue {*} dependencies to be injected into the class constructor.
    */
   public factory(classz:any, factoryFn:Function) {
-    var className = this.translateName(this.getFunctionName(classz));
+    const className = this.translateName(this.getFunctionName(classz));
     this.assertIsFunction(factoryFn, 'The factory must be a function.');
     this.logger.debug(`Registering factory for ${name}`);
     this.factories.set(className, factoryFn);
@@ -111,7 +111,7 @@ export class DependencyInjector {
    * - dependencyValue {*} value that is being injected in the class parameter.
    */
   public hookInjection(classz:any, callback:Function) {
-    var className = this.translateName(this.getFunctionName(classz));
+    const className = this.translateName(this.getFunctionName(classz));
     this.assertIsFunction(callback, 'The decorator must be a function.');
     this.logger.debug(`Registering injection hook for ${className}`);
     this.hooks.set(className, callback);
@@ -130,7 +130,8 @@ export class DependencyInjector {
     this.values.set(name, <Dependency>{
       value: value,
       missingDependencies: [],
-      resolved: true
+      resolved: true,
+      classz: null
     });
   }
 
@@ -154,7 +155,7 @@ export class DependencyInjector {
     }
     name = this.translateName(name);
 
-    var classArgs:string[] = ObjectUtils.extractArgs(classz);
+    const classArgs: string[] = ObjectUtils.extractArgs(classz);
     if (!injectable && classArgs.length > 0) {
       this.logger.debug(`Skipping registration of service ${name}. Not an injectable (not annotated with @Inject)`);
       return;
@@ -224,7 +225,7 @@ export class DependencyInjector {
         // each class, since its dependencies should already have been resolved.
 
         value.missingDependencies.forEach(dependencyName => {
-          var depIndex = keys.indexOf(dependencyName);
+          const depIndex = keys.indexOf(dependencyName);
           if (depIndex < 0) {
             throw new Error(`Dependency not found: ${dependencyName} (from module ${key}).`)
           }
@@ -254,9 +255,9 @@ export class DependencyInjector {
    * the real resolved value as parameter.
    */
   private getResolvedDependencies(entryName:string, entryValue:any) {
-    var self = this;
+    const self = this;
     return entryValue.missingDependencies.map(dep => {
-      var value = self.values.get(dep);
+      const value = self.values.get(dep);
       if (!value.resolved) {
         throw new Error(`Failed to resolve dependency ${dep} (from ref. ${entryName}).`);
       }
@@ -278,7 +279,7 @@ export class DependencyInjector {
   }
 
   private buildValue(entryName, entryValue) {
-    var resolvedDependencies = this.getResolvedDependencies(entryName, entryValue);
+    const resolvedDependencies = this.getResolvedDependencies(entryName, entryValue);
     if (!entryValue.resolved) {
       if (!entryValue.classz) {
         throw new Error(`No class constructor found for ${entryName}.`);
