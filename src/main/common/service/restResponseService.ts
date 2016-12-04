@@ -1,8 +1,8 @@
 'use strict';
-import {Inject} from "../decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 import {ErrorHandlerService} from "./errorHandlerService";
 
-@Inject
+@Named
 export class RestResponseService {
   constructor(private errorHandlerService: ErrorHandlerService) {
   }

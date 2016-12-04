@@ -1,12 +1,12 @@
 'use strict';
 
 import * as Redis from "ioredis";
-import {Inject} from "../decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 import {LoggerFactory} from "../loggerFactory";
 import {CacheClient} from "./cacheClient";
 import {Config} from "../config";
 
-@Inject
+@Named('cacheClient')
 export class RedisClient implements CacheClient {
   private client: any;
   private logger;

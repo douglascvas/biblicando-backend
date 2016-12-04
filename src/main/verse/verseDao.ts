@@ -1,12 +1,12 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {Db} from "mongodb";
 import {BaseDao} from "../common/dao/baseDao";
 import {Collection} from "../common/enums/collection";
 import {Verse} from "./verse";
 import {Optional} from "../common/optional";
 
-@Inject
+@Named
 export class VerseDao extends BaseDao<Verse> {
   constructor(private database: Db) {
     super(database, Collection.VERSE);

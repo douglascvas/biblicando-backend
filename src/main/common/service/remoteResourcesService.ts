@@ -1,6 +1,6 @@
 import {RemoteApiInfo} from "../enums/remoteApiInfo";
 import {RemoteApiInfoService} from "./remoteApiInfoService";
-import {Inject} from "../decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 import {Bible} from "../../bible/bible";
 import {RemoteService} from "../interface/remoteService";
 import {BibleDao} from "../../bible/bibleDao";
@@ -9,8 +9,9 @@ import {Book} from "../../book/book";
 import {BookDao} from "../../book/bookDao";
 import {Chapter} from "../../chapter/chapter";
 import {ChapterDao} from "../../chapter/chapterDao";
+import {Optional} from "../optional";
 
-@Inject
+@Named
 export class RemoteResourcesService {
 
   constructor(private remoteApiInfoService: RemoteApiInfoService,
@@ -35,8 +36,8 @@ export class RemoteResourcesService {
   }
 
   private async fetchBiblesFromRemoteApi(info: RemoteApiInfo): Promise<Bible[]> {
-    const remoteService: RemoteService = this.remoteApiInfoService.getService(info.name);
-    return await remoteService.getBibles();
+    const remoteService: Optional<RemoteService> = this.remoteApiInfoService.getService(info.name);
+    return remoteService.isPresent() ? await remoteService.get().getBibles() : [];
   }
 
   private async saveBibleInDatabaseAndCache(remoteBible: Bible): Promise<Bible> {
@@ -46,9 +47,9 @@ export class RemoteResourcesService {
     return bible;
   }
 
-  private async synchronizeBooksForBible(bible: Bible) {
-    const remoteService: RemoteService = this.remoteApiInfoService.getService(bible.remoteSource);
-    const books: Book[] = await remoteService.getBooks(bible.remoteId);
+  private async synchronizeBooksForBible(bible: Bible): Promise<void> {
+    const remoteService: Optional<RemoteService> = this.remoteApiInfoService.getService(bible.remoteSource);
+    const books: Book[] = remoteService.isPresent() ? await remoteService.get().getBooks(bible.remoteId) : [];
     books.map(book => this.saveBookInDatabaseAndCache(book));
   }
 
@@ -58,9 +59,9 @@ export class RemoteResourcesService {
     this.synchronizeChaptersForBook(book);
   }
 
-  private async synchronizeChaptersForBook(book: Book) {
-    const remoteService: RemoteService = this.remoteApiInfoService.getService(book.remoteSource);
-    const chapters: Chapter[] = await remoteService.getChapters(book.remoteId);
+  private async synchronizeChaptersForBook(book: Book): Promise<void> {
+    const remoteService: Optional<RemoteService> = this.remoteApiInfoService.getService(book.remoteSource);
+    const chapters: Chapter[] = remoteService.isPresent() ? await remoteService.get().getChapters(book.remoteId) : [];
     chapters.map(chapter => this.saveChapterInDatabaseAndCache(chapter));
   }
 

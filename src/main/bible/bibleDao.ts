@@ -1,13 +1,13 @@
 'use strict';
 
 import {BaseDao} from "../common/dao/baseDao";
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {Collection} from "../common/enums/collection";
 import {Bible} from "./bible";
 import {Db} from "mongodb";
 import {Optional} from "../common/optional";
 
-@Inject
+@Named
 export class BibleDao extends BaseDao<Bible> {
 
   constructor(private database: Db) {

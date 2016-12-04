@@ -1,18 +1,16 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
-import {Controller} from "../common/decorators/controller";
 import {AuthenticationService} from "../common/service/restAuthenticationService";
 import {MarkService} from "./markService";
-import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 import {RestResponseService} from "../common/service/restResponseService";
+import {RequestMapping, RequestType} from "../bdi/decorator/mvc";
+import {Named} from "../bdi/decorator/di";
 
-@Inject
-@Controller
+@Named
 export class MarkController {
 
-  constructor(private markService:MarkService,
-              private authenticationService:AuthenticationService,
-              private restResponseService:RestResponseService) {
+  constructor(private markService: MarkService,
+              private authenticationService: AuthenticationService,
+              private restResponseService: RestResponseService) {
   }
 
   @RequestMapping('/marks', RequestType.GET)

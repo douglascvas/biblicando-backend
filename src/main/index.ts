@@ -1,9 +1,13 @@
 import {ServerFactory} from "./common/serverFactory";
 
-var server = new ServerFactory().createServer();
-
-server.initialize()
-  .then(()=>server.start())
-  .catch(e => {
+async function start() {
+  const server = new ServerFactory().createServer();
+  try {
+    await server.initialize();
+    await server.start();
+  } catch (e) {
     server.logger.error(e.stack);
-  });
+  }
+}
+
+start();

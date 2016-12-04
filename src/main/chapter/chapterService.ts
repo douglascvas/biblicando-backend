@@ -1,13 +1,13 @@
 'use strict';
 import {ChapterDao} from "./chapterDao";
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {Chapter} from "./chapter";
 import {VerseService} from "../verse/verseService";
 import {Config} from "../common/config";
 import {Optional} from "../common/optional";
 import {ResourceManager} from "../common/resourceManager";
 
-@Inject
+@Named
 export class ChapterService {
   private CACHE_TIMEOUT;
 

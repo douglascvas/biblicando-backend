@@ -1,8 +1,8 @@
 import * as express from "express";
 import {Server} from "../../../main/server";
-import {ModuleScannerService} from "../../../main/common/service/moduleScannerService";
+import {ModuleScannerService} from "../../../main/bdi/moduleScannerService";
 import {LoggerFactory} from "../../../main/common/loggerFactory";
-import {DependencyInjector} from "../../../main/common/service/dependencyInjector";
+import {DependencyInjector} from "../../../main/bdi/dependencyInjector";
 
 const path = require('path');
 const Configurator = require('configurator-js');
@@ -10,10 +10,10 @@ const moduleInfo = require("../../../../package.json");
 
 export class TestTool {
   private _config;
-  private _moduleScannerService:ModuleScannerService;
-  private _loggerFactory:LoggerFactory;
-  private _dependencyInjector:DependencyInjector;
-  private _server:Server;
+  private _moduleScannerService: ModuleScannerService;
+  private _loggerFactory: LoggerFactory;
+  private _dependencyInjector: DependencyInjector;
+  private _server: Server;
   private _app;
 
   constructor() {
@@ -22,7 +22,7 @@ export class TestTool {
     this._moduleScannerService = new ModuleScannerService();
     this._loggerFactory = new LoggerFactory(this._config);
     this._dependencyInjector = new DependencyInjector(this._loggerFactory);
-    this._server = new Server(this._app, this._config, this._dependencyInjector, this._loggerFactory, this._moduleScannerService);
+    this._server = new Server(this._app, this._config, this._loggerFactory);
   }
 
   private loadConfiguration() {
@@ -31,7 +31,7 @@ export class TestTool {
     return new Configurator(CONFIG_PATH, moduleInfo.name, moduleInfo.version);
   }
 
-  public initialize(startServer:boolean) {
+  public initialize(startServer: boolean) {
     return this._server.initialize();
   }
 

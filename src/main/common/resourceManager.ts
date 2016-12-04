@@ -1,9 +1,9 @@
 import {Optional} from "./optional";
 import {CacheService} from "./service/cacheService";
 import {Config} from "./config";
-import {Inject} from "./decorators/inject";
+import {Named} from "../bdi/decorator/di";
 
-@Inject
+@Named
 export class ResourceManager {
   private CACHE_TIMEOUT;
 

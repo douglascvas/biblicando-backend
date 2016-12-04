@@ -1,8 +1,8 @@
 'use strict';
-import {Inject} from "../decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 import {LoggerFactory} from "../loggerFactory";
 
-@Inject
+@Named
 export class ErrorHandlerService {
   private logger;
 

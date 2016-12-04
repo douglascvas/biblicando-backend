@@ -4,6 +4,9 @@ const typescript = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const mocha = require('gulp-mocha');
 const net = require('net');
+const through = require('through2');
+const watch = require('gulp-watch');
+const cache = require('gulp-cached');
 
 module.exports = function (gulp) {
   function cleanMain() {
@@ -24,6 +27,16 @@ module.exports = function (gulp) {
 
   function compileTest() {
     return compile(paths.test, paths.output);
+  }
+
+  function compileTS(dest) {
+    // creating a stream through which each file will pass
+    const stream = through.obj(function (file, enc, cb) {
+      compile(file, dest);
+      cb();
+    });
+    // returning the file stream
+    return stream;
   }
 
   function unitTest(cb) {
@@ -66,18 +79,27 @@ module.exports = function (gulp) {
       .pipe(gulp.dest(paths.output));
   }
 
-  function watch() {
+  function watchTask() {
     return Promise.all([
-      gulp.watch([`${paths.baseMain}/**/*`], gulp.parallel('be-build:main')),
-      gulp.watch([`${paths.baseResource}/**/*`], gulp.parallel('be-build:resource')),
-      gulp.watch([`${paths.baseTest}/**/*`], gulp.parallel('be-build:test'))
+      watch(`${paths.baseMain}/**/*.ts`, {ignoreInitial: true}, function (file) {
+        console.log('compiling', file.history);
+        compile(file.history, paths.outputMain, {base: `${paths.baseMain}/`});
+        compileMain();
+      }),
+      watch([`${paths.baseResource}/**/*`], gulp.parallel('be-build:resource')),
+      watch([`${paths.baseTest}/**/*`], gulp.parallel('be-build:test'))
     ]);
   }
 
-  function compile(source, output) {
-    const sourceTsFiles = [source, `${paths.typings}/**/*.ts`];
+  function compile(source, output, options) {
+    options = options || {base: `${paths.root}/`};
+    if (!source instanceof Array) {
+      source = [source];
+    }
+    const sourceTsFiles = [`${paths.typings}/**/*.ts`].concat(source);
     const tsProject = typescript.createProject(paths.tsConfig);
-    const tsResult = gulp.src(sourceTsFiles)
+    const tsResult = gulp.src(sourceTsFiles, options)
+      // .pipe(cache('linting'))
       .pipe(sourcemaps.init())
       .pipe(tsProject());
     // .pipe(typescript(typescript.longReporter));
@@ -138,7 +160,7 @@ module.exports = function (gulp) {
   gulp.task('be-test:integration', gulp.series('be-build', integrationTest));
   gulp.task('be-test', gulp.series('be-build', 'be-test:unit', 'be-test:integration'));
   gulp.task('be-start', gulp.series('be-build', start));
-  gulp.task('be-watch', gulp.series('be-build', watch));
+  gulp.task('be-watch', gulp.series('be-build', watchTask));
   gulp.task('be-dev', gulp.series('be-watch'));
 
 };

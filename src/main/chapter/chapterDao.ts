@@ -1,11 +1,11 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {Collection} from "../common/enums/collection";
 import {BaseDao} from "../common/dao/baseDao";
 import {Chapter} from "./chapter";
 import {ObjectID, Db} from "mongodb";
 
-@Inject
+@Named
 export class ChapterDao extends BaseDao<Chapter> {
 
   constructor(private database: Db) {

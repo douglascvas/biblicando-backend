@@ -1,9 +1,9 @@
 'use strict';
 
-import {Inject} from "../decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 import {Optional} from "../optional";
 
-@Inject
+@Named
 export class CacheService {
 
   constructor(private cacheClient) {

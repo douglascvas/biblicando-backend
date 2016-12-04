@@ -1,9 +1,9 @@
-import {Inject} from "../decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 import {ValidationService} from "./validationService";
 import {AccessDeniedException} from "../exception/accessDeniedException";
 import {Config} from "../config";
 
-@Inject
+@Named
 export class AuthenticationService {
   constructor(private config:Config,
               private validationService:ValidationService) {

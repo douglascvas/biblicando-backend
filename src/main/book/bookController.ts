@@ -1,38 +1,37 @@
 'use strict';
 import {BookService} from "./bookService";
 import {RestResponseService} from "../common/service/restResponseService";
-import {RequestType, RequestMapping} from "../common/decorators/requestMapping";
-import {Inject} from "../common/decorators/inject";
-import {Controller} from "../common/decorators/controller";
-import {ChapterService} from "../chapter/chapterService";
-import {VerseService} from "../verse/verseService";
+import {Named} from "../bdi/decorator/di";
 import {Book} from "./book";
 import {LoggerFactory} from "../common/loggerFactory";
+import {RequestMapping, RequestType, ResponseBody, Router} from "../bdi/decorator/mvc";
+import {Optional} from "../common/optional";
+import {IRouter} from "express-serve-static-core";
 
-@Inject
-@Controller
+@Named
 export class BookController {
   private log;
 
-  constructor(loggerFactory:LoggerFactory,
-              private bookService:BookService,
-              private restResponseService:RestResponseService) {
+  constructor(@Router private router: IRouter,
+              private loggerFactory: LoggerFactory,
+              private bookService: BookService,
+              private restResponseService: RestResponseService) {
     this.log = loggerFactory.getLogger(BookController);
   }
 
+  @ResponseBody
   @RequestMapping('/bible/:bibleId/books', RequestType.GET)
-  public getBooks(request, response) {
+  public async getBooks(request, response): Promise<Book[]> {
     const bibleId = request.params.bibleId;
     this.log.debug(`Loading books for ${bibleId}`);
-    let result = this.bookService.loadFromBible(bibleId);
-
-    this.restResponseService.respond(request, response, result);
+    return await this.bookService.loadFromBible(bibleId);
   }
 
+  @ResponseBody
   @RequestMapping('/book/:bookId', RequestType.GET)
-  public getBook(request, response) {
+  public async getBook(request, response): Promise<Book> {
     const bookId = request.params.bookId;
-    let result = this.bookService.getBook(bookId);
-    this.restResponseService.respond(request, response, result);
+    let result: Optional<Book> = await this.bookService.getBook(bookId);
+    return result.orElse(null);
   }
 }

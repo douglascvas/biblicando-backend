@@ -1,7 +1,7 @@
 import * as request from "request-promise";
-import {Inject} from "./decorators/inject";
+import {Named} from "../bdi/decorator/di";
 
-@Inject
+@Named
 export class HttpClient {
   private client: any;
 

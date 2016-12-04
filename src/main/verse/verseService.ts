@@ -1,5 +1,5 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {VerseDao} from "./verseDao";
 import {ChapterDao} from "../chapter/chapterDao";
 import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
@@ -9,7 +9,7 @@ import {Optional} from "../common/optional";
 import {ResourceManager} from "../common/resourceManager";
 import {RemoteService} from "../common/interface/remoteService";
 
-@Inject
+@Named
 export class VerseService {
 
   constructor(private verseDao: VerseDao,
@@ -47,8 +47,8 @@ export class VerseService {
     if (!chapter.isPresent()) {
       return [];
     }
-    let remoteService: RemoteService = this.remoteApiInfoService.getService(chapter.get().remoteSource);
-    return remoteService.getVerses(chapter.get().remoteId);
+    let remoteService: Optional<RemoteService> = this.remoteApiInfoService.getService(chapter.get().remoteSource);
+    return remoteService.isPresent() ? remoteService.get().getVerses(chapter.get().remoteId) : [];
   }
 
 }

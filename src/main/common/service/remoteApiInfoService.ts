@@ -1,23 +1,23 @@
 ///<reference path="../optional.ts"/>
 'use strict';
 import {RemoteApiInfo, RemoteApiConfig} from "../enums/remoteApiInfo";
-import {DependencyInjector} from "./dependencyInjector";
-import {Inject} from "../decorators/inject";
+import {DependencyInjector} from "../../bdi/dependencyInjector";
+import {Named} from "../../bdi/decorator/di";
 import {Optional} from "../optional";
 import {RemoteService} from "../interface/remoteService";
 
-@Inject
+@Named
 export class RemoteApiInfoService {
   constructor(private dependencyInjector: DependencyInjector) {
   }
 
-  public getService(name: string): RemoteService {
+  public getService(name: string): Optional<RemoteService> {
     let remoteApiInfo: Optional<RemoteApiInfo> = this.resolveFromName(name);
     if (!remoteApiInfo.isPresent()) {
       throw new Error(`No service found for ${name}.`);
     }
     let remoteServiceClass: RemoteService = <RemoteService>remoteApiInfo.get().serviceClass;
-    return <RemoteService>this.dependencyInjector.get(remoteServiceClass);
+    return this.dependencyInjector.get(remoteServiceClass);
   }
 
   public resolveFromName(name: string): Optional<RemoteApiInfo> {

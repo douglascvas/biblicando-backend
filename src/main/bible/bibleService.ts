@@ -1,11 +1,11 @@
 import {BibleDao} from "./bibleDao";
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {Bible} from "./bible";
 import {Config} from "../common/config";
 import {Optional} from "../common/optional";
 import {ResourceManager} from "../common/resourceManager";
 
-@Inject
+@Named
 export class BibleService {
 
   constructor(private config: Config,

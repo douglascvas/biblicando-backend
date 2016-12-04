@@ -1,5 +1,5 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {BookDao} from "./bookDao";
 import {Book} from "./book";
 import {LoggerFactory, Logger} from "../common/loggerFactory";
@@ -8,7 +8,7 @@ import {ResourceManager} from "../common/resourceManager";
 import {ChapterService} from "../chapter/chapterService";
 import {Chapter} from "../chapter/chapter";
 
-@Inject
+@Named
 export class BookService {
 
   private logger: Logger;

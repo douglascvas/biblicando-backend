@@ -18,9 +18,12 @@ export class ObjectUtils {
     }
   }
 
-  public static extractClassName(classz:Function):string {
-    var asString = classz.toString();
-    var match = asString.match(/(?:function|class)[\s]*(\w+).*(\(|\{)/);
+  public static extractClassName(classz: Function): string {
+    let asString = classz.toString();
+    if (asString === '[object]') {
+      asString = classz.constructor.toString();
+    }
+    let match = asString.match(/(?:function|class)[\s]*(\w+).*(\(|\{)/);
     if (!match) {
       console.log('The class must specify a name.', classz);
       return null;
@@ -28,22 +31,22 @@ export class ObjectUtils {
     return match[1];
   }
 
-  public static isClass(classz:Function):boolean {
+  public static isClass(classz: Function): boolean {
     return classz.toString().indexOf('class') === 0;
   }
 
-  public static extractArgs(classz:Function):string[] {
-    var regexStr = '\\(([^)]*)\\)';
+  public static extractArgs(classz: Function): string[] {
+    let regexStr = '\\(([^)]*)\\)';
     if (this.isClass(classz)) {
       regexStr = 'constructor[ ]*' + regexStr;
     }
-    var match = classz.toString().match(new RegExp(regexStr));
+    let match = classz.toString().match(new RegExp(regexStr));
     if (!match) {
       return [];
     }
     return match[1]
       .split(',')
-      .map(name => name.trim()).filter((value:string, index:number, array:string[]) => !!value);
+      .map(name => name.trim()).filter((value: string, index: number, array: string[]) => !!value);
   }
 
   /**

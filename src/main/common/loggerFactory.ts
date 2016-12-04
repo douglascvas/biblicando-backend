@@ -1,11 +1,11 @@
 'use strict';
-import {Inject} from "./decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {ObjectUtils} from "./service/objectUtils";
 import {Config} from "./config";
 
 const log4js = require('log4js');
 
-@Inject
+@Named
 export class LoggerFactory {
   constructor(private config?:Config) {
     const loggerConfig = config ? config.find('logger') || {} : {};
@@ -25,7 +25,7 @@ export class Logger {
   }
 
   public log(...args:String[]) {
-    this._logger.log.apply(this._logger, this._toArray(arguments));
+    this._logger.debugLog.apply(this._logger, this._toArray(arguments));
   }
 
   public info(...args:String[]) {

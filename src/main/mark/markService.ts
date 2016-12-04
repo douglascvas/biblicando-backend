@@ -1,11 +1,11 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {MarkDao} from "./markDao";
 import {Mark} from "./mark";
 import {ValidationService} from "../common/service/validationService";
 import * as assert from "assert";
 
-@Inject
+@Named
 export class MarkService {
   constructor(private markDao:MarkDao,
               private validationService:ValidationService) {

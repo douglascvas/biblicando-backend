@@ -1,28 +1,30 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
-import {Controller} from "../common/decorators/controller";
+import {Named} from "../bdi/decorator/di";
 import {VerseService} from "./verseService";
 import {RestResponseService} from "../common/service/restResponseService";
-import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 import {Verse} from "./verse";
+import {RequestMapping, RequestType, ResponseBody, Router} from "../bdi/decorator/mvc";
+import {IRouter} from "express-serve-static-core";
 
-@Inject
-@Controller
+@Named
 export class VerseController {
-  constructor(private verseService: VerseService,
+  constructor(@Router private router: IRouter,
+              private verseService: VerseService,
               private restResponseService: RestResponseService) {
   }
 
+  @ResponseBody
   @RequestMapping('/chapter/:chapterId/verses', RequestType.GET)
   public async getVerses(request, response): Promise<Verse[]> {
     const chapterId = request.params.chapterId;
     return this.verseService.getVerses(chapterId);
   }
 
+  @ResponseBody
   @RequestMapping('/verse/:verseId', RequestType.GET)
   public async getVerse(request, response): Promise<Verse> {
     const verseId = request.params.verseId;
     const verse = await this.verseService.getVerse(verseId);
-    return verse.isPresent() ? verse.get() : null;
+    return verse.orElse(null);
   }
 }

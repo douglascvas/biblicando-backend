@@ -1,12 +1,12 @@
 'use strict';
 import {ValidationException} from "../exception/validationException";
 import {LoggerFactory} from "../loggerFactory";
-import {Inject} from "../decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 
 const jsonschema = require("jsonschema");
 const Validator = jsonschema.Validator;
 
-@Inject
+@Named
 export class ValidationService {
   private validator;
   private logger;

@@ -1,11 +1,11 @@
 'use strict';
-import {Inject} from "../../decorators/inject";
+import {Named} from "../../../bdi/decorator/di";
 import {MongoClient} from "mongodb";
 import {Config} from "../../config";
 
 const jsonutils = require("jsonutils");
 
-@Inject
+@Named
 export class Mongo {
   private connection;
 

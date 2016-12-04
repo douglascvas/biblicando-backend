@@ -1,5 +1,5 @@
 'use strict';
-import {Inject} from "../../common/decorators/inject";
+import {Named} from "../../bdi/decorator/di";
 import {CacheService} from "../../common/service/cacheService";
 import * as URL from "url";
 import {Book} from "../../book/book";
@@ -18,7 +18,7 @@ import {Optional} from "../../common/optional";
 
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
-@Inject
+@Named
 export class BiblesOrgService implements RemoteService {
   private baseUrl;
   private logger: Logger;

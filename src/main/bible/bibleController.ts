@@ -1,39 +1,41 @@
 'use strict';
 
-import {Inject} from "../common/decorators/inject";
-import {Controller} from "../common/decorators/controller";
+import {Named} from "../bdi/decorator/di";
 import {BibleService} from "./bibleService";
 import {RestResponseService} from "../common/service/restResponseService";
-import {RequestMapping, RequestType} from "../common/decorators/requestMapping";
 import {LoggerFactory} from "../common/loggerFactory";
+import {Bible} from "./bible";
+import {Optional} from "../common/optional";
+import {Router, ResponseBody, RequestMapping, RequestType, Controller} from "../bdi/decorator/mvc";
+import {IRouter} from "express-serve-static-core";
 
-@Inject
+@Named
 @Controller
 export class BibleController {
   private log;
 
-  constructor(loggerFactory: LoggerFactory,
+  constructor(@Router private router: IRouter,
+              private loggerFactory: LoggerFactory,
               private bibleService: BibleService,
               private restResponseService: RestResponseService) {
     this.log = loggerFactory.getLogger(BibleController);
   }
 
+  @ResponseBody
   @RequestMapping('/bibles', RequestType.GET)
-  public getBibles(request, response) {
-    var self = this;
-    var result = this.bibleService.getBibles()
-      .then(bibles => {
-        self.log.debug(bibles.length, 'bibles queried', bibles.map(bible => bible._id + ' - ' + bible.name));
-        return bibles;
-      });
-    this.restResponseService.respond(request, response, result);
+  public async getBibles(request, response): Promise<Bible[]> {
+    let bibles: Bible[] = await this.bibleService.getBibles();
+    this.log.debug(bibles.length, 'bibles queried--', bibles.map(bible => bible._id + ' - ' + bible.name));
+    return bibles;
   }
 
+  @ResponseBody
   @RequestMapping('/bible/:bibleId', RequestType.GET)
-  public getBible(request, response) {
+  public async getBible(request, response) {
     const bibleId = request.params.bibleId;
-    let result = this.bibleService.getBible(bibleId);
-    this.restResponseService.respond(request, response, result);
+    let bible: Optional<Bible> = await this.bibleService.getBible(bibleId);
+    this.log.debug('bible queried', bibleId, '. Found: ', bible.isPresent() ? 1 : 0);
+    return bible.orElse(null);
   }
 
   // @RequestMapping('/bibles/sync', RequestType.POST)

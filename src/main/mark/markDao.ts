@@ -1,5 +1,5 @@
 'use strict';
-import {Inject} from "../common/decorators/inject";
+import {Named} from "../bdi/decorator/di";
 import {BaseDao} from "../common/dao/baseDao";
 import {Collection} from "../common/enums/collection";
 import {Mark} from "./mark";
@@ -7,7 +7,7 @@ import {ObjectID} from "mongodb";
 import * as assert from "assert";
 import {Optional} from "../common/optional";
 
-@Inject
+@Named
 export class MarkDao extends BaseDao<Mark> {
   constructor(private database) {
     super(database, Collection.MARK);
