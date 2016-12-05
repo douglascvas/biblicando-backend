@@ -3,13 +3,11 @@ import {Named} from "../bdi/decorator/di";
 import {VerseService} from "./verseService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {Verse} from "./verse";
-import {RequestMapping, RequestType, ResponseBody, Router} from "../bdi/decorator/mvc";
-import {IRouter} from "express-serve-static-core";
+import {RequestMapping, RequestType, ResponseBody} from "../bdi/decorator/mvc";
 
 @Named
 export class VerseController {
-  constructor(@Router private router: IRouter,
-              private verseService: VerseService,
+  constructor(private verseService: VerseService,
               private restResponseService: RestResponseService) {
   }
 

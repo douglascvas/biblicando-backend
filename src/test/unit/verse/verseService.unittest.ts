@@ -1,13 +1,13 @@
 'use strict';
 
-import {VerseService} from "../../../../main/verse/verseService";
+import {VerseService} from "../../../main/verse/verseService";
 import * as sinon from "sinon";
 import * as chai from "chai";
-import {ResourceManager} from "../../../../main/common/resourceManager";
-import {RemoteApiInfoService} from "../../../../main/common/service/remoteApiInfoService";
-import {Verse} from "../../../../main/verse/verse";
-import {VerseDao} from "../../../../main/verse/verseDao";
-import {ChapterDao} from "../../../../main/chapter/chapterDao";
+import {ResourceManager} from "../../../main/common/resourceManager";
+import {RemoteApiInfoService} from "../../../main/common/service/remoteApiInfoService";
+import {Verse} from "../../../main/verse/verse";
+import {VerseDao} from "../../../main/verse/verseDao";
+import {ChapterDao} from "../../../main/chapter/chapterDao";
 
 const assert = chai.assert;
 

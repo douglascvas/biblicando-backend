@@ -2,15 +2,24 @@
 
 import * as glob from "glob";
 import * as path from "path";
-import {ObjectUtils} from "../common/service/objectUtils";
+import {ObjectUtils} from "../../common/service/objectUtils";
+import {ModuleScannerService, ClassInfo} from "./moduleScannerService";
 
-export interface ClassInfo {
-  name: string,
-  classz: Function
-}
+export class DefaultModuleScannerService implements ModuleScannerService {
 
-export class ModuleScannerService {
-  private async getUnits(includePaths?: string[], excludePaths?: string[]): Promise<Map<string, any>> {
+  public async scan(includePaths?: string[], excludePaths?: string[]): Promise<ClassInfo[]> {
+    let result: ClassInfo[] = [];
+    let classMap: Map<string, Function> = await this.findClasses();
+    for (let entry of classMap.entries()) {
+      let [key, value] = entry;
+      if (typeof value === 'function') {
+        result.push({name: key, classz: value});
+      }
+    }
+    return result;
+  }
+
+  private async findClasses(includePaths?: string[], excludePaths?: string[]): Promise<Map<string, any>> {
     const result: Map<string, any> = new Map();
 
     includePaths = (includePaths && includePaths.length) ? includePaths : [path.resolve(`${__dirname}/..`) + '/**/*.js'];
@@ -42,18 +51,6 @@ export class ModuleScannerService {
     for (let entry of entries) {
       result.set(entry.key, entry.value);
     }
-  }
-
-  public async scan(includePaths?: string[], excludePaths?: string[]): Promise<ClassInfo[]> {
-    let result: ClassInfo[] = [];
-    let units: Map<string, Function> = await this.getUnits();
-    for (let entry of units.entries()) {
-      let [key, value] = entry;
-      if (typeof value === 'function') {
-        result.push({name: key, classz: value});
-      }
-    }
-    return result;
   }
 
 }

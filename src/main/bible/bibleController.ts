@@ -6,16 +6,13 @@ import {RestResponseService} from "../common/service/restResponseService";
 import {LoggerFactory} from "../common/loggerFactory";
 import {Bible} from "./bible";
 import {Optional} from "../common/optional";
-import {Router, ResponseBody, RequestMapping, RequestType, Controller} from "../bdi/decorator/mvc";
-import {IRouter} from "express-serve-static-core";
+import {ResponseBody, RequestMapping, RequestType} from "../bdi/decorator/mvc";
 
 @Named
-@Controller
 export class BibleController {
   private log;
 
-  constructor(@Router private router: IRouter,
-              private loggerFactory: LoggerFactory,
+  constructor(private loggerFactory: LoggerFactory,
               private bibleService: BibleService,
               private restResponseService: RestResponseService) {
     this.log = loggerFactory.getLogger(BibleController);

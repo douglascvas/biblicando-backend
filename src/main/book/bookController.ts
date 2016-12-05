@@ -4,16 +4,14 @@ import {RestResponseService} from "../common/service/restResponseService";
 import {Named} from "../bdi/decorator/di";
 import {Book} from "./book";
 import {LoggerFactory} from "../common/loggerFactory";
-import {RequestMapping, RequestType, ResponseBody, Router} from "../bdi/decorator/mvc";
+import {RequestMapping, RequestType, ResponseBody} from "../bdi/decorator/mvc";
 import {Optional} from "../common/optional";
-import {IRouter} from "express-serve-static-core";
 
 @Named
 export class BookController {
   private log;
 
-  constructor(@Router private router: IRouter,
-              private loggerFactory: LoggerFactory,
+  constructor(private loggerFactory: LoggerFactory,
               private bookService: BookService,
               private restResponseService: RestResponseService) {
     this.log = loggerFactory.getLogger(BookController);

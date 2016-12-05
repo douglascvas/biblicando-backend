@@ -1,14 +1,12 @@
 'use strict';
 // Maps the stack trace to the right typescript sources
 import * as sourceMapSupport from "source-map-support";
-import {ModuleScannerService} from "./bdi/moduleScannerService";
-import {DependencyInjector} from "./bdi/dependencyInjector";
 import {LoggerFactory, Logger} from "./common/loggerFactory";
 import {Mongo} from "./common/database/mongo/mongo";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import {Config} from "./common/config";
-import {AppManager} from "./bdi/appManager";
+import {ApplicationManager} from "./bdi/applicationManager";
 import {AutoScan} from "./bdi/decorator/di";
 sourceMapSupport.install();
 
@@ -19,13 +17,12 @@ const ignoreList = ['Promise'];
 @AutoScan
 export class Server {
   private _logger: Logger;
-  private appManager: AppManager;
 
   constructor(private app,
               private config: Config,
+              private appManager: ApplicationManager,
               private loggerFactory: LoggerFactory) {
     this._logger = loggerFactory.getLogger(Server);
-    this.appManager = new AppManager(this, loggerFactory);
   }
 
   public get logger() {
@@ -68,37 +65,6 @@ export class Server {
     this.appManager.registerValue('router', router);
     this.appManager.registerValue('database', connection);
   }
-
-  /**
-   * Activate the APIs registered by the controllers.
-   */
-  // private registerApis() {
-  //   const dependencies = ObjectUtils.toIterable(this.dependencyInjector.getAll());
-  //   const app = this.dependencyInjector.get('router');
-  //   for (let instance of dependencies) {
-  //     if (!instance.value.$controller) {
-  //       continue;
-  //     }
-  //     if (typeof instance.value.$controller.register !== 'function') {
-  //       throw new Error(`The controller ${instance.name} must be annotated with @Controller`)
-  //     }
-  //     instance.value.$controller.register(app, instance.value, this.loggerFactory);
-  //   }
-  // }
-
-  /**
-   * Register the generated schemas in the validator.
-   */
-  // private registerSchemas() {
-  // const dependencies = ObjectUtils.toIterable(this.dependencyInjector.getAll());
-  // const validationService: ValidationService = this.dependencyInjector.get('validationService');
-  // for (let instance of dependencies) {
-  //   if (instance.value.__$resource) {
-  //     validationService.addSchema(instance.value.__$resource);
-  //     // delete instance.value.__proto__.__$resource;
-  //   }
-  // }
-  // }
 
 }
 

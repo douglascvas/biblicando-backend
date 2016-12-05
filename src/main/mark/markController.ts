@@ -2,8 +2,9 @@
 import {AuthenticationService} from "../common/service/restAuthenticationService";
 import {MarkService} from "./markService";
 import {RestResponseService} from "../common/service/restResponseService";
-import {RequestMapping, RequestType} from "../bdi/decorator/mvc";
+import {RequestMapping, RequestType, ResponseBody} from "../bdi/decorator/mvc";
 import {Named} from "../bdi/decorator/di";
+import {Mark} from "./mark";
 
 @Named
 export class MarkController {
@@ -13,21 +14,21 @@ export class MarkController {
               private restResponseService: RestResponseService) {
   }
 
+  @ResponseBody
   @RequestMapping('/marks', RequestType.GET)
-  public getMarks(request, response) {
+  public getMarks(request, response): Promise<Mark[]> {
     const userId = request.user.id;
     const verseIds = (request.query.verses || '').split(',');
 
-    let result = this.markService.getMarksForVerses(userId, verseIds);
-    this.restResponseService.respond(request, response, result);
+    return this.markService.getMarksForVerses(userId, verseIds);
   }
 
+  @ResponseBody
   @RequestMapping('/marks', RequestType.PUT)
-  public saveMarks(request, response) {
+  public saveMarks(request, response): Promise<void> {
     const userId = request.user.id;
     const marks = request.body;
 
-    let result = this.markService.saveMarks(userId, marks);
-    this.restResponseService.respond(request, response, result);
+    return this.markService.saveMarks(userId, marks);
   }
 }

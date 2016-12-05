@@ -2,6 +2,7 @@ import {Config} from "./config";
 import * as express from "express";
 import {LoggerFactory} from "./loggerFactory";
 import {Server} from "../server";
+import {ApplicationManager} from "../bdi/applicationManager";
 
 const path = require("path");
 const Configurator = require("configurator-js");
@@ -12,7 +13,8 @@ export class ServerFactory {
     app = app || express();
     const config: Config = this.loadConfiguration();
     const loggerFactory = new LoggerFactory(config);
-    return new Server(app, config, loggerFactory);
+    const applicationManager: ApplicationManager = new ApplicationManager(Server, app, loggerFactory, null, null);
+    return new Server(app, config, applicationManager, loggerFactory);
   }
 
   private loadConfiguration(): Config {

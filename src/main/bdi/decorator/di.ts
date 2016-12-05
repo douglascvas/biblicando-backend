@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import {Optional} from "../../common/optional";
 
 const injectMetadataKey = Symbol("injectMD");
 const producesMetadataKey = Symbol("producesMD");
@@ -14,6 +13,11 @@ export interface FactoryInfo {
 export interface ServiceInfo {
   name: string,
   classz: Function
+}
+
+export interface AutoScanInfo {
+  includePaths: string[],
+  excludePaths: string[]
 }
 
 // export function Inject(target) {
@@ -37,28 +41,37 @@ export function Named(name?: any): any {
     Reflect.defineMetadata(servicesMetadataKey, services, target)
   }
 
-  if (typeof name !== 'string') {
-    let target = name;
-    defineNamed(target);
-    return target;
+  if (name && typeof name === 'string') {
+    return defineNamed;
   }
-  return defineNamed;
+
+  // No parameter
+  let target = name;
+  name = null;
+  defineNamed(target);
+  return target;
 }
 
-export function AutoScan(paths?: any): any {
-  if (!(paths instanceof Array)) {
-    let target = paths;
+export function AutoScan(includePaths?: any, excludePaths?: any): any {
+  if (typeof includePaths === 'string') {
+    includePaths = [includePaths];
+  }
+  if (!(includePaths instanceof Array)) {
+    let target = includePaths;
     Reflect.defineMetadata(autoscanMetadataKey, [], target);
     return target;
   }
   return function (target: any) {
-    Reflect.defineMetadata(autoscanMetadataKey, paths || [], target);
+    Reflect.defineMetadata(autoscanMetadataKey, <AutoScanInfo>{
+      includePaths: includePaths || [],
+      excludePaths: excludePaths || []
+    }, target);
   }
 }
 
 export class DI {
-  public static getAutoScanConfig(target: any): Optional<string[]> {
-    return Optional.ofNullable(Reflect.getMetadata(autoscanMetadataKey, target));
+  public static getAutoScanConfig(target: any): AutoScanInfo {
+    return Reflect.getMetadata(autoscanMetadataKey, target) || {includePaths: [], excludePaths: []};
   }
 
   public static getDeclaredServices(target: any): ServiceInfo[] {
