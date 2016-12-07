@@ -12,7 +12,7 @@ export class ApplicationManager {
   private logger: Logger;
 
   constructor(private mainApplicationClass: Function,
-              private routeManager: RouteManager,
+              private routeManager?: RouteManager,
               private loggerFactory?: LoggerFactory,
               private dependencyInjector?: DependencyInjector,
               private moduleScannerService?: ModuleScannerService) {

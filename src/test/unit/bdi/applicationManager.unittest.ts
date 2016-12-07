@@ -11,9 +11,9 @@ import {DefaultModuleScannerService} from "../../../main/bdi/moduleScanner/defau
 import {AutoScan, Named, Produces} from "../../../main/bdi/decorator/di";
 import {DependencyInjector} from "../../../main/bdi/dependencyInjector/dependencyInjector";
 import {DefaultDependencyInjector} from "../../../main/bdi/dependencyInjector/defaultDependencyInjector";
+import {RequestMapping, ResponseBody, RequestType, EndpointInfo} from "../../../main/bdi/decorator/mvc";
 import SinonSpy = Sinon.SinonSpy;
 import SinonStub = Sinon.SinonStub;
-import {RequestMapping, ResponseBody, RequestType, EndpointInfo} from "../../../main/bdi/decorator/mvc";
 
 const assert = chai.assert;
 
@@ -26,6 +26,7 @@ describe('AppManager', function () {
   let loggerFactory: LoggerFactory;
   let dependencyInjector: DependencyInjector;
   let byClassInstance: ByClass;
+  const UNIT_NAME = "test1";
 
 
   function spy() {
@@ -107,7 +108,7 @@ describe('AppManager', function () {
       assertApiIsRegistered({
         path: '/testApi-1',
         type: RequestType.GET,
-        callback: ByClass.prototype.testApiMethodWithResponseBody
+        callback: <any>sinon.match.any
       }, byClassInstance);
 
       assertApiIsRegistered({
@@ -117,6 +118,42 @@ describe('AppManager', function () {
       }, byClassInstance);
     });
 
+  });
+
+  describe('#registerFactory()', function () {
+    it('should register a factory', async function () {
+      // given
+      let factoryFn = sinon.stub();
+
+      // when
+      await appManager.registerFactory(UNIT_NAME, factoryFn);
+
+      assert.isTrue((<SinonStub>dependencyInjector.factory).calledWith(UNIT_NAME, factoryFn));
+    });
+  });
+
+  describe('#registerService()', async function () {
+    it('should register a service', async function () {
+      // given
+      let service = sinon.stub();
+
+      // when
+      await appManager.registerService(service, UNIT_NAME);
+
+      assert.isTrue((<SinonStub>dependencyInjector.service).calledWith(service, UNIT_NAME));
+    });
+  });
+
+  describe('#registerValue()', async function () {
+    it('should register a value', async function () {
+      // given
+      let value = sinon.stub();
+
+      // when
+      await appManager.registerValue(UNIT_NAME, value);
+
+      assert.isTrue((<SinonStub>dependencyInjector.value).calledWith(UNIT_NAME, value));
+    });
   });
 
   function classesInfo(): ClassInfo[] {

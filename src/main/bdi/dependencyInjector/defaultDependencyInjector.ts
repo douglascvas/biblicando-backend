@@ -76,7 +76,7 @@ export class DefaultDependencyInjector implements DependencyInjector {
     if (!unit || !unit.resolved) {
       return Optional.empty();
     }
-    return unit.instanceValue;
+    return Optional.ofNullable(unit.instanceValue);
   }
 
   public findAll(): UnitInfo[] {
@@ -180,7 +180,7 @@ export class DefaultDependencyInjector implements DependencyInjector {
   }
 
   private debugLog(...value) {
-    if (this.logger.debug) {
+    if (this.logger && this.logger.debug) {
       this.logger.debug.apply(this.logger, arguments);
     } else {
       console.log.apply(null, arguments);
@@ -205,9 +205,10 @@ export class DefaultDependencyInjector implements DependencyInjector {
     return name;
   }
 
+
   private defaultFactory(classz, dependencies) {
     this.debugLog("Registering default: ", this.getFunctionName(classz));
-    return new (Function.prototype.bind.apply(classz, dependencies));
+    return new (Function.prototype.bind.apply(classz, [classz].concat(dependencies)));
   }
 
   private instantiate(unit: Unit, dependencies: Unit[]): boolean {
