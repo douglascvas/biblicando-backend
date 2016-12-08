@@ -52,14 +52,12 @@ export function Named(name?: any): any {
   return target;
 }
 
-export function AutoScan(includePaths?: any, excludePaths?: any): any {
+export function AutoScan(includePaths: string|string[], excludePaths?: string|string[]) {
   if (typeof includePaths === 'string') {
     includePaths = [includePaths];
   }
-  if (!(includePaths instanceof Array)) {
-    let target = includePaths;
-    Reflect.defineMetadata(autoscanMetadataKey, [], target);
-    return target;
+  if (typeof excludePaths === 'string') {
+    excludePaths = [excludePaths];
   }
   return function (target: any) {
     Reflect.defineMetadata(autoscanMetadataKey, <AutoScanInfo>{
@@ -71,7 +69,8 @@ export function AutoScan(includePaths?: any, excludePaths?: any): any {
 
 export class DI {
   public static getAutoScanConfig(target: any): AutoScanInfo {
-    return Reflect.getMetadata(autoscanMetadataKey, target) || {includePaths: [], excludePaths: []};
+    return Reflect.getMetadata(autoscanMetadataKey, target) ||
+      Reflect.getMetadata(autoscanMetadataKey, target.prototype) || null;
   }
 
   public static getDeclaredServices(target: any): ServiceInfo[] {

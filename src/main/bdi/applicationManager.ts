@@ -11,7 +11,7 @@ import {DependencyInjector} from "./dependencyInjector/dependencyInjector";
 export class ApplicationManager {
   private logger: Logger;
 
-  constructor(private mainApplicationClass: Function,
+  constructor(private mainApplicationClass: any,
               private routeManager?: RouteManager,
               private loggerFactory?: LoggerFactory,
               private dependencyInjector?: DependencyInjector,
@@ -19,6 +19,7 @@ export class ApplicationManager {
     this.logger = loggerFactory ? loggerFactory.getLogger('dependencyInjector') : <any>console;
     this.dependencyInjector = dependencyInjector || new DefaultDependencyInjector(loggerFactory);
     this.moduleScannerService = moduleScannerService || new DefaultModuleScannerService();
+    this.dependencyInjector.value('applicationManager', this);
   }
 
 
@@ -34,11 +35,15 @@ export class ApplicationManager {
     this.dependencyInjector.factory(target, factoryFn);
   }
 
-  public async bootstrap() {
+  public async bootstrap(): Promise<any> {
+    this.dependencyInjector.service(this.mainApplicationClass);
     let autoScanInfo: AutoScanInfo = DI.getAutoScanConfig(this.mainApplicationClass);
-    await this.scanAndRegisterModules(autoScanInfo.includePaths, autoScanInfo.excludePaths);
+    if (autoScanInfo) {
+      await this.scanAndRegisterModules(autoScanInfo.includePaths, autoScanInfo.excludePaths);
+    }
     this.dependencyInjector.assertAllResolved();
     await this.registerEndpoints();
+    return this.dependencyInjector.findOne(this.mainApplicationClass).get();
   }
 
   private async scanAndRegisterModules(includePaths?: string[], excludePaths?: string[]): Promise<void> {

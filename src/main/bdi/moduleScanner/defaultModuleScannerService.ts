@@ -9,7 +9,7 @@ export class DefaultModuleScannerService implements ModuleScannerService {
 
   public async scan(includePaths?: string[], excludePaths?: string[]): Promise<ClassInfo[]> {
     let result: ClassInfo[] = [];
-    let classMap: Map<string, Function> = await this.findClasses();
+    let classMap: Map<string, Function> = await this.findClasses(includePaths, excludePaths);
     for (let entry of classMap.entries()) {
       let [key, value] = entry;
       if (typeof value === 'function') {
@@ -22,7 +22,6 @@ export class DefaultModuleScannerService implements ModuleScannerService {
   private async findClasses(includePaths?: string[], excludePaths?: string[]): Promise<Map<string, any>> {
     const result: Map<string, any> = new Map();
 
-    includePaths = (includePaths && includePaths.length) ? includePaths : [path.resolve(`${__dirname}/..`) + '/**/*.js'];
     const mainPattern: string = includePaths.join('|');
     const options: any = {};
     if (excludePaths && excludePaths.length) {

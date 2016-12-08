@@ -58,11 +58,9 @@ export class DefaultDependencyInjector implements DependencyInjector {
   public factory(target: any, factoryFn: Function): void {
     this.assertIsFunction(factoryFn, 'The factory must be a function.');
 
-    let unit = this.getOrCreateUnit(target);
-    unit.factory = factoryFn;
-    unit.classArgs = ObjectUtils.extractArgs(factoryFn);
+    let unit = this.getOrCreateUnit(target, target, factoryFn);
     this.debugLog(`Registering factory for ${unit.name}`);
-    unit.instanceValue = factoryFn();
+    // unit.instanceValue = factoryFn();
     this.add(unit);
   }
 
@@ -114,9 +112,8 @@ export class DefaultDependencyInjector implements DependencyInjector {
     }
     resolveQueue.push(unit.name);
 
-    let dependenciesResolved = this.resolveDependencies(unit, self, resolveQueue);
-
-    if (!dependenciesResolved) {
+    // let dependenciesResolved = this.resolveDependencies(unit, self, resolveQueue);
+    if (!unit.classz) {
       return false;
     }
 
@@ -145,16 +142,25 @@ export class DefaultDependencyInjector implements DependencyInjector {
     });
   }
 
-  private getOrCreateUnit(name: string, classz?: Function): Unit {
+  private getOrCreateUnit(name: string, classz?: Function, factory?: Function): Unit {
     let unitName: string = this.getInstanceName(classz, name);
-    let classArgs: string[] = classz ? ObjectUtils.extractArgs(classz) : [];
+    let classArgs: string[] = (classz ? ObjectUtils.extractArgs(factory || classz) : []);
 
     let unit = this.units.get(unitName);
     if (unit) {
-      return unit;
+      return this.updateUnitData(unit, factory, classz, classArgs);
     }
     unit = new Unit(unitName, classz, classArgs);
+    unit.factory = factory;
+    unit.instanceValue = null;
     this.units.set(unitName, unit);
+    return unit;
+  }
+
+  private updateUnitData(unit: Unit, factory: Function, classz: Function, classArgs: string[]): Unit {
+    unit.factory = unit.factory || factory;
+    unit.classz = unit.classz || classz;
+    unit.classArgs = unit.classArgs.length ? unit.classArgs : classArgs;
     return unit;
   }
 
