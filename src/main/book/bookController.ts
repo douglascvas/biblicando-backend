@@ -1,19 +1,14 @@
 'use strict';
 import {BookService} from "./bookService";
-import {RestResponseService} from "../common/service/restResponseService";
-import {Named} from "../bdi/decorator/di";
 import {Book} from "./book";
-import {LoggerFactory} from "../common/loggerFactory";
-import {RequestMapping, RequestType, ResponseBody} from "../bdi/decorator/mvc";
-import {Optional} from "../common/optional";
+import {Optional, Service, ResponseBody, RequestMapping, RequestType, LoggerFactory} from "node-boot";
 
-@Named
+@Service
 export class BookController {
   private log;
 
   constructor(private loggerFactory: LoggerFactory,
-              private bookService: BookService,
-              private restResponseService: RestResponseService) {
+              private bookService: BookService) {
     this.log = loggerFactory.getLogger(BookController);
   }
 

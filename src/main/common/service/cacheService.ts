@@ -1,9 +1,7 @@
 'use strict';
+import {Service, Optional} from "node-boot";
 
-import {Named} from "../../bdi/decorator/di";
-import {Optional} from "../optional";
-
-@Named
+@Service
 export class CacheService {
 
   constructor(private cacheClient) {

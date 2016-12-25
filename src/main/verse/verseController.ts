@@ -1,11 +1,10 @@
 'use strict';
-import {Named} from "../bdi/decorator/di";
 import {VerseService} from "./verseService";
 import {RestResponseService} from "../common/service/restResponseService";
 import {Verse} from "./verse";
-import {RequestMapping, RequestType, ResponseBody} from "../bdi/decorator/mvc";
+import {Service, ResponseBody, RequestMapping, RequestType} from "node-boot";
 
-@Named
+@Service
 export class VerseController {
   constructor(private verseService: VerseService,
               private restResponseService: RestResponseService) {

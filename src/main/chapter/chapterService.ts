@@ -1,13 +1,12 @@
 'use strict';
 import {ChapterDao} from "./chapterDao";
-import {Named} from "../bdi/decorator/di";
 import {Chapter} from "./chapter";
 import {VerseService} from "../verse/verseService";
 import {Config} from "../common/config";
-import {Optional} from "../common/optional";
+import {Optional, Service} from "node-boot";
 import {ResourceManager} from "../common/resourceManager";
 
-@Named
+@Service
 export class ChapterService {
   private CACHE_TIMEOUT;
 

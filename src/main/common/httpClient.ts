@@ -1,7 +1,7 @@
 import * as request from "request-promise";
-import {Named} from "../bdi/decorator/di";
+import {Service} from "node-boot";
 
-@Named
+@Service
 export class HttpClient {
   private client: any;
 

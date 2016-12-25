@@ -1,10 +1,10 @@
 'use strict';
 // Maps the stack trace to the right typescript sources
 import * as sourceMapSupport from "source-map-support";
-import {LoggerFactory, Logger} from "./common/loggerFactory";
 import * as bodyParser from "body-parser";
 import {Config} from "./common/config";
-import {AutoScan} from "./bdi/decorator/di";
+import {Mongo} from "./common/database/mongo/mongo";
+import {AutoScan, Logger, LoggerFactory, Factory} from "node-boot";
 import {IRouter} from "express-serve-static-core";
 
 sourceMapSupport.install();
@@ -48,6 +48,13 @@ export class Server {
   public async initialize(): Promise<any> {
     this.configureServer();
     this.app.use('/api/v1', this.router);
+  }
+
+  @Factory('database')
+  private async databaseFactory(config: Config) {
+    const mongoDb: Mongo = new Mongo(config);
+    const connection = await mongoDb.connect();
+    return connection;
   }
 
 }

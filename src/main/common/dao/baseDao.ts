@@ -1,8 +1,8 @@
 'use strict';
 
 import {Db, ObjectID} from "mongodb";
-import {Optional} from "../optional";
 import {RemoteResource} from "../interface/remoteResource";
+import {Optional} from "node-boot";
 
 export class BaseDao<E> {
   constructor(private db: Db, private collectionName: string) {

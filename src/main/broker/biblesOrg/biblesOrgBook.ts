@@ -1,5 +1,4 @@
 'use strict';
-import {Bible} from "../../bible/bible";
 import {Broker} from "../../common/enums/broker";
 import {Book} from "../../book/book";
 

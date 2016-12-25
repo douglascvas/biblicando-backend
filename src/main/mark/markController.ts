@@ -2,11 +2,10 @@
 import {AuthenticationService} from "../common/service/restAuthenticationService";
 import {MarkService} from "./markService";
 import {RestResponseService} from "../common/service/restResponseService";
-import {RequestMapping, RequestType, ResponseBody} from "../bdi/decorator/mvc";
-import {Named} from "../bdi/decorator/di";
 import {Mark} from "./mark";
+import {Service, ResponseBody, RequestMapping, RequestType} from "node-boot";
 
-@Named
+@Service
 export class MarkController {
 
   constructor(private markService: MarkService,

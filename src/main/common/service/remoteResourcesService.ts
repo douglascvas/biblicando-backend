@@ -1,6 +1,5 @@
 import {RemoteApiInfo} from "../enums/remoteApiInfo";
 import {RemoteApiInfoService} from "./remoteApiInfoService";
-import {Named} from "../../bdi/decorator/di";
 import {Bible} from "../../bible/bible";
 import {RemoteService} from "../interface/remoteService";
 import {BibleDao} from "../../bible/bibleDao";
@@ -9,9 +8,9 @@ import {Book} from "../../book/book";
 import {BookDao} from "../../book/bookDao";
 import {Chapter} from "../../chapter/chapter";
 import {ChapterDao} from "../../chapter/chapterDao";
-import {Optional} from "../optional";
+import {Service, Optional} from "node-boot";
 
-@Named
+@Service
 export class RemoteResourcesService {
 
   constructor(private remoteApiInfoService: RemoteApiInfoService,

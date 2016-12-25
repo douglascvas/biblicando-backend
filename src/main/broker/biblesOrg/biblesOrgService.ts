@@ -1,5 +1,4 @@
 'use strict';
-import {Named} from "../../bdi/decorator/di";
 import {CacheService} from "../../common/service/cacheService";
 import * as URL from "url";
 import {Book} from "../../book/book";
@@ -10,15 +9,14 @@ import {BiblesOrgBible} from "./biblesOrgBible";
 import {BiblesOrgBook} from "./biblesOrgBook";
 import {BiblesOrgChapter} from "./biblesOrgChapter";
 import {BiblesOrgVerse} from "./biblesOrgVerse";
-import {LoggerFactory, Logger} from "../../common/loggerFactory";
 import {Config} from "../../common/config";
 import {HttpClient} from "../../common/httpClient";
 import {RemoteService} from "../../common/interface/remoteService";
-import {Optional} from "../../common/optional";
+import {Service, Optional, Logger, LoggerFactory} from "node-boot";
 
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
-@Named
+@Service
 export class BiblesOrgService implements RemoteService {
   private baseUrl;
   private logger: Logger;
@@ -54,7 +52,7 @@ export class BiblesOrgService implements RemoteService {
     return Promise.resolve();
   }
 
-  private async getResourceFromInternet<T>(url: string, filter: (any)=>any): Promise<Optional<T>> {
+  private async getResourceFromInternet<T>(url: string, filter: (any) => any): Promise<Optional<T>> {
     const self = this;
     this.logger.debug('Fetching resource from:', url);
     const remoteDataStr: string = await self.httpClient.get(url);
@@ -64,7 +62,7 @@ export class BiblesOrgService implements RemoteService {
     return result;
   }
 
-  private async getResource<T>(url: string, requestFilter: (any)=>any): Promise<Optional<T>> {
+  private async getResource<T>(url: string, requestFilter: (any) => any): Promise<Optional<T>> {
     const remoteResource: any = await this.getResourceFromCache(url);
     return remoteResource ? Optional.of(remoteResource) : this.getResourceFromInternet(url, requestFilter);
   }

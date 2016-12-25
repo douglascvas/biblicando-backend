@@ -1,12 +1,11 @@
 'use strict';
-import {Named} from "../../bdi/decorator/di";
-import {LoggerFactory} from "../loggerFactory";
+import {Service, LoggerFactory} from "node-boot";
 
-@Named
+@Service
 export class ErrorHandlerService {
   private logger;
 
-  constructor(private loggerFactory:LoggerFactory) {
+  constructor(private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.getLogger('ErrorHandlerService');
   }
 
@@ -21,7 +20,7 @@ export class ErrorHandlerService {
   }
 
   private logRequestError(httpRequest, responseStatus, jsonValue, error) {
-    var result = JSON.parse(JSON.stringify(jsonValue));
+    const result = JSON.parse(JSON.stringify(jsonValue));
     result.url = httpRequest.path;
     result.responseStatus = responseStatus;
     result.stack = error.stack;

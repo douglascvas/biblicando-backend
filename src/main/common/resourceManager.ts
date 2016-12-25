@@ -1,9 +1,8 @@
-import {Optional} from "./optional";
 import {CacheService} from "./service/cacheService";
 import {Config} from "./config";
-import {Named} from "../bdi/decorator/di";
+import {Service, Optional} from "node-boot";
 
-@Named
+@Service
 export class ResourceManager {
   private CACHE_TIMEOUT;
 

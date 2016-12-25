@@ -1,0 +1,24 @@
+biblicando-backend:
+  '{0.0.1}':
+    bible:
+      filter: {languageCode: {$regex: '^por|^en'}}
+    database:
+      host: '[[DB_HOST]]'
+      port: '27017'
+      username: '[[DB_USERNAME]]'
+      password: '[[DB_PASSWORD]]'
+      database: 'biblicando'
+    cache:
+      host: '[[REDIS_HOST]]'
+      port: '[[REDIS_PORT]]'
+      configFile: '[[CACHE_CONFIG_FILE]]'
+      expirationInMillis: 100000
+    server:
+      port: 3005
+    api:
+      biblesOrg:
+        url: 'https://[[BIBLES_ORG_TOKEN]]:@bibles.org/v2/'
+    logger:
+      appenders:
+        - type: 'console'
+

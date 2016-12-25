@@ -99,7 +99,7 @@ module.exports = function (gulp) {
     const sourceTsFiles = [`${paths.typings}/**/*.ts`].concat(source);
     const tsProject = typescript.createProject(paths.tsConfig);
     const tsResult = gulp.src(sourceTsFiles, options)
-      // .pipe(cache('linting'))
+    // .pipe(cache('linting'))
       .pipe(sourcemaps.init())
       .pipe(tsProject());
     // .pipe(typescript(typescript.longReporter));
@@ -143,6 +143,10 @@ module.exports = function (gulp) {
     server.run([`${paths.outputMain}/index.js`], {}, 35725);
     waitForApplication(3005, cb);
   }
+
+  process.on('unhandledRejection', (e) => {
+    console.trace('Error: ', e);
+  });
 
   gulp.task('be-clean:main', cleanMain);
   gulp.task('be-clean:test', cleanTest);

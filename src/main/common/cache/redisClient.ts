@@ -1,12 +1,11 @@
 'use strict';
 
 import * as Redis from "ioredis";
-import {Named} from "../../bdi/decorator/di";
-import {LoggerFactory} from "../loggerFactory";
 import {CacheClient} from "./cacheClient";
 import {Config} from "../config";
+import {Service, LoggerFactory} from "node-boot";
 
-@Named('cacheClient')
+@Service('cacheClient')
 export class RedisClient implements CacheClient {
   private client: any;
   private logger;

@@ -1,16 +1,14 @@
 'use strict';
 
 import {BaseDao} from "../common/dao/baseDao";
-import {Named} from "../bdi/decorator/di";
 import {Collection} from "../common/enums/collection";
 import {Bible} from "./bible";
-import {Db} from "mongodb";
-import {Optional} from "../common/optional";
+import {Optional, Service} from "node-boot";
 
-@Named
+@Service
 export class BibleDao extends BaseDao<Bible> {
 
-  constructor(private database: Db) {
+  constructor(private database: any) {
     super(database, Collection.BIBLE);
   }
 

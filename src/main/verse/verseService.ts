@@ -1,15 +1,15 @@
 'use strict';
-import {Named} from "../bdi/decorator/di";
+
 import {VerseDao} from "./verseDao";
 import {ChapterDao} from "../chapter/chapterDao";
 import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
 import {Verse} from "./verse";
 import {Chapter} from "../chapter/chapter";
-import {Optional} from "../common/optional";
 import {ResourceManager} from "../common/resourceManager";
 import {RemoteService} from "../common/interface/remoteService";
+import {Service, Optional} from "node-boot";
 
-@Named
+@Service
 export class VerseService {
 
   constructor(private verseDao: VerseDao,
@@ -34,7 +34,7 @@ export class VerseService {
     if (!verseId) {
       return Optional.empty();
     }
-    return this.resourceManager.getResource(verseId, 'verse', id => this.verseDao.findOne(id));
+    return <Optional<Verse>>await this.resourceManager.getResource(verseId, 'verse', id => this.verseDao.findOne(id));
   }
 
 

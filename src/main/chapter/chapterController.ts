@@ -1,12 +1,10 @@
 'use strict';
-import {Named} from "../bdi/decorator/di";
 import {RestResponseService} from "../common/service/restResponseService";
 import {ChapterService} from "./chapterService";
-import {ResponseBody, RequestMapping, RequestType} from "../bdi/decorator/mvc";
-import {Optional} from "../common/optional";
+import {Optional, Service, ResponseBody, RequestMapping, RequestType} from "node-boot";
 import {Chapter} from "./chapter";
 
-@Named
+@Service
 export class ChapterController {
 
   constructor(private chapterService: ChapterService,

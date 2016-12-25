@@ -1,12 +1,10 @@
 'use strict';
-import {Named} from "../bdi/decorator/di";
 import {BaseDao} from "../common/dao/baseDao";
-import {ObjectID, InsertOneWriteOpResult} from "mongodb";
 import {Collection} from "../common/enums/collection";
 import {Book} from "./book";
-import {Optional} from "../common/optional";
+import {Optional, Service} from "node-boot";
 
-@Named
+@Service
 export class BookDao extends BaseDao<Book> {
 
   constructor(private database) {

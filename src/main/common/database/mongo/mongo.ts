@@ -1,11 +1,11 @@
 'use strict';
-import {Named} from "../../../bdi/decorator/di";
 import {MongoClient} from "mongodb";
 import {Config} from "../../config";
+import {Service} from "node-boot";
 
 const jsonutils = require("jsonutils");
 
-@Named
+@Service
 export class Mongo {
   private connection;
 

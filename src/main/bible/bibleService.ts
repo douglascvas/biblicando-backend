@@ -1,11 +1,10 @@
 import {BibleDao} from "./bibleDao";
-import {Named} from "../bdi/decorator/di";
 import {Bible} from "./bible";
 import {Config} from "../common/config";
-import {Optional} from "../common/optional";
+import {Optional, Service} from "node-boot";
 import {ResourceManager} from "../common/resourceManager";
 
-@Named
+@Service
 export class BibleService {
 
   constructor(private config: Config,

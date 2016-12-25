@@ -2,7 +2,7 @@ import {Bible} from "../../bible/bible";
 import {Book} from "../../book/book";
 import {Chapter} from "../../chapter/chapter";
 import {Verse} from "../../verse/verse";
-import {Optional} from "../optional";
+import {Optional} from "node-boot";
 
 export interface RemoteService {
   getBibles(): Promise<Bible[]>;

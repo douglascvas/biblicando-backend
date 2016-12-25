@@ -1,7 +1,7 @@
 import * as express from "express";
 import {Server} from "../../../main/server";
-import {LoggerFactory} from "../../../main/common/loggerFactory";
-import {ApplicationManager} from "../../../main/bdi/applicationManager";
+import {IRouter} from "express-serve-static-core";
+import {ApplicationManager, LoggerFactory} from "node-boot";
 
 const path = require('path');
 const Configurator = require('configurator-js');
@@ -19,7 +19,8 @@ export class TestTool {
     this.config = this.loadConfiguration();
     this.loggerFactory = new LoggerFactory(this.config);
     this.applicationManager = new ApplicationManager(Server, this.app, this.loggerFactory);
-    this.server = new Server(this.app, this.config, this.applicationManager, this.loggerFactory);
+    const router: IRouter = express.Router();
+    this.server = new Server(this.app, this.config, router, this.loggerFactory);
   }
 
   private loadConfiguration() {

@@ -1,8 +1,8 @@
 'use strict';
-import {Named} from "../../bdi/decorator/di";
 import {ErrorHandlerService} from "./errorHandlerService";
+import {Service} from "node-boot";
 
-@Named
+@Service
 export class RestResponseService {
   constructor(private errorHandlerService: ErrorHandlerService) {
   }

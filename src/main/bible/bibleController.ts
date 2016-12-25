@@ -1,14 +1,11 @@
 'use strict';
 
-import {Named} from "../bdi/decorator/di";
 import {BibleService} from "./bibleService";
 import {RestResponseService} from "../common/service/restResponseService";
-import {LoggerFactory} from "../common/loggerFactory";
 import {Bible} from "./bible";
-import {Optional} from "../common/optional";
-import {ResponseBody, RequestMapping, RequestType} from "../bdi/decorator/mvc";
+import {Optional, LoggerFactory, ResponseBody, RequestMapping, RequestType, Service} from "node-boot";
 
-@Named
+@Service
 export class BibleController {
   private log;
 
