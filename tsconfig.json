@@ -7,18 +7,17 @@
     "target": "es2015",
     "module": "commonjs",
     "declaration": false,
+    "diagnostics": true,
     "noImplicitAny": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "moduleResolution": "node"
   },
-  "filesGlob": [
-    "./src/**/*.ts",
-    "./typings/index.d.ts",
-    "./node_modules/node-boot/lib/index.d.ts"
+  "include": [
+    "./src/**/*.ts"
   ],
-  "files": [
-    "./node_modules/node-boot/lib/index.d.ts"
+  "exclude": [
+    "node_modules"
   ]
 }

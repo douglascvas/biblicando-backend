@@ -1,13 +1,13 @@
 'use strict';
 
 import {VerseDao} from "./verseDao";
-import {ChapterDao} from "../chapter/chapterDao";
-import {RemoteApiInfoService} from "../common/service/remoteApiInfoService";
+import {ChapterDao} from "../chapter/ChapterDao";
+import {RemoteApiInfoService} from "../common/service/RemoteApiInfoService";
 import {Verse} from "./verse";
-import {Chapter} from "../chapter/chapter";
-import {ResourceManager} from "../common/resourceManager";
+import {Chapter} from "../chapter/Chapter";
+import {ResourceManager} from "../common/ResourceManager";
 import {RemoteService} from "../common/interface/remoteService";
-import {Service, Optional} from "node-boot";
+import {Service} from "node-boot";
 
 @Service
 export class VerseService {
@@ -30,25 +30,22 @@ export class VerseService {
     );
   }
 
-  public async getVerse(verseId: string): Promise<Optional<Verse>> {
-    if (!verseId) {
-      return Optional.empty();
-    }
-    return <Optional<Verse>>await this.resourceManager.getResource(verseId, 'verse', id => this.verseDao.findOne(id));
+  public async getVerse(verseId: string): Promise<Verse> {
+    return <Verse>await this.resourceManager.getResource(verseId, 'verse', id => this.verseDao.findOne(id));
   }
 
 
-  private getChapter(chapterId: string): Promise<Optional<Chapter>> {
+  private getChapter(chapterId: string): Promise<Chapter> {
     return this.resourceManager.getResource(chapterId, 'chapter', id => this.chapterDao.findOne(id));
   }
 
   private async loadVersesFromRemote(chapterId: string): Promise<Verse[]> {
-    const chapter: Optional<Chapter> = await this.getChapter(chapterId);
-    if (!chapter.isPresent()) {
+    const chapter: Chapter = await this.getChapter(chapterId);
+    if (!chapter) {
       return [];
     }
-    let remoteService: Optional<RemoteService> = this.remoteApiInfoService.getService(chapter.get().remoteSource);
-    return remoteService.isPresent() ? remoteService.get().getVerses(chapter.get().remoteId) : [];
+    let remoteService: RemoteService = this.remoteApiInfoService.getService(chapter.remoteSource);
+    return remoteService ? remoteService.getVerses(chapter.remoteId) : [];
   }
 
 }

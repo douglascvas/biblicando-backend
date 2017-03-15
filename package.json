@@ -4,9 +4,8 @@
   "description": "Bible study tools",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "postinstall": "typings install",
-    "build": "gulp build"
+    "test": "node ./node_modules/.bin/_mocha --require ts-node/register --ui bdd src/test/**/*.unittest.ts src/test/*.unittest.ts",
+    "build": "node ./node_modules/.bin/rimraf build && node ./node_modules/.bin/tsc"
   },
   "repository": {
     "type": "git",
@@ -18,48 +17,51 @@
     "jesus",
     "saviour"
   ],
+  "engines": {
+    "node": ">=0.12.0"
+  },
   "author": "Douglas Carvalho Vasconcelos <douglascvas@gmail.com>",
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/douglascvas/biblicandojs/issues"
   },
   "dependencies": {
-    "biblicando-api": "git+ssh://git@github.com/douglascvas/biblicando-api.git#v0.0.13",
-    "body-parser": "^1.15.0",
-    "configurator-js": "0.0.5",
+    "body-parser": "^1.16.0",
     "express": "4.14.0",
-    "glob": "^7.0.3",
     "gulp-express": "^0.3.5",
-    "ioredis": "^2.4.0",
-    "jsonschema": "^1.1.0",
+    "ioredis": "^2.5.0",
+    "jsonschema": "^1.1.1",
     "jsonutils": "^0.1.0",
-    "log4js": "^1.0.1",
-    "mongodb": "^2.1.7",
-    "reflect-metadata": "^0.1.8",
-    "request": "^2.69.0",
+    "mongodb": "^2.2.24",
+    "request": "^2.79.0",
     "request-promise": "^4.1.1",
-    "source-map-support": "^0.4.0",
-    "through2": "^2.0.1",
-    "node-boot": "*"
+    "source-map-support": "^0.4.10",
+    "through2": "^2.0.3",
+    "node-boot": "/home/douglas/workspace/node-boot"
   },
   "devDependencies": {
+    "@types/body-parser": "0.0.34",
+    "@types/chai": "^3.4.34",
+    "@types/express": "^4.0.35",
+    "@types/ioredis": "0.0.22",
+    "@types/mocha": "^2.2.39",
+    "@types/mongodb": "^2.1.41",
+    "@types/node": "^7.0.4",
+    "@types/request": "0.0.41",
+    "@types/request-promise": "^4.1.33",
+    "@types/serve-static": "^1.7.31",
+    "@types/sinon": "^1.16.35",
+    "@types/source-map-support": "^0.2.28",
     "chai": "^3.5.0",
-    "del": "^2.2.0",
-    "gulp": "gulpjs/gulp#4.0",
-    "gulp-cached": "^1.1.1",
-    "gulp-mocha": "^3.0.1",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-typescript": "^3.1.3",
-    "gulp-watch": "^4.3.5",
-    "karma": "^1.3.0",
+    "del": "^2.2.2",
     "mocha": "^3.2.0",
     "node-uuid": "^1.4.7",
-    "phantomjs-prebuilt": "^2.1.7",
-    "sinon": "^1.17.3",
-    "ts-node": "^1.7.0",
+    "phantomjs-prebuilt": "^2.1.14",
+    "rimraf": "^2.5.4",
+    "sinon": "^1.17.7",
+    "ts-node": "^2.1.0",
     "tsconfig-glob": "^0.4.3",
-    "tslint": "^4.0.2",
-    "typescript": "^2.0.10",
-    "typings": "^2.0.0"
+    "tslint": "^4.4.2",
+    "typescript": "^2.2.0-dev.20170125"
   }
 }

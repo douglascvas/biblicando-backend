@@ -1,9 +1,9 @@
 'use strict';
 import {Db} from "mongodb";
-import {BaseDao} from "../common/dao/baseDao";
-import {Collection} from "../common/enums/collection";
+import {BaseDao} from "../common/dao/BaseDao";
+import {Collection} from "../common/enums/Collection";
 import {Verse} from "./verse";
-import {Optional, Service} from "node-boot";
+import {Service} from "node-boot";
 
 @Service
 export class VerseDao extends BaseDao<Verse> {
@@ -11,7 +11,7 @@ export class VerseDao extends BaseDao<Verse> {
     super(database, Collection.VERSE);
   }
 
-  public findOneByNumber(chapterId: string, number: number): Promise<Optional<Verse>> {
+  public findOneByNumber(chapterId: string, number: number): Promise<Verse> {
     const query = {
       "chapter._id": chapterId,
       "number": number

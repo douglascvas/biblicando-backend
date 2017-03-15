@@ -1,12 +1,13 @@
 'use strict';
-import {Chapter} from "../chapter/Chapter";
+import {Verse} from "../verse/verse";
+import {Book} from "../book/Book";
 import {Resource} from "../common/decorators/Resource";
 import {Type} from "../common/decorators/Type";
 import {SchemaType} from "../common/enums/SchemaType";
 import {RemoteResource} from "../common/interface/remoteResource";
 
 @Resource
-export class Verse implements RemoteResource {
+export class Chapter implements RemoteResource {
 
   @Type(SchemaType.STRING)
   _id: string;
@@ -21,13 +22,13 @@ export class Verse implements RemoteResource {
   copyright: string;
 
   @Type(SchemaType.INTEGER)
-  numbers: number[];
+  number: number;
 
-  @Type(SchemaType.OBJECT, Chapter)
-  chapter: Chapter;
+  @Type(SchemaType.OBJECT, Book)
+  book: Book;
 
-  @Type(SchemaType.STRING)
-  text: string;
+  @Type(SchemaType.ARRAY, Verse)
+  verses: Verse[];
 
   @Type(SchemaType.DATE)
   updatedAt: Date;
