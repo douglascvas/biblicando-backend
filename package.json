@@ -37,7 +37,7 @@
     "request-promise": "^4.1.1",
     "source-map-support": "^0.4.10",
     "through2": "^2.0.3",
-    "node-boot": "/home/douglas/workspace/node-boot"
+    "node-boot": "*"
   },
   "devDependencies": {
     "@types/body-parser": "0.0.34",
