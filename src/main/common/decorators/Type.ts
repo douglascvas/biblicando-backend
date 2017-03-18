@@ -1,47 +1,29 @@
 import {SchemaType} from "../enums/SchemaType";
-import {ObjectUtils} from "../service/ObjectUtils";
+import "reflect-metadata";
 
-export function Type(type:SchemaType, _of?:any) {
-  var self = this;
+const typeMetadataKey = Symbol("typeMD");
+
+export interface TypeInfo {
+  type: SchemaType;
+  subtype?: any
+}
+
+export function Type(type: SchemaType, subtype?: any) {
   return function (target, key) {
-    target.__$resource = target.__$resource || {properties: {}};
-    if (_of) {
-      var schemaProperty: any = target.__$resource.properties[key] = {};
-      var targetProperty:any;
-      if (type.value === SchemaType.ARRAY.value) {
-        schemaProperty.type = type.value;
-        targetProperty = schemaProperty.items = {};
-      } else {
-        targetProperty = schemaProperty;
-      }
-      if (_of instanceof SchemaType) {
-        targetProperty.type = (<SchemaType>_of).value;
-      } else if (typeof _of === 'string') {
-        targetProperty.type = _of;
-      } else {
-        targetProperty.$ref = ObjectUtils.extractClassName(_of);
-      }
-    } else {
-      target.__$resource.properties[key] = {
-        type: type.value
-      };
-    }
-
-    var _value = self[key];
-
-    function getter() {
-      return _value;
-    }
-
-    function setter(newValue) {
-      _value = newValue;
-    }
-
-    if (delete self[key]) {
-      Object.defineProperty(target, key, {
-        get: getter,
-        set: setter
-      });
-    }
+    let types: Map<String, TypeInfo> = Reflect.getMetadata(typeMetadataKey, target) || new Map();
+    types.set(key, {type: type, subtype: subtype});
+    Reflect.defineMetadata(typeMetadataKey, types, target);
   };
 }
+
+export class TypeHelper {
+  public static getTypesMetadata(target: any): Map<String, TypeInfo> {
+    return Reflect.getMetadata(typeMetadataKey, target) || new Map();
+  }
+
+  public static getTypeMetadata(target: any, property: string): TypeInfo {
+    return (Reflect.getMetadata(typeMetadataKey, target) || new Map()).get(property);
+  }
+}
+
+

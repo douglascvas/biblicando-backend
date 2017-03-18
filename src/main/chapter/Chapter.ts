@@ -1,5 +1,5 @@
 'use strict';
-import {Verse} from "../verse/verse";
+import {Verse} from "../verse/Verse";
 import {Book} from "../book/Book";
 import {Resource} from "../common/decorators/Resource";
 import {Type} from "../common/decorators/Type";

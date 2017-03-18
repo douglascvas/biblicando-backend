@@ -1,14 +1,13 @@
 'use strict';
 
 import {BibleService} from "../../../main/bible/BibleService";
-import * as Sinon from "sinon";
 import {assert} from "chai";
 import {ResourceManager} from "../../../main/common/ResourceManager";
 import {Bible} from "../../../main/bible/Bible";
 import {BibleDao} from "../../../main/bible/BibleDao";
 import {Config} from "../../../main/config/Config";
 import {ConfigTest} from "../../ConfigTest";
-
+import * as Sinon from "sinon";
 
 describe('BibleService', function () {
 

@@ -1,323 +1,123 @@
-// 'use strict';
-//
-// import {ChapterService} from "../../../../main/chapter/chapterService";
-// import {AssertThat} from "../../../assertThat";
-// import * as sinon from 'sinon';
-// import * as chai from 'chai';
-//
-// const assert = chai.assert;
-// const assertThat = new AssertThat();
-// const CACHE_TIMEOUT = 1000;
-// const BOOK_ID = 'aBook';
-// const REMOTE_BOOK_ID = 'aRemoteBook';
-// const REMOTE_SOURCE = 'remoteApi';
-//
-// describe('ChapterService', function () {
-//
-//   var cacheService, config, httpClient, verseService,
-//     chapterService:ChapterService,
-//     chapterDao, bookDao, remoteApiInfoService, book, returnedValue;
-//   var aChapter, anotherChapter, chapterList, chapterIdList;
-//   var mockRemoteResourceClassConstructorArgs, mockRemoteResource;
-//   var MockRemoteResourceClass;
-//
-//   function stub() {
-//     return sinon.stub();
-//   }
-//
-//   beforeEach(()=> {
-//     MockRemoteResourceClass = function () {
-//       mockRemoteResourceClassConstructorArgs = Array.prototype.slice.call(arguments);
-//       mockRemoteResource = this;
-//     };
-//     MockRemoteResourceClass.prototype.getChapters = stub();
-//
-//     book = sinon.stub();
-//     aChapter = {_id: 'id1'};
-//     anotherChapter = {_id: 'id2'};
-//     chapterList = [aChapter, anotherChapter];
-//     chapterIdList = [aChapter._id, anotherChapter._id];
-//
-//     config = {find: stub()};
-//     config.find.withArgs('cache.expirationInMillis').returns(CACHE_TIMEOUT);
-//
-//     httpClient = stub();
-//     cacheService = {get: stub(), set: stub()};
-//     verseService = {findVerses: stub()};
-//
-//     bookDao = {find: stub(), findOne: stub()};
-//
-//     chapterDao = {findByBook: stub(), findOne: stub(), insert: stub(), find: stub(), upsertOne: stub()};
-//     chapterDao.upsertOne.withArgs(chapterList[0]).returns(Promise.resolve({upsertedId: chapterList[0]._id}));
-//     chapterDao.upsertOne.withArgs(chapterList[1]).returns(Promise.resolve({upsertedId: chapterList[1]._id}));
-//     chapterDao.find.withArgs({_id: {$in: chapterIdList}}).returns(Promise.resolve(chapterList));
-//
-//     remoteApiInfoService = {resolveFromName: stub()};
-//     chapterService = new ChapterService(config, cacheService, chapterDao, bookDao, verseService, remoteApiInfoService);
-//   });
-//
-//   describe('#getChapters()', function () {
-//     it('should return the chapters from cache', function () {
-//       return assertThat
-//         .given(cacheContainsSomeChapters)
-//
-//         .when(callingGetChapters)
-//
-//         .then(theChaptersAreReturned);
-//     });
-//
-//     it('should return the chapters from the database when there is none in cache', function () {
-//       return assertThat
-//         .given(cacheContainsNoChapters)
-//         .given(databaseContainsSomeChapters)
-//
-//         .when(callingGetChapters)
-//
-//         .then(theDatabaseIsQueriedForChapters)
-//         .then(theChaptersAreReturned);
-//     });
-//
-//     it('should not store in cache when there is no chapter in the database', function () {
-//       return assertThat
-//         .given(cacheContainsNoChapters)
-//         .given(databaseDoesNotContainChapters)
-//         .given(databaseContainsBookWithoutRemoteSource)
-//
-//         .when(callingGetChapters)
-//
-//         .then(noChaptersAreReturned)
-//         .then(nothingIsStoredInCache);
-//     });
-//
-//     it('should get the bible from database and return no chapters if bible has no remoteSource', function () {
-//       return assertThat
-//         .given(cacheContainsNoChapters)
-//         .given(databaseDoesNotContainChapters)
-//         .given(databaseContainsBookWithoutRemoteSource)
-//
-//         .when(callingGetChapters)
-//
-//         .then(theDatabaseIsQueriedForBook)
-//         .then(noChaptersAreReturned)
-//     });
-//
-//     it('should query for the chapters in the remote resource serviceClass, but not find any, and not store in cache', function () {
-//       return assertThat
-//         .given(cacheContainsNoChapters)
-//         .given(databaseDoesNotContainChapters)
-//         .given(databaseContainsBookWithRemoteSource)
-//         .given(remoteApiInfoServiceResolvesRemoteSourceInfo)
-//         .given(remoteSourceHasNoChaptersForGivenBook)
-//
-//         .when(callingGetChapters)
-//
-//         .then(remoteSourceServiceIsConstructed)
-//         .then(remoteSourceIsQueriedForChapters)
-//         .then(nothingIsStoredInCache)
-//         .then(noChaptersAreReturned);
-//     });
-//
-//     it('should save the chapters returned from remote source in the database and cache', function () {
-//       return assertThat
-//         .given(cacheContainsNoChapters)
-//         .given(databaseDoesNotContainChapters)
-//         .given(databaseContainsBookWithRemoteSource)
-//         .given(remoteApiInfoServiceResolvesRemoteSourceInfo)
-//         .given(remoteSourceHasChaptersForGivenBook)
-//
-//         .when(callingGetChapters)
-//
-//         .then(remoteSourceServiceIsConstructed)
-//         .then(remoteSourceIsQueriedForChapters)
-//         .then(chaptersContainBookId)
-//         .then(theChaptersAreStoredInTheDatabase)
-//         .then(theChaptersAreStoredInCache)
-//         .then(theChaptersAreReturned);
-//     });
-//   });
-//
-//   describe('#getChapter()', function () {
-//     it('should return the chapter from cache', function () {
-//       return assertThat
-//         .given(cacheContainsTheDesiredChapter)
-//
-//         .when(callingGetChapter)
-//
-//         .then(theChapterIsReturned);
-//     });
-//
-//     it('should return the chapter from the database when there is none in cache', function () {
-//       return assertThat
-//         .given(cacheDoesNotContainTheDesiredChapter)
-//         .given(databaseContainsTheDesiredChapter)
-//
-//         .when(callingGetChapter)
-//
-//         .then(theDatabaseIsQueriedForAChapter)
-//         .then(theChapterIsReturned);
-//     });
-//
-//     it('should not store in cache when there is no chapter in the database', function () {
-//       return assertThat
-//         .given(cacheDoesNotContainTheDesiredChapter)
-//         .given(databaseDoesNotContainTheDesiredChapter)
-//
-//         .when(callingGetChapter)
-//
-//         .then(nothingIsStoredInCache)
-//         .then(noChapterIsReturned);
-//     });
-//
-//     it('should store in cache when there is a chapter in the database', function () {
-//       return assertThat
-//         .given(cacheDoesNotContainTheDesiredChapter)
-//         .given(databaseContainsTheDesiredChapter)
-//
-//         .when(callingGetChapter)
-//
-//         .then(theChapterIsStoredInCache)
-//         .then(theChapterIsReturned);
-//     });
-//
-//
-//   });
-//
-//   /**
-//    * Assert that the book id of all chapters is the right one (BOOK_ID)
-//    */
-//   function chaptersContainBookId() {
-//     var chapterBookIds = [], bookIds = [];
-//     chapterList.forEach(chapter => {
-//       chapterBookIds.push(chapter.book._id);
-//       bookIds.push(BOOK_ID);
-//     });
-//     return assert.deepEqual(chapterBookIds, bookIds);
-//   }
-//
-//   function remoteSourceHasNoChaptersForGivenBook() {
-//     MockRemoteResourceClass.prototype.getChapters.withArgs(book.remoteId).returns(Promise.resolve([]));
-//   }
-//
-//   function remoteSourceHasChaptersForGivenBook() {
-//     MockRemoteResourceClass.prototype.getChapters.withArgs(book.remoteId).returns(Promise.resolve(chapterList));
-//   }
-//
-//   function remoteApiInfoServiceResolvesRemoteSourceInfo() {
-//     remoteApiInfoService.resolveFromName.withArgs(book.remoteSource).returns({serviceClass: MockRemoteResourceClass});
-//   }
-//
-//   function databaseContainsBookWithoutRemoteSource() {
-//     book = {_id: BOOK_ID, remoteId: REMOTE_BOOK_ID};
-//     bookDao.findOne.withArgs(BOOK_ID).returns(Promise.resolve(book));
-//   }
-//
-//   function databaseContainsBookWithRemoteSource() {
-//     book = {_id: BOOK_ID, remoteId: REMOTE_BOOK_ID, remoteSource: REMOTE_SOURCE};
-//     bookDao.findOne.withArgs(BOOK_ID).returns(Promise.resolve(book));
-//   }
-//
-//   function nothingIsStoredInCache() {
-//     return assert.equal(cacheService.set.callCount, 0);
-//   }
-//
-//   function theChaptersAreStoredInCache() {
-//     return assert.isTrue(cacheService.set.withArgs(`chapters_${BOOK_ID}`, chapterList, CACHE_TIMEOUT).calledOnce);
-//   }
-//
-//   function theChaptersAreStoredInTheDatabase() {
-//     assert.isTrue(chapterDao.upsertOne.withArgs(chapterList[0]).calledOnce);
-//     assert.isTrue(chapterDao.upsertOne.withArgs(chapterList[1]).calledOnce);
-//     assert.isTrue(chapterDao.find.withArgs({_id: {$in: chapterIdList}}).calledOnce);
-//   }
-//
-//   function theChapterIsStoredInCache() {
-//     return assert.isTrue(cacheService.set.withArgs(`chapter_${aChapter._id}`, aChapter, CACHE_TIMEOUT).calledOnce);
-//   }
-//
-//   function databaseContainsSomeChapters() {
-//     chapterDao.findByBook.withArgs().returns(Promise.resolve(chapterList));
-//   }
-//
-//   function databaseContainsTheDesiredChapter() {
-//     chapterDao.findOne.withArgs(aChapter._id).returns(Promise.resolve(aChapter));
-//   }
-//
-//   function databaseDoesNotContainTheDesiredChapter() {
-//     chapterDao.findOne.withArgs(aChapter._id).returns(Promise.resolve(null));
-//   }
-//
-//   function databaseDoesNotContainChapters() {
-//     chapterDao.findByBook.withArgs().returns(Promise.resolve(null));
-//   }
-//
-//   function cacheContainsSomeChapters() {
-//     cacheService.get.withArgs(`chapters_${BOOK_ID}`).returns(Promise.resolve(chapterList));
-//   }
-//
-//   function cacheContainsTheDesiredChapter() {
-//     cacheService.get.withArgs(`chapter_${aChapter._id}`).returns(Promise.resolve(aChapter));
-//   }
-//
-//   function cacheDoesNotContainTheDesiredChapter() {
-//     cacheService.get.withArgs(`chapter_${aChapter._id}`).returns(Promise.resolve(null));
-//   }
-//
-//   function cacheContainsNoChapters() {
-//     cacheService.get.withArgs(`chapters_${BOOK_ID}`).returns(Promise.resolve(null));
-//   }
-//
-//   function callingGetChapters() {
-//     return chapterService.getChapters(BOOK_ID)
-//     // resolve the promise value so it can be use in the next steps
-//       .then(resultChapters => {
-//         returnedValue = resultChapters;
-//       });
-//   }
-//
-//   function callingGetChapter() {
-//     return chapterService.getChapter(aChapter._id)
-//     // resolve the promise value so it can be use in the next steps
-//       .then(resultChapter => {
-//         returnedValue = resultChapter;
-//       });
-//   }
-//
-//   function theDatabaseIsQueriedForChapters() {
-//     return assert.isTrue(chapterDao.findByBook.calledOnce);
-//   }
-//
-//   function theDatabaseIsQueriedForBook() {
-//     return assert.isTrue(bookDao.findOne.withArgs(BOOK_ID).calledOnce);
-//   }
-//
-//   function theDatabaseIsQueriedForAChapter() {
-//     return assert.isTrue(chapterDao.findOne.withArgs(aChapter._id).calledOnce);
-//   }
-//
-//   function theChaptersAreReturned() {
-//     return assert.equal(returnedValue, chapterList);
-//   }
-//
-//   function theChapterIsReturned() {
-//     return assert.equal(returnedValue, aChapter);
-//   }
-//
-//   function noChaptersAreReturned() {
-//     return assert.deepEqual(returnedValue, []);
-//   }
-//
-//   function noChapterIsReturned() {
-//     return assert.deepEqual(returnedValue, null);
-//   }
-//
-//   function remoteSourceServiceIsConstructed() {
-//     return assert.deepEqual(mockRemoteResourceClassConstructorArgs, [config, httpClient, cacheService]);
-//   }
-//
-//   /**
-//    * Assert that the 'getChapters' method of the RemoteResourceClass is called.
-//    */
-//   function remoteSourceIsQueriedForChapters() {
-//     return assert.isTrue(MockRemoteResourceClass.prototype.getChapters.withArgs(REMOTE_BOOK_ID).calledOnce);
-//   }
-// });
+'use strict';
+
+import {ChapterService} from "../../../main/chapter/ChapterService";
+import * as Sinon from "sinon";
+import {assert} from "chai";
+import {Chapter} from "../../../main/chapter/Chapter";
+import {VerseService} from "../../../main/verse/VerseService";
+import {TestLoggerFactory} from "../common/TestLoggerFactory";
+import {LoggerFactory} from "node-boot";
+import {ChapterResourceFetcher} from "../../../main/chapter/ChapterResourceFetcher";
+import {Verse} from "../../../main/verse/Verse";
+
+describe('ChapterService', function () {
+
+  let chapterService: ChapterService;
+  let verseService: VerseService;
+  let loggerFactory: LoggerFactory;
+  let chapterResourceFetcher: ChapterResourceFetcher;
+
+  beforeEach(() => {
+    chapterResourceFetcher = Sinon.createStubInstance(ChapterResourceFetcher);
+    verseService = Sinon.createStubInstance(VerseService);
+    loggerFactory = new TestLoggerFactory();
+    chapterService = new ChapterService(verseService, chapterResourceFetcher, loggerFactory);
+  });
+
+  describe('#getChapter()', function () {
+    it('should return empty if no chapter id is given', async function () {
+      // when
+      const chapter: Chapter = await chapterService.findChapter(null);
+
+      // then
+      assert.isNull(chapter);
+    });
+
+    it('should fetch the chapter from remote', async function () {
+      // given
+      const chapter: Chapter = aChapterWithNumber(1);
+
+      const chapterId: string = 'chapter1';
+      (<Sinon.SinonStub>chapterResourceFetcher.fetchChapter).withArgs(chapterId).returns(Promise.resolve(chapter));
+
+      // when
+      let result: Chapter = await chapterService.findChapter(chapterId);
+
+      // then
+      assert.strictEqual(result, chapter);
+    });
+
+    it('should load verses for chapter', async function () {
+      // given
+      const chapter: Chapter = aChapterWithNumber(1);
+      const verses: Verse[] = [new Verse()];
+
+      const chapterId: string = 'chapter1';
+      (<Sinon.SinonStub>chapterResourceFetcher.fetchChapter).withArgs(chapterId).returns(Promise.resolve(chapter));
+      (<Sinon.SinonStub>verseService.findVersesForChapter).withArgs(chapter._id).returns(Promise.resolve(verses));
+
+      // when
+      let result: Chapter = await chapterService.findChapter(chapterId);
+
+      // then
+      assert.strictEqual(result.verses, verses);
+    });
+  });
+
+  describe('#getChapters()', function () {
+    it('should return empty if no book id is given', async function () {
+      // when
+      const chapters: Chapter[] = await chapterService.findChaptersForBook(null);
+
+      // then
+      assert.equal(chapters.length, 0);
+    });
+
+    it('should fetch the chapters from remote and sort by number', async function () {
+      // given
+      const chapter1: Chapter = aChapterWithNumber(1);
+      const chapter2: Chapter = aChapterWithNumber(2);
+      const chapters: Chapter[] = [chapter2, chapter1];
+
+      const bookId: string = '123';
+      (<Sinon.SinonStub>chapterResourceFetcher.fetchChapters).withArgs(bookId).returns(Promise.resolve(chapters));
+
+      // when
+      let result: Chapter[] = await chapterService.findChaptersForBook(bookId);
+
+      // then
+      assert.strictEqual(result.length, chapters.length);
+      assert.strictEqual(result[0], chapter1);
+      assert.strictEqual(result[1], chapter2);
+    });
+
+    it('should fetch the verse for the first chapter', async function () {
+      // given
+      const chapter1: Chapter = aChapterWithNumber(1);
+      const chapter2: Chapter = aChapterWithNumber(2);
+      const chapters: Chapter[] = [chapter2, chapter1];
+      const verses: Verse[] = [new Verse()];
+
+      const bookId: string = '123';
+      (<Sinon.SinonStub>chapterResourceFetcher.fetchChapters).withArgs(bookId).returns(Promise.resolve(chapters));
+      (<Sinon.SinonStub>verseService.findVersesForChapter).withArgs(chapter1._id).returns(Promise.resolve(verses));
+
+      // when
+      let result: Chapter[] = await chapterService.findChaptersForBook(bookId);
+
+      // then
+      assert.strictEqual(result[0].verses.length, 1);
+      assert.strictEqual(result[0].verses, verses);
+      assert.strictEqual(result[1].verses.length, 0);
+    });
+  });
+
+  function aChapterWithNumber(chapterNumber: number): Chapter {
+    let chapter: Chapter = new Chapter();
+    chapter._id = 'id' + chapterNumber;
+    chapter.number = chapterNumber;
+    chapter.verses = [];
+    return chapter;
+  }
+
+});

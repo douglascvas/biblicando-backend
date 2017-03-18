@@ -31,10 +31,12 @@ export interface ApiConfig {
   }
 }
 
+export interface LoggerAppender {
+  type: string
+}
+
 export interface LoggerConfig {
-  appenders: {
-    type: string
-  }
+  appenders: LoggerAppender[]
 }
 
 export abstract class Config {

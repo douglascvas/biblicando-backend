@@ -9,13 +9,18 @@
     "declaration": false,
     "diagnostics": true,
     "noImplicitAny": false,
-    "removeComments": true,
+    "removeComments": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "pretty": true
   },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./src/**/*.d.ts",
+    "./node_modules/@types/**/*.d.ts",
+    "./node_modules/node-boot/**/*.d.ts",
+    "./node_modules/node-boot/*.d.ts"
   ],
   "exclude": [
     "node_modules"

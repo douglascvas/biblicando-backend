@@ -26,8 +26,8 @@ export class ConfigTest implements Config {
     }
   };
   logger: LoggerConfig = {
-    appenders: {
+    appenders: [{
       type: 'console'
-    }
+    }]
   };
 }

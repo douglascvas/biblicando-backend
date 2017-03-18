@@ -28,8 +28,8 @@ export class ConfigDev implements Config {
     }
   };
   logger: LoggerConfig = {
-    appenders: {
+    appenders: [{
       type: 'console'
-    }
+    }]
   };
 }

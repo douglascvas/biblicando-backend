@@ -1,14 +1,11 @@
 import * as express from "express";
 import {ApplicationManager, LoggerFactory, WebManager, ExpressWebManager} from "node-boot";
-import {BiblicandoLoggerFactory} from "./common/LoggerFactory";
+import {BiblicandoLoggerFactory} from "./common/BiblicandoLoggerFactory";
 import * as sourceMapSupport from "source-map-support";
 import {Config} from "./config/Config";
 import {ConfigDev} from "./config/ConfigDev";
 import {ConfigProd} from "./config/ConfigProd";
 import {Server} from "./Server";
-
-const Configurator = require("configurator-js");
-const moduleInfo = require("../../package.json");
 
 sourceMapSupport.install();
 

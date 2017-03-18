@@ -1,7 +1,7 @@
 import {Bible} from "../../bible/Bible";
 import {Book} from "../../book/Book";
 import {Chapter} from "../../chapter/Chapter";
-import {Verse} from "../../verse/verse";
+import {Verse} from "../../verse/Verse";
 
 export interface RemoteService {
   getBibles(): Promise<Bible[]>;

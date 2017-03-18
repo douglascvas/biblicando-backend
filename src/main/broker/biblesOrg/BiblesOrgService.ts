@@ -4,7 +4,7 @@ import * as URL from "url";
 import {Book} from "../../book/Book";
 import {Bible} from "../../bible/Bible";
 import {Chapter} from "../../chapter/Chapter";
-import {Verse} from "../../verse/verse";
+import {Verse} from "../../verse/Verse";
 import {BiblesOrgBible} from "./BiblesOrgBible";
 import {BiblesOrgBook} from "./BiblesOrgBook";
 import {BiblesOrgChapter} from "./BiblesOrgChapter";

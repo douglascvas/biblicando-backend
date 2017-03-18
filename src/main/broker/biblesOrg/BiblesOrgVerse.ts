@@ -1,6 +1,6 @@
 'use strict';
 import {Broker} from "../../common/enums/Broker";
-import {Verse} from "../../verse/verse";
+import {Verse} from "../../verse/Verse";
 
 export class BiblesOrgVerse {
   id:string;

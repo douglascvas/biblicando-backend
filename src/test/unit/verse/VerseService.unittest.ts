@@ -1,80 +1,84 @@
 'use strict';
 
-import {VerseService} from "../../../main/verse/verseService";
-import * as sinon from "sinon";
-import * as chai from "chai";
-import {ResourceManager} from "../../../main/common/ResourceManager";
-import {RemoteApiInfoService} from "../../../main/common/service/RemoteApiInfoService";
-import {Verse} from "../../../main/verse/verse";
-import {VerseDao} from "../../../main/verse/verseDao";
-import {ChapterDao} from "../../../main/chapter/ChapterDao";
-
-const assert = chai.assert;
+import {VerseService} from "../../../main/verse/VerseService";
+import * as Sinon from "sinon";
+import {assert} from "chai";
+import {Verse} from "../../../main/verse/Verse";
+import {TestLoggerFactory} from "../common/TestLoggerFactory";
+import {LoggerFactory} from "node-boot";
+import {VerseResourceFetcher} from "../../../main/verse/VerseResourceFetcher";
 
 describe('VerseService', function () {
 
-  let verseDao: VerseDao;
-  let chapterDao: ChapterDao;
-  let resourceManager: ResourceManager;
   let verseService: VerseService;
-  let remoteApiInfoService: RemoteApiInfoService;
-
-  function spy() {
-    return sinon.spy();
-  }
-
-  function stub() {
-    return sinon.stub();
-  }
+  let loggerFactory: LoggerFactory;
+  let verseResourceFetcher: VerseResourceFetcher;
 
   beforeEach(() => {
-    chapterDao = <any>{find: spy(), findOne: spy()};
-    resourceManager = <any>{getResources: stub(), getResource: stub()};
-    verseDao = <any>{findByChapter: spy(), findOne: spy()};
-    remoteApiInfoService = <any>{resolveFromName: spy()};
-    verseService = new VerseService(verseDao, chapterDao, remoteApiInfoService, resourceManager);
+    verseResourceFetcher = Sinon.createStubInstance(VerseResourceFetcher);
+    loggerFactory = new TestLoggerFactory();
+    verseService = new VerseService(verseResourceFetcher, loggerFactory);
+  });
+
+  describe('#getVerse()', function () {
+    it('should return empty if no verse id is given', async function () {
+      // when
+      const verse: Verse = await verseService.findVerse(null);
+
+      // then
+      assert.isNull(verse);
+    });
+
+    it('should fetch the verse from remote', async function () {
+      // given
+      const verse: Verse = aVerseWithNumber(1);
+
+      const verseId: string = 'verse1';
+      (<Sinon.SinonStub>verseResourceFetcher.fetchVerse).withArgs(verseId).returns(Promise.resolve(verse));
+
+      // when
+      let result: Verse = await verseService.findVerse(verseId);
+
+      // then
+      assert.strictEqual(result, verse);
+    });
+
   });
 
   describe('#getVerses()', function () {
-    it('should return empty if chapter id is null', async function () {
+    it('should return empty if no chapter id is given', async function () {
       // when
-      const verses: Verse[] = await verseService.getVerses(null);
+      const verses: Verse[] = await verseService.findVersesForChapter(null);
 
       // then
       assert.equal(verses.length, 0);
     });
 
-    it('should return verses from resource manager', async function () {
+    it('should fetch the verses from remote and sort by number', async function () {
       // given
-      const verses: Verse[] = [new Verse()];
-      (<any>resourceManager.getResources).withArgs().returns(Promise.resolve(verses));
+      const verse1: Verse = aVerseWithNumber(1);
+      const verse2: Verse = aVerseWithNumber(2);
+      const verses: Verse[] = [verse2, verse1];
+
+      const chapterId: string = '123';
+      (<Sinon.SinonStub>verseResourceFetcher.fetchVerses).withArgs(chapterId).returns(Promise.resolve(verses));
 
       // when
-      const result: Verse[] = await verseService.getVerses('123');
+      let result: Verse[] = await verseService.findVersesForChapter(chapterId);
 
       // then
-      assert.equal(result, verses);
+      assert.strictEqual(result.length, verses.length);
+      assert.strictEqual(result[0], verse1);
+      assert.strictEqual(result[1], verse2);
     });
 
-    it('should get verses for the chapter from the database if necessary', async function () {
-      // given
-      const verses: Verse[] = [new Verse()];
-      (<any>resourceManager.getResources).returns(Promise.resolve(verses));
-
-      // when
-      await verseService.getVerses('123');
-
-      // then
-      assert.equal((<any>verseDao.findByChapter).callCount, 0);
-
-      // given
-      const calledArg = (<any>resourceManager.getResources).args[0][2];
-
-      // when
-      calledArg('123');
-
-      assert.isTrue((<any>verseDao.findByChapter).calledOnce);
-    });
   });
+
+  function aVerseWithNumber(verseNumber: number): Verse {
+    let verse: Verse = new Verse();
+    verse._id = 'id' + verseNumber;
+    verse.numbers = [verseNumber];
+    return verse;
+  }
 
 });

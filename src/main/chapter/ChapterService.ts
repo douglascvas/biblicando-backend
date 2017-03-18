@@ -1,45 +1,46 @@
 'use strict';
-import {ChapterDao} from "./ChapterDao";
 import {Chapter} from "./Chapter";
-import {VerseService} from "../verse/verseService";
+import {VerseService} from "../verse/VerseService";
 import {Service} from "node-boot";
-import {ResourceManager} from "../common/ResourceManager";
-import {Config} from "../config/Config";
+import {ChapterResourceFetcher} from "./ChapterResourceFetcher";
+import {LoggerFactory, Logger} from "node-boot";
 
 @Service
 export class ChapterService {
-  private CACHE_TIMEOUT;
+  private _logger: Logger;
 
-  constructor(private config: Config,
-              private chapterDao: ChapterDao,
-              private verseService: VerseService,
-              private resourceManager: ResourceManager) {
-    this.CACHE_TIMEOUT = config.cache.expirationInMillis;
+  constructor(private _verseService: VerseService,
+              private _chapterResourceFetcher: ChapterResourceFetcher,
+              private _loggerFactory: LoggerFactory) {
+    this._logger = _loggerFactory.getLogger(ChapterService);
   }
 
-  public async getChapters(bookId: string): Promise<Chapter[]> {
+  public async findChaptersForBook(bookId: string): Promise<Chapter[]> {
     if (!bookId) {
       return [];
     }
-    return this.resourceManager.getResources(bookId, 'chapters', id => this.chapterDao.findByBook(id));
+    let chapters: Chapter[] = await this._chapterResourceFetcher.fetchChapters(bookId);
+    chapters = this.sortChaptersByNumber(chapters);
+    await this.loadVersesForChapter(chapters[0]);
+    return chapters;
   }
 
-  public async getChapter(chapterId: string): Promise<Chapter> {
+  public async findChapter(chapterId: string): Promise<Chapter> {
     if (!chapterId) {
       return null;
     }
-    return this.resourceManager.getResource(chapterId, 'chapter', id => this.chapterDao.findOne(id));
+    let chapter: Chapter = await this._chapterResourceFetcher.fetchChapter(chapterId);
+    await this.loadVersesForChapter(chapter);
+    return chapter;
   }
 
-  /**
-   * Load all the chapters from the book, filling the first of them with it's verses.
-   */
-  public async loadFromBook(bookId: string): Promise<Chapter[]> {
-    let chapters: Chapter[] = await this.getChapters(bookId);
-    chapters = chapters.sort((a: Chapter, b: Chapter) => a.number - b.number);
-    if (chapters.length) {
-      chapters[0].verses = await this.verseService.getVerses(chapters[0]._id);
+  private async loadVersesForChapter(chapter: Chapter) {
+    if (chapter) {
+      chapter.verses = await this._verseService.findVersesForChapter(chapter._id);
     }
-    return chapters;
+  }
+
+  private sortChaptersByNumber(chapters: Chapter[]) {
+    return chapters.sort((a: Chapter, b: Chapter) => a.number - b.number);
   }
 }

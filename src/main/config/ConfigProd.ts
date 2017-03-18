@@ -28,8 +28,8 @@ export class ConfigProd implements Config {
     }
   };
   logger: LoggerConfig = {
-    appenders: {
+    appenders: [{
       type: 'console'
-    }
+    }]
   };
 }

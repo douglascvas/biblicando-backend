@@ -2,7 +2,7 @@
 import {Db} from "mongodb";
 import {BaseDao} from "../common/dao/BaseDao";
 import {Collection} from "../common/enums/Collection";
-import {Verse} from "./verse";
+import {Verse} from "./Verse";
 import {Service} from "node-boot";
 
 @Service

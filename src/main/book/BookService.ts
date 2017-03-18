@@ -1,10 +1,9 @@
 'use strict';
-import {BookDao} from "./BookDao";
 import {Book} from "./Book";
 import {Service, Logger, LoggerFactory} from "node-boot";
-import {ResourceManager} from "../common/ResourceManager";
 import {ChapterService} from "../chapter/ChapterService";
 import {Chapter} from "../chapter/Chapter";
+import {BookResourceFetcher} from "./BookResourceFetcher";
 
 @Service
 export class BookService {
@@ -12,27 +11,36 @@ export class BookService {
   private logger: Logger;
 
   constructor(private chapterService: ChapterService,
-              private bookDao: BookDao,
-              private loggerFactory: LoggerFactory,
-              private resourceManager: ResourceManager) {
+              private bookResourceFetcher: BookResourceFetcher,
+              private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.getLogger(BookService);
   }
 
-  public async getBooks(bibleId: string): Promise<Book[]> {
+  public async findBooksForBible(bibleId: string): Promise<Book[]> {
     if (!bibleId) {
       return [];
     }
-    let books: Book[] = await this.resourceManager.getResources(bibleId, 'books', id => this.bookDao.findByBible(id));
-    books = books.sort((a: Book, b: Book) => a.number - b.number);
-    let chapters: Chapter[] = await this.chapterService.loadFromBook(books[0]._id);
-    if (books.length) {
-      books[0].chapters = chapters;
-    }
+    let books: Book[] = await this.bookResourceFetcher.fetchBooks(bibleId);
+    this.sortBooksByNumber(books);
+    await this.loadChapterForFirstBook(books[0]);
     return books;
   }
 
-  public async getBook(bookId: string): Promise<Book> {
-    return this.resourceManager.getResource(bookId, 'book', id => this.bookDao.findOne(id));
+  public async findBook(bookId: string): Promise<Book> {
+    let book: Book = await this.bookResourceFetcher.fetchBook(bookId);
+    await this.loadChapterForFirstBook(book);
+    return book || null;
+  }
+
+  private async loadChapterForFirstBook(book: Book) {
+    if (book) {
+      let chapters: Chapter[] = await this.chapterService.findChaptersForBook(book._id);
+      book.chapters = chapters;
+    }
+  }
+
+  private sortBooksByNumber(books: Book[]) {
+    return books.sort((a: Book, b: Book) => a.number - b.number);
   }
 
 

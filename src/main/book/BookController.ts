@@ -17,13 +17,13 @@ export class BookController {
   public async getBooks(request, response): Promise<Book[]> {
     const bibleId = request.params.bibleId;
     this.log.debug(`Loading books for ${bibleId}`);
-    return await this.bookService.getBooks(bibleId);
+    return await this.bookService.findBooksForBible(bibleId);
   }
 
   @ResponseBody
   @RequestMapping('/book/:bookId', RequestType.GET)
   public async getBook(request, response): Promise<Book> {
     const bookId = request.params.bookId;
-    return await this.bookService.getBook(bookId);
+    return await this.bookService.findBook(bookId);
   }
 }
