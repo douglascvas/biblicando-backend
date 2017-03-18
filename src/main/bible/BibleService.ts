@@ -1,25 +1,23 @@
-import {BibleDao} from "./BibleDao";
 import {Bible} from "./Bible";
 import {Service} from "node-boot";
-import {ResourceManager} from "../common/ResourceManager";
-import {Config} from "../config/Config";
+import {BibleResourceFetcher} from "./BibleResourceFetcher";
 
 @Service
 export class BibleService {
 
-  constructor(private config: Config,
-              private bibleDao: BibleDao,
-              private resourceManager: ResourceManager) {
+  constructor(private bibleResourceFetcher: BibleResourceFetcher) {
   }
 
-  public getBibles(): Promise<Bible[]> {
-    const filter = this.config.bible.filter || {};
-    return this.resourceManager.getResources('', 'bibles', id => this.bibleDao.find(filter, {}));
+  public findBibles(): Promise<Bible[]> {
+    return this.bibleResourceFetcher.fetchBibles();
   }
 
 
-  public getBible(bibleId: string): Promise<Bible> {
-    return this.resourceManager.getResource(bibleId, 'bible', id => this.bibleDao.findOne(id));
+  public findBible(bibleId: string): Promise<Bible> {
+    if (!bibleId) {
+      return null;
+    }
+    return this.bibleResourceFetcher.fetchBible(bibleId);
   }
 
 }

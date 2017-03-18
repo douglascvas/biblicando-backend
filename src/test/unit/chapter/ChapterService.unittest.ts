@@ -24,7 +24,7 @@ describe('ChapterService', function () {
     chapterService = new ChapterService(verseService, chapterResourceFetcher, loggerFactory);
   });
 
-  describe('#getChapter()', function () {
+  describe('#findChapter()', function () {
     it('should return empty if no chapter id is given', async function () {
       // when
       const chapter: Chapter = await chapterService.findChapter(null);
@@ -64,7 +64,7 @@ describe('ChapterService', function () {
     });
   });
 
-  describe('#getChapters()', function () {
+  describe('#findChaptersForBook()', function () {
     it('should return empty if no book id is given', async function () {
       // when
       const chapters: Chapter[] = await chapterService.findChaptersForBook(null);

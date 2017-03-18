@@ -25,7 +25,7 @@ describe('BookService', function () {
     bookService = new BookService(chapterService, bookResourceFetcher, loggerFactory);
   });
 
-  describe('#getBook()', function () {
+  describe('#findBook()', function () {
     it('should return empty if no book id is given', async function () {
       // when
       const book: Book = await bookService.findBook(null);
@@ -65,7 +65,7 @@ describe('BookService', function () {
     });
   });
 
-  describe('#getBooks()', function () {
+  describe('#findBooksForBible()', function () {
     it('should return empty if no bible id is given', async function () {
       // when
       const books: Book[] = await bookService.findBooksForBible(null);

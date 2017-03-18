@@ -20,7 +20,7 @@ describe('VerseService', function () {
     verseService = new VerseService(verseResourceFetcher, loggerFactory);
   });
 
-  describe('#getVerse()', function () {
+  describe('#findVerse()', function () {
     it('should return empty if no verse id is given', async function () {
       // when
       const verse: Verse = await verseService.findVerse(null);
@@ -45,7 +45,7 @@ describe('VerseService', function () {
 
   });
 
-  describe('#getVerses()', function () {
+  describe('#findVersesForChapter()', function () {
     it('should return empty if no chapter id is given', async function () {
       // when
       const verses: Verse[] = await verseService.findVersesForChapter(null);
